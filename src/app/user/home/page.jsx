@@ -23,7 +23,7 @@ export default function HomePage() {
           size="lg"
           className="bg-purple-700 hover:bg-purple-800 text-white"
         >
-          <Link href="/ask-ai">Ask Our AI Doctor</Link>
+          <Link href="/user/ai">Ask Our AI Doctor</Link>
         </Button>
       </section>
 
@@ -37,25 +37,25 @@ export default function HomePage() {
             icon={<HeartPulse className="w-8 h-8 text-purple-700" />}
             title="Consult Doctors"
             description="Find and connect with medical professionals easily."
-            href="/doctor"
+            href="/user/doctor"
           />
           <FeatureCard
             icon={<Bot className="w-8 h-8 text-purple-700" />}
             title="Ask AI"
             description="Get instant answers to your health-related queries."
-            href="/ask-ai"
+            href="/user/ai"
           />
           <FeatureCard
             icon={<Activity className="w-8 h-8 text-purple-700" />}
             title="Predict Disease"
             description="Use machine learning to assess potential health risks."
-            href="/predict-disease"
+            href="/user/ml"
           />
           <FeatureCard
             icon={<FileText className="w-8 h-8 text-purple-700" />}
             title="Your Reports"
             description="View and manage your medical history and reports."
-            href="/reports"
+            href="/user/reports"
           />
         </div>
       </section>

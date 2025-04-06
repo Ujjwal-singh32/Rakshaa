@@ -10,7 +10,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-
+import doctor1 from "@/assets/doctor1.jpg";
 export default function Navbar() {
   return (
     <header className="w-full bg-purple-100 dark:bg-purple-900 shadow-sm top-0 sticky z-50">
@@ -28,10 +28,10 @@ export default function Navbar() {
         {/* Center: Links */}
         <nav className="hidden md:flex gap-6 ">
           <NavLink href="/user/doctor" label="Doctors" />
-          <NavLink href="/pathlabs" label="Path Labs" />
-          <NavLink href="/ask-saksham" label="Ask Sakhsam" />
-          <NavLink href="/predict-disease" label="Predict Disease" />
-          <NavLink href="/reports" label="Your Reports" />
+          <NavLink href="/user/pathlabs" label="Path Labs" />
+          <NavLink href="/user/ai" label="Ask Sakhsam" />
+          <NavLink href="/user/ml" label="Predict Disease" />
+          <NavLink href="/user/reports" label="Your Reports" />
         </nav>
 
         {/* Right: Profile + Mobile Menu */}
@@ -39,7 +39,7 @@ export default function Navbar() {
           {/* Profile */}
           <Link href="/profile">
             <Avatar className="w-9 h-9 border-2 border-purple-400 hover:border-purple-600 transition">
-              <AvatarImage src="/profile.jpg" alt="Profile" />
+              <AvatarImage src= "https://www.mepmiddleeast.com/cloud/2023/01/10/Narendra-Modi.jpg" alt="Profile" />
               <AvatarFallback>MP</AvatarFallback>
             </Avatar>
           </Link>
@@ -61,10 +61,10 @@ export default function Navbar() {
                 </SheetHeader>
                 <nav className="flex flex-col gap-4 mt-6 ml-5 text-purple-800 dark:text-purple-100">
                   <NavLink href="/user/doctor" label="Doctors" />
-                  <NavLink href="/pathlabs" label="Path Labs" />
-                  <NavLink href="/ask-saksham" label="Ask Sakhsam" />
-                  <NavLink href="/predict-disease" label="Predict Disease" />
-                  <NavLink href="/reports" label="Your Reports" />
+                  <NavLink href="/user/pathlabs" label="Path Labs" />
+                  <NavLink href="/user/ai" label="Ask Sakhsam" />
+                  <NavLink href="/user/ml" label="Predict Disease" />
+                  <NavLink href="/user/reports" label="Your Reports" />
                 </nav>
               </SheetContent>
             </Sheet>

@@ -5,7 +5,7 @@ import { Github, Instagram, Linkedin } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-100 mt-10">
+    <footer className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-100 pb-0">
       <div className="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 sm:grid-cols-3 gap-8">
         {/* Logo and Tagline */}
         <div>
@@ -17,11 +17,11 @@ export default function Footer() {
 
         {/* Navigation Links */}
         <div className="flex flex-col gap-2">
-          <FooterLink href="/doctor" label="Doctors" />
-          <FooterLink href="/pathlabs" label="Path Labs" />
-          <FooterLink href="/ask-saksham" label="Ask Saksham" />
-          <FooterLink href="/predict-disease" label="Predict Disease" />
-          <FooterLink href="/reports" label="Your Reports" />
+          <FooterLink href="/user/doctor" label="Doctors" />
+          <FooterLink href="/user/pathlabs" label="Path Labs" />
+          <FooterLink href="/user/ai" label="Ask Saksham" />
+          <FooterLink href="/user/ml" label="Predict Disease" />
+          <FooterLink href="/user/reports" label="Your Reports" />
         </div>
 
         {/* Social / Contact */}
