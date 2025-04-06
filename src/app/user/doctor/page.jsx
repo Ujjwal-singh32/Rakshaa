@@ -2,7 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import doctor1 from "@/assets/doctor1.jpg"
+import doctor1 from "@/assets/doctor1.jpg";
+import UserNavbar from "@/components/UserNavbar";
+import UserFooter from "@/components/UserFooter";
+import Navbar from "@/components/UserNavbar";
 
 const doctors = [
   {
@@ -149,44 +152,65 @@ const doctors = [
 
 export default function DoctorSection() {
   return (
-    <section className="py-10 bg-purple-50 dark:bg-purple-900">
-      <div className="max-w-7xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-purple-800 dark:text-purple-100 mb-8 text-center">
-          Meet Our Experts
-        </h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
-          {doctors.map((doctor) => (
-            <div
-              key={doctor.id}
-              className="bg-white dark:bg-purple-950 shadow-md rounded-2xl p-4 transition hover:shadow-lg hover:-translate-y-1 duration-300"
-            >
-              <div className="flex flex-col items-center text-center gap-3">
-                <Image
-                  src={doctor.image}
-                  alt={doctor.name}
-                  width={100}
-                  height={100}
-                  className="rounded-full border-2 border-purple-300"
-                />
-                <h2 className="text-xl font-semibold text-purple-700 dark:text-purple-200">
-                  {doctor.name}
-                </h2>
-                <p className="text-sm text-purple-600 dark:text-purple-300">
-                  {doctor.specialization}
-                </p>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  {doctor.bio}
-                </p>
-                <Link href={`/book/${doctor.id}`}>
-                  <button className="mt-2 px-4 py-1 rounded-full bg-teal-500 text-white text-sm hover:bg-teal-600 transition">
-                    Book Now
-                  </button>
-                </Link>
+    <>
+      <UserNavbar />
+      <section className="py-10 bg-purple-50 dark:bg-purple-900">
+        <div className="max-w-7xl mx-auto px-4">
+          <h1 className="text-3xl font-bold text-purple-800 dark:text-purple-100 mb-8 text-center">
+            Meet Our Experts
+          </h1>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
+            {doctors.map((doctor) => (
+              <div
+                key={doctor.id}
+                className="bg-gradient-to-tr from-purple-200 via-white to-purple-100 dark:from-purple-800 dark:via-purple-950 dark:to-purple-900 shadow-md rounded-3xl p-5 transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] border border-purple-300 dark:border-purple-700"
+              >
+                <div className="flex flex-col items-center text-center gap-2">
+                  <Image
+                    src={doctor.image}
+                    alt={doctor.name}
+                    width={80 }
+                    height={80}
+                    className="rounded-full border-4 border-purple-400 dark:border-purple-600 shadow-md"
+                  />
+                  <h2 className="text-xl font-bold text-purple-800 dark:text-purple-200">
+                    {doctor.name}
+                  </h2>
+                  <p className="text-sm font-medium text-purple-600 dark:text-purple-300">
+                    {doctor.specialization}
+                  </p>
+                  <p className="text-sm font-semibold text-gray-700 dark:text-gray-200 max-w-[90%]">
+                    {doctor.bio}
+                  </p>
+
+                  {/* Rating */}
+                  <div className="flex items-center gap-1 text-yellow-400">
+                    {[...Array(5)].map((_, i) => (
+                      <svg
+                        key={i}
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                        className="w-4 h-4"
+                      >
+                        <path d="M12 .587l3.668 7.571 8.332 1.151-6.064 5.916 1.428 8.294L12 18.896l-7.364 4.623 1.428-8.294-6.064-5.916 8.332-1.151z" />
+                      </svg>
+                    ))}
+                  </div>
+
+                  {/* Book Now Button */}
+                  <Link href={`/book/${doctor.id}`}>
+                    <button className="mt-3 px-5 py-2 rounded-full bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold shadow-md hover:scale-105 transition">
+                      Take Appointment
+                    </button>
+                  </Link>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+      <UserFooter />
+    </>
   );
 }
