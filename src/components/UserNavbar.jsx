@@ -37,7 +37,7 @@ export default function Navbar() {
         {/* Right: Profile + Mobile Menu */}
         <div className="flex items-center gap-4">
           {/* Profile */}
-          <Link href="/profile">
+          <Link href="/user/profile">
             <Avatar className="w-9 h-9 border-2 border-purple-400 hover:border-purple-600 transition">
               <AvatarImage src= "https://www.mepmiddleeast.com/cloud/2023/01/10/Narendra-Modi.jpg" alt="Profile" />
               <AvatarFallback>MP</AvatarFallback>
