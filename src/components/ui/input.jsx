@@ -1,6 +1,5 @@
-import * as React from "react"
-
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
 function Input({
   className,
@@ -8,11 +7,7 @@ function Input({
   ...props
 }) {
   return (
-<<<<<<< HEAD
-    (<input
-=======
     <input
->>>>>>> 05cc324dc894f7e259f90ca9adbcc3e8f8f8684c
       type={type}
       data-slot="input"
       className={cn(
@@ -21,12 +16,9 @@ function Input({
         "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
         className
       )}
-<<<<<<< HEAD
-      {...props} />)
-=======
-      {...props} />
->>>>>>> 05cc324dc894f7e259f90ca9adbcc3e8f8f8684c
+      {...props}
+    />
   );
 }
 
-export { Input }
+export { Input };
