@@ -31,7 +31,8 @@ export default function Navbar() {
           <NavLink href="/user/pathlabs" label="Path Labs" />
           <NavLink href="/user/ai" label="Ask Sakhsam" />
           <NavLink href="/user/ml" label="Predict Disease" />
-          <NavLink href="/user/reports" label="Your Reports" />
+          <NavLink href="/user/reports" label="Appointments" />
+          <NavLink href="/user/pathlab-reports" label="Reports" />
         </nav>
 
         {/* Right: Profile + Mobile Menu */}
@@ -64,7 +65,8 @@ export default function Navbar() {
                   <NavLink href="/user/pathlabs" label="Path Labs" />
                   <NavLink href="/user/ai" label="Ask Sakhsam" />
                   <NavLink href="/user/ml" label="Predict Disease" />
-                  <NavLink href="/user/reports" label="Your Reports" />
+                  <NavLink href="/user/reports" label="Appointments" />
+                  <NavLink href="/user/pathlab-reports" label="Reports" />
                 </nav>
               </SheetContent>
             </Sheet>
