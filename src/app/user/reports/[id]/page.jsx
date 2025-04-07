@@ -94,6 +94,22 @@ export default function AppointmentDetails() {
       ],
     },
     {
+      date: "2015-09-05",
+      medications: [
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+      ],
+    },
+    {
       date: "2025-04-10",
       medications: [
         { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
