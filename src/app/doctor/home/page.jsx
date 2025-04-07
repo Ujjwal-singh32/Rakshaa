@@ -55,7 +55,7 @@ export default function DoctorHomePage() {
               title: "Disease Prediction",
               description: "Use ML tools to predict possible conditions.",
               icon: Activity,
-              link: "/predict-disease",
+              link: "/user/ml",
             },
             {
               title: "Dashboard",

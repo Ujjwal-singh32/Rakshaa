@@ -65,6 +65,21 @@ export default function DoctorDashboard() {
       disease: "Chikungunya",
       report: "Chikungunya_Report.pdf",
     },
+    {
+        name: "Ravi Kumar",
+        disease: "Flu",
+        report: "Flu_Report.pdf",
+      },
+      {
+        name: "Anjali Sharma",
+        disease: "Dengue",
+        report: "Dengue_Report.pdf",
+      },
+      {
+        name: "Amit Verma",
+        disease: "Chikungunya",
+        report: "Chikungunya_Report.pdf",
+      },
   ];
 
   const medicineList = [

@@ -53,7 +53,7 @@ export default function HomePage() {
           />
           <FeatureCard
             icon={<FileText className="w-8 h-8 text-purple-700" />}
-            title="Your Reports"
+            title="Appointments"
             description="View and manage your medical history and reports."
             href="/user/reports"
           />
