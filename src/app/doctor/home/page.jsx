@@ -43,7 +43,7 @@ export default function DoctorHomePage() {
         </section>
 
         {/* Action Cards */}
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-6 pb-16">
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-6 pb-16 pt-10">
           {[
             {
               title: "Appointments",
@@ -74,8 +74,8 @@ export default function DoctorHomePage() {
             return (
               <Tooltip key={index}>
                 <TooltipTrigger asChild>
-                  <Link href={card.link} className="bg-white dark:bg-purple-900 p-5 rounded-xl shadow hover:shadow-lg transition-all">
-                    <div className="flex items-center gap-3 mb-3">
+                  <Link href={card.link} className="bg-white dark:bg-purple-900 p-5 rounded-xl shadow hover:shadow-lg transition-all py-15">
+                    <div className="flex items-center gap-3 mb-3 ">
                       <Icon className="w-6 h-6 text-purple-700" />
                       <h4 className="text-lg font-bold">{card.title}</h4>
                     </div>
