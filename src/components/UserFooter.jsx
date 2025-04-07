@@ -21,7 +21,8 @@ export default function Footer() {
           <FooterLink href="/user/pathlabs" label="Path Labs" />
           <FooterLink href="/user/ai" label="Ask Saksham" />
           <FooterLink href="/user/ml" label="Predict Disease" />
-          <FooterLink href="/user/reports" label="Your Reports" />
+          <FooterLink href="/user/reports" label="Appointments" />
+          <FooterLink href="/user/pathlab-reports" label="Reports" />
         </div>
 
         {/* Social / Contact */}
