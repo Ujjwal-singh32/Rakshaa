@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -34,7 +34,7 @@ const reports = [
   { date: "2025-04-06", name: "Blood Test.pdf" },
   { date: "2025-04-05", name: "X-ray Report.pdf" },
   { date: "2025-04-06", name: "Blood Test.pdf" },
-  { date: "2025-04-05", name: "X-ray Report.pdf" }
+  { date: "2025-04-05", name: "X-ray Report.pdf" },
 ];
 
 export default function DoctorAppointmentPage() {
@@ -68,7 +68,9 @@ export default function DoctorAppointmentPage() {
     <Button
       variant="outline"
       className={`w-full text-base font-medium shadow-none border-none rounded-2xl px-4 py-2 transition-all duration-300 ${
-        selectedTab === label ? "bg-[#9D4DFF] text-white" : "bg-white text-black"
+        selectedTab === label
+          ? "bg-[#9D4DFF] text-white"
+          : "bg-white text-black"
       }`}
       onClick={() => setSelectedTab(label)}
     >
@@ -84,7 +86,9 @@ export default function DoctorAppointmentPage() {
         <div className="w-full md:w-1/3 space-y-4">
           <Card className="bg-[#F7EBFF] p-4 rounded-2xl">
             <CardContent className="space-y-2">
-              <h2 className="text-xl font-bold text-[#9D4DFF]">Appointment Details</h2>
+              <h2 className="text-xl font-bold text-[#9D4DFF]">
+                Appointment Details
+              </h2>
               <p><span className="font-semibold">Patient Name:</span> John Doe</p>
               <p><span className="font-semibold">Doctor Name:</span> Dr. Sakhsam Verma</p>
               <p><span className="font-semibold">Date:</span> 2025-04-06</p>
@@ -149,12 +153,33 @@ export default function DoctorAppointmentPage() {
             <Card className="bg-[#F7EBFF] p-6 rounded-2xl max-h-[70vh] overflow-auto">
               <CardContent className="space-y-4 flex flex-col h-full">
                 <h2 className="text-2xl font-semibold text-[#9D4DFF]">Send Medication</h2>
-                <div className="flex flex-wrap gap-2">
-                  <Input className="flex-1" placeholder="Medication Name" value={newMed.name} onChange={(e) => setNewMed({ ...newMed, name: e.target.value })} />
-                  <Input className="flex-1" placeholder="Dosage" value={newMed.dosage} onChange={(e) => setNewMed({ ...newMed, dosage: e.target.value })} />
-                  <Input className="flex-1" placeholder="Frequency" value={newMed.frequency} onChange={(e) => setNewMed({ ...newMed, frequency: e.target.value })} />
-                  <Button onClick={handleAddMedication} className="bg-[#9D4DFF] text-white"><PlusCircle className="w-4 h-4" /></Button>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Input
+                    className="flex-1"
+                    placeholder="Medication Name"
+                    value={newMed.name}
+                    onChange={(e) => setNewMed({ ...newMed, name: e.target.value })}
+                  />
+                  <Input
+                    className="flex-1"
+                    placeholder="Dosage"
+                    value={newMed.dosage}
+                    onChange={(e) => setNewMed({ ...newMed, dosage: e.target.value })}
+                  />
+                  <Input
+                    className="flex-1"
+                    placeholder="Frequency"
+                    value={newMed.frequency}
+                    onChange={(e) => setNewMed({ ...newMed, frequency: e.target.value })}
+                  />
+                  <Button
+                    onClick={handleAddMedication}
+                    className="bg-[#9D4DFF] text-white w-full sm:w-auto"
+                  >
+                    <PlusCircle className="w-4 h-4" />
+                  </Button>
                 </div>
+
                 <ScrollArea className="flex-1">
                   <table className="min-w-full text-left border-separate border-spacing-y-2">
                     <thead>
@@ -172,7 +197,12 @@ export default function DoctorAppointmentPage() {
                           <td className="p-2">{med.dosage}</td>
                           <td className="p-2">{med.frequency}</td>
                           <td className="p-2">
-                            <Button onClick={() => handleDeleteMedication(index)} className="bg-red-500 text-white px-3 py-1 text-sm">Delete</Button>
+                            <Button
+                              onClick={() => handleDeleteMedication(index)}
+                              className="bg-red-500 text-white px-3 py-1 text-sm"
+                            >
+                              Delete
+                            </Button>
                           </td>
                         </tr>
                       ))}
@@ -217,8 +247,12 @@ export default function DoctorAppointmentPage() {
                           <td className="p-2">{report.date}</td>
                           <td className="p-2">{report.name}</td>
                           <td className="p-2 space-x-2">
-                            <Button className="bg-[#9D4DFF] text-white px-3 py-1 text-sm">View</Button>
-                            <Button className="bg-[#9D4DFF] text-white px-3 py-1 text-sm">Download</Button>
+                            <Button className="bg-[#9D4DFF] text-white px-3 py-1 text-sm">
+                              View
+                            </Button>
+                            <Button className="bg-[#9D4DFF] text-white px-3 py-1 text-sm">
+                              Download
+                            </Button>
                           </td>
                         </tr>
                       ))}
@@ -235,19 +269,35 @@ export default function DoctorAppointmentPage() {
                 <h2 className="text-xl font-semibold text-[#9D4DFF]">Chat with your Doctor</h2>
                 <ScrollArea className="flex-1 mt-2 bg-white rounded-md p-2 overflow-y-auto">
                   {messages.map((msg, index) => (
-                    <div key={index} className={`p-2 rounded-md my-1 w-fit max-w-[80%] ${msg.sender === "user" ? "ml-auto bg-[#D7A9FF]" : "mr-auto bg-gray-300"}`}>
+                    <div
+                      key={index}
+                      className={`p-2 rounded-md my-1 w-fit max-w-[80%] ${
+                        msg.sender === "user"
+                          ? "ml-auto bg-[#D7A9FF]"
+                          : "mr-auto bg-gray-300"
+                      }`}
+                    >
                       {msg.text}
                     </div>
                   ))}
                 </ScrollArea>
                 <div className="mt-2 flex gap-2">
-                  <Input value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Type a message..." />
-                  <Button onClick={handleSendMessage} className="bg-[#9D4DFF] text-white">Send</Button>
+                  <Input
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    placeholder="Type a message..."
+                  />
+                  <Button
+                    onClick={handleSendMessage}
+                    className="bg-[#9D4DFF] text-white"
+                  >
+                    Send
+                  </Button>
                 </div>
               </CardContent>
             </Card>
           )}
-          
+
           {selectedTab === "Zoom Meeting" && (
             <Card className="bg-[#F7EBFF] p-6 rounded-2xl">
               <CardContent>

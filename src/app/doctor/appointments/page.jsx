@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState } from "react";
 import DocNav from "@/components/DocNavbar";
@@ -53,12 +53,12 @@ export default function AppointmentPage() {
     <div className="min-h-screen bg-purple-50 dark:bg-purple-950 text-purple-900 dark:text-purple-100">
       <DocNav />
 
-      <div className="px-6 py-10">
-        {/* Tab Buttons */}
-        <div className="flex gap-4 mb-6">
+      <div className="px-4 py-10 max-w-screen">
+        {/* Responsive Tab Buttons */}
+        <div className="flex flex-wrap gap-3 mb-6 w-full justify-start">
           <button
             onClick={() => setActiveTab("ongoing")}
-            className={`px-4 py-2 rounded-lg font-semibold ${
+            className={`px-4 py-2 rounded-lg font-semibold text-sm sm:text-base ${
               activeTab === "ongoing"
                 ? "bg-purple-700 text-white"
                 : "bg-purple-200 text-purple-800"
@@ -68,7 +68,7 @@ export default function AppointmentPage() {
           </button>
           <button
             onClick={() => setActiveTab("upcoming")}
-            className={`px-4 py-2 rounded-lg font-semibold ${
+            className={`px-4 py-2 rounded-lg font-semibold text-sm sm:text-base ${
               activeTab === "upcoming"
                 ? "bg-purple-700 text-white"
                 : "bg-purple-200 text-purple-800"
@@ -81,7 +81,7 @@ export default function AppointmentPage() {
         {/* Ongoing Appointments */}
         {activeTab === "ongoing" && (
           <>
-            <h2 className="text-3xl font-bold mb-6">Ongoing Appointments</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6">Ongoing Appointments</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {ongoingAppointments.map((appt) => (
                 <div
@@ -107,7 +107,7 @@ export default function AppointmentPage() {
         {/* Upcoming Appointments */}
         {activeTab === "upcoming" && (
           <>
-            <h2 className="text-3xl font-bold mb-6">Upcoming Appointments</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6">Upcoming Appointments</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {upcomingAppointments.map((appt) => (
                 <div
