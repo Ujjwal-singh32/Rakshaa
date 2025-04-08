@@ -1,7 +1,6 @@
 "use client";
 
-
-import {  Download, Eye } from "lucide-react";
+import { Download, Eye } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -47,17 +46,32 @@ export default function DoctorDashboard() {
           <h2 className="text-3xl font-bold mb-6">Recent Appointments</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {recentAppointments.map((patient, index) => (
-              <div key={index} className="bg-white dark:bg-purple-900 p-5 rounded-xl shadow">
+              <div
+                key={index}
+                className="bg-white dark:bg-purple-900 p-5 rounded-xl shadow"
+              >
                 <h4 className="text-xl font-semibold mb-1">{patient.name}</h4>
-                <p className="text-purple-700 dark:text-purple-300 mb-3">Disease: {patient.disease}</p>
-                <div className="flex gap-4">
+                <p className="text-purple-700 dark:text-purple-300 mb-3">
+                  Disease: {patient.disease}
+                </p>
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
                   <Button
                     onClick={() => {
-                      const blob = new Blob([
-                        `<!DOCTYPE html><html><head><meta charset='utf-8'><title>Prescription</title></head><body><h2>Medication Report for ${patient.name}</h2><table border='1' cellpadding='8' cellspacing='0'><tr><th>Name</th><th>Dosage</th><th>Frequency</th></tr>${medicineList.map(med => `<tr><td>${med.name}</td><td>${med.dosage}</td><td>${med.frequency}</td></tr>`).join('')}</table></body></html>`
-                      ], { type: 'application/pdf' });
+                      const blob = new Blob(
+                        [
+                          `<!DOCTYPE html><html><head><meta charset='utf-8'><title>Prescription</title></head><body><h2>Medication Report for ${
+                            patient.name
+                          }</h2><table border='1' cellpadding='8' cellspacing='0'><tr><th>Name</th><th>Dosage</th><th>Frequency</th></tr>${medicineList
+                            .map(
+                              (med) =>
+                                `<tr><td>${med.name}</td><td>${med.dosage}</td><td>${med.frequency}</td></tr>`
+                            )
+                            .join("")}</table></body></html>`,
+                        ],
+                        { type: "application/pdf" }
+                      );
                       const url = URL.createObjectURL(blob);
-                      const a = document.createElement('a');
+                      const a = document.createElement("a");
                       a.href = url;
                       a.download = `${patient.name}_prescription.pdf`;
                       a.click();
@@ -74,7 +88,16 @@ export default function DoctorDashboard() {
                       <Button
                         onClick={() => {
                           const newWindow = window.open();
-                          newWindow.document.write(`<!DOCTYPE html><html><head><meta charset='utf-8'><title>Prescription</title></head><body><h2>Medication Report for ${patient.name}</h2><table border='1' cellpadding='8' cellspacing='0'><tr><th>Name</th><th>Dosage</th><th>Frequency</th></tr>${medicineList.map(med => `<tr><td>${med.name}</td><td>${med.dosage}</td><td>${med.frequency}</td></tr>`).join('')}</table></body></html>`);
+                          newWindow.document.write(
+                            `<!DOCTYPE html><html><head><meta charset='utf-8'><title>Prescription</title></head><body><h2>Medication Report for ${
+                              patient.name
+                            }</h2><table border='1' cellpadding='8' cellspacing='0'><tr><th>Name</th><th>Dosage</th><th>Frequency</th></tr>${medicineList
+                              .map(
+                                (med) =>
+                                  `<tr><td>${med.name}</td><td>${med.dosage}</td><td>${med.frequency}</td></tr>`
+                              )
+                              .join("")}</table></body></html>`
+                          );
                           newWindow.document.close();
                         }}
                         variant="link"
@@ -90,17 +113,19 @@ export default function DoctorDashboard() {
           </div>
         </section>
 
-
         <section className="px-6 py-10">
           <h2 className="text-3xl font-bold mb-6">Schedule & Holidays</h2>
-          <div className="bg-white dark:bg-purple-900 p-6 rounded-xl shadow max-w-md mx-auto">
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              modifiers={{ holiday: holidays.map(date => new Date(date)) }}
-              modifiersClassNames={{ holiday: "bg-red-200 text-red-800" }}
-            />
+          <div className="bg-white dark:bg-purple-900 p-4 rounded-xl shadow w-full max-w-full overflow-x-auto">
+            <div className="w-full min-w-[250px] max-w-full overflow-x-auto">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                modifiers={{ holiday: holidays.map((date) => new Date(date)) }}
+                modifiersClassNames={{ holiday: "bg-red-200 text-red-800" }}
+              />
+            </div>
+
             <div className="mt-4 text-sm">
               <strong>Holidays:</strong>
               <ul className="list-disc ml-6 mt-1">
@@ -111,7 +136,7 @@ export default function DoctorDashboard() {
             </div>
           </div>
         </section>
-        <Footer/>
+        <Footer />
       </div>
     </TooltipProvider>
   );
