@@ -1,8 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Download } from "lucide-react";
+import DocNav from "@/components/DocNavbar";
+import UserFooter from "@/components/UserFooter";
+import { useRef, useEffect } from "react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+
 import {
   Select,
   SelectTrigger,
@@ -10,305 +19,599 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { Download, PlusCircle } from "lucide-react";
-import DocNav from "@/components/DocNavbar";
-import Footer from "@/components/UserFooter";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
-
-const medicationsByDate = {
-  "2025-04-06": [
-    { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-    { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-  ],
-  "2025-04-05": [
-    { name: "Ibuprofen", dosage: "200mg", frequency: "Thrice a day" },
-  ],
-};
-
-const reports = [
-  { date: "2025-04-06", name: "Blood Test.pdf" },
-  { date: "2025-04-05", name: "X-ray Report.pdf" },
-  { date: "2025-04-06", name: "Blood Test.pdf" },
-  { date: "2025-04-05", name: "X-ray Report.pdf" },
-  { date: "2025-04-06", name: "Blood Test.pdf" },
-  { date: "2025-04-05", name: "X-ray Report.pdf" },
-  { date: "2025-04-06", name: "Blood Test.pdf" },
-  { date: "2025-04-05", name: "X-ray Report.pdf" },
-];
-
-export default function DoctorAppointmentPage() {
-  const [selectedTab, setSelectedTab] = useState("Medications");
-  const [selectedDate, setSelectedDate] = useState("2025-04-06");
-  const [sendMedications, setSendMedications] = useState([]);
-  const [newMed, setNewMed] = useState({ name: "", dosage: "", frequency: "" });
-  const [messages, setMessages] = useState([]);
-  const [chatInput, setChatInput] = useState("");
+export default function AppointmentDetails() {
+  const [activeSection, setActiveSection] = useState("chat");
+  const [selectedMedication, setSelectedMedication] = useState(null);
+  const [uploadedReports, setUploadedReports] = useState([
+    {
+      name: "Blood_Test_Report.pdf",
+      url:
+        "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+    },
+    {
+      name: "X-Ray_Result.png",
+      url: "https://via.placeholder.com/800x600.png?text=X-Ray+Image",
+    },
+    {
+      name: "MRI_Scan_Report.pdf",
+      url:
+        "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+    },
+    {
+      name: "Blood_Test_Report.pdf",
+      url:
+        "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+    },
+    {
+      name: "X-Ray_Result.png",
+      url: "https://via.placeholder.com/800x600.png?text=X-Ray+Image",
+    },
+    {
+      name: "MRI_Scan_Report.pdf",
+      url:
+        "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+    },
+  ]);
+  const [isClient, setIsClient] = useState(false);
+  const [newMedications, setNewMedications] = useState([
+    { name: "", dosage: "", frequency: "" },
+  ]);
 
   const handleAddMedication = () => {
-    if (newMed.name && newMed.dosage && newMed.frequency) {
-      setSendMedications([...sendMedications, newMed]);
-      setNewMed({ name: "", dosage: "", frequency: "" });
+    setNewMedications([
+      ...newMedications,
+      { name: "", dosage: "", frequency: "" },
+    ]);
+  };
+
+  const handleRemoveMedication = (index) => {
+    const updated = [...newMedications];
+    updated.splice(index, 1);
+    setNewMedications(updated);
+  };
+
+  const handleMedicationChange = (index, field, value) => {
+    const updated = [...newMedications];
+    updated[index][field] = value;
+    setNewMedications(updated);
+  };
+
+  const handleSubmitMedications = () => {
+    console.log("Submitted Medications:", newMedications);
+    alert("Medications sent to patient!");
+  };
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  const medicationData = [
+    {
+      date: "2025-04-06",
+      medications: [
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+      ],
+    },
+    {
+      date: "2025-04-07",
+      medications: [
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+      ],
+    },
+    {
+      date: "2025-04-08",
+      medications: [
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+      ],
+    },
+    {
+      date: "2025-04-09",
+      medications: [
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+      ],
+    },
+    {
+      date: "2015-09-05",
+      medications: [
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+      ],
+    },
+    {
+      date: "2025-04-10",
+      medications: [
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+      ],
+    },
+    {
+      date: "2025-04-11",
+      medications: [
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+      ],
+    },
+    {
+      date: "2025-04-12",
+      medications: [
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+      ],
+    },
+    {
+      date: "2025-04-13",
+      medications: [
+        {
+          name: "Amoxicillin",
+          dosage: "250mg",
+          frequency: "Three times a day",
+        },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
+        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
+      ],
+    },
+  ];
+
+  const fileInputRef = useRef(null);
+
+  const handleReportUpload = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    const newReports = files.map((file) => ({
+      name: file.name,
+      url: URL.createObjectURL(file),
+    }));
+    setUploadedReports((prev) => [...prev, ...newReports]);
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
-  const handleDeleteMedication = (index) => {
-    const updatedMeds = [...sendMedications];
-    updatedMeds.splice(index, 1);
-    setSendMedications(updatedMeds);
-  };
+  const [messages, setMessages] = useState([
+    {
+      text: "Hello, Doctor!",
+      sender: "user",
+      time: new Date().toLocaleTimeString(),
+    },
+    {
+      text: "Hi, how are you feeling today?",
+      sender: "doctor",
+      time: new Date().toLocaleTimeString(),
+    },
+  ]);
+  const [messageInput, setMessageInput] = useState("");
 
   const handleSendMessage = () => {
-    if (chatInput.trim() === "") return;
-    setMessages([...messages, { text: chatInput, sender: "user" }]);
-    setChatInput("");
+    if (!messageInput.trim()) return;
+
+    const newMessage = {
+      text: messageInput,
+      sender: "user",
+      time: new Date().toLocaleTimeString(),
+    };
+    setMessages([...messages, newMessage]);
+    setMessageInput("");
   };
 
-  const tabButton = (label) => (
-    <Button
-      variant="outline"
-      className={`w-full text-base font-medium shadow-none border-none rounded-2xl px-4 py-2 transition-all duration-300 ${
-        selectedTab === label
-          ? "bg-[#9D4DFF] text-white"
-          : "bg-white text-black"
-      }`}
-      onClick={() => setSelectedTab(label)}
-    >
-      {label}
-    </Button>
-  );
+  const handleSelectChange = (date) => {
+    const med = medicationData.find((m) => m.date === date);
+    setSelectedMedication(med);
+  };
+
+  const handleDownloadPdf = () => {
+    if (!selectedMedication) return;
+
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text("Medication Report", 14, 15);
+    doc.setFontSize(12);
+    doc.text(`Date: ${selectedMedication.date}`, 14, 25);
+
+    // Table headers and rows
+    const headers = [["Name", "Dosage", "Frequency"]];
+    const rows = selectedMedication.medications.map((m) => [
+      m.name,
+      m.dosage,
+      m.frequency,
+    ]);
+
+    // Using autoTable for cleaner layout (if installed)
+    autoTable(doc, {
+      startY: 35,
+      head: headers,
+      body: rows,
+    });
+
+    // Save PDF
+    doc.save(`Medication_${selectedMedication.date}.pdf`);
+  };
+
+  if (!isClient) return null;
 
   return (
-    <div className="min-h-screen flex flex-col overflow-x-hidden">
+    <>
       <DocNav />
-      <div className="flex-1 p-4 md:p-6 bg-white flex flex-col md:flex-row gap-6 w-full max-w-full overflow-hidden">
-        {/* Sidebar */}
-        <div className="w-full md:w-1/3 space-y-4">
-          <Card className="bg-[#F7EBFF] p-4 rounded-2xl">
-            <CardContent className="space-y-2">
-              <h2 className="text-xl font-bold text-[#9D4DFF]">
-                Appointment Details
-              </h2>
-              <p><span className="font-semibold">Patient Name:</span> John Doe</p>
-              <p><span className="font-semibold">Doctor Name:</span> Dr. Sakhsam Verma</p>
-              <p><span className="font-semibold">Date:</span> 2025-04-06</p>
-              <p><span className="font-semibold">Disease:</span> Flu and Fever</p>
-            </CardContent>
-          </Card>
-          {tabButton("Chat")}
-          {tabButton("Medications")}
-          {tabButton("Send Medication")}
-          {tabButton("View Reports")}
-          {tabButton("Zoom Meeting")}
-        </div>
+      <div className="p-4 max-w-7xl mx-auto space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {/* Left Column */}
+          <div className="space-y-4">
+            {/* Appointment Info */}
+            <Card className="bg-purple-100 dark:bg-purple-900">
+              <CardContent className="p-4 space-y-1">
+                <h2 className="text-xl font-bold text-purple-800 dark:text-purple-100">
+                  Appointment Details
+                </h2>
+                <p>
+                  <strong>Patient Name:</strong> John Doe
+                </p>
+                <p>
+                  <strong>Doctor Name:</strong> Dr. Sakhsam Verma
+                </p>
+                <p>
+                  <strong>Date:</strong> 2025-04-06
+                </p>
+                <p>
+                  <strong>Disease:</strong> Flu and Fever
+                </p>
+              </CardContent>
+            </Card>
 
-        {/* Main Content */}
-        <div className="flex-1 max-w-full overflow-hidden">
-          {selectedTab === "Medications" && (
-            <Card className="bg-[#F7EBFF] p-6 rounded-2xl max-h-[70vh] overflow-auto">
-              <CardContent className="h-full flex flex-col">
-                <h2 className="text-2xl font-semibold text-[#9D4DFF] mb-4">Medications</h2>
-                <div className="flex items-center gap-4 mb-4">
-                  <Select onValueChange={setSelectedDate} defaultValue={selectedDate}>
-                    <SelectTrigger className="w-[200px] bg-white border border-gray-300 rounded-md">
+            {/* Navigation Buttons */}
+            <div className="space-y-3">
+              {["chat", "medications", "send Medication", "reports", "zoom"].map(
+                (section) => (
+                  <Button
+                    key={section}
+                    variant={activeSection === section ? "default" : "outline"}
+                    className="w-full capitalize"
+                    onClick={() => setActiveSection(section)}
+                  >
+                    {section === "reports"
+                      ? "View Reports"
+                      : section === "zoom"
+                      ? "Zoom Meeting"
+                      : section}
+                  </Button>
+                )
+              )}
+            </div>
+          </div>
+
+          {/* Right Column */}
+          <div className="md:col-span-3 space-y-4">
+            {activeSection === "chat" && (
+              <Card className="bg-purple-100 dark:bg-purple-900">
+                <CardContent className="p-4 space-y-3">
+                  <h2 className="text-xl justify-center text-center font-semibold text-purple-800 dark:text-purple-100">
+                    Chat with John Doe
+                  </h2>
+                  <div className="h-80 overflow-y-auto bg-white dark:bg-purple-950 rounded-md p-2 space-y-2">
+                    {messages.map((msg, index) => (
+                      <div
+                        key={index}
+                        className={`text-sm p-2 rounded w-fit ${
+                          msg.sender === "user"
+                            ? "bg-pink-300 dark:bg-purple-800 ml-auto text-right"
+                            : "bg-purple-300 dark:bg-purple-700 ml-auto text-left"
+                        }`}
+                      >
+                        <p>{msg.text}</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
+                          {msg.time}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Type your message..."
+                      value={messageInput}
+                      onChange={(e) => setMessageInput(e.target.value)}
+                      className="flex-1"
+                    />
+                    <Button onClick={handleSendMessage}>Send</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {activeSection === "medications" && (
+              <Card className="bg-purple-100 dark:bg-purple-900">
+                <CardContent className="p-4">
+                  <h2 className="text-xl font-semibold text-purple-800 dark:text-purple-100 mb-4">
+                    Medications
+                  </h2>
+
+                  {/* Date Dropdown */}
+                  <Select onValueChange={handleSelectChange}>
+                    <SelectTrigger className="w-[200px] bg-white dark:bg-purple-800 border-purple-300 dark:border-purple-700 mb-4">
                       <SelectValue placeholder="Select a date" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white">
-                      {Object.keys(medicationsByDate).map((date) => (
-                        <SelectItem key={date} value={date}>{date}</SelectItem>
+                    <SelectContent>
+                      {medicationData.map((med, index) => (
+                        <SelectItem key={index} value={med.date}>
+                          {med.date}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
-                <ScrollArea className="flex-1">
-                  <table className="min-w-full text-left border-separate border-spacing-y-2">
-                    <thead>
-                      <tr className="bg-[#D7A9FF] text-black">
-                        <th className="p-2">Name</th>
-                        <th className="p-2">Dosage</th>
-                        <th className="p-2">Frequency</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {medicationsByDate[selectedDate]?.map((med, index) => (
-                        <tr key={index} className="bg-white text-black">
-                          <td className="p-2">{med.name}</td>
-                          <td className="p-2">{med.dosage}</td>
-                          <td className="p-2">{med.frequency}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </ScrollArea>
-                <div className="flex justify-end mt-4">
-                  <Button className="bg-[#9D4DFF] text-white flex gap-2 px-4 py-2 rounded-md shadow-md">
-                    <Download className="h-4 w-4" /> Download PDF
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
 
-          {selectedTab === "Send Medication" && (
-            <Card className="bg-[#F7EBFF] p-6 rounded-2xl max-h-[70vh] overflow-auto">
-              <CardContent className="space-y-4 flex flex-col h-full">
-                <h2 className="text-2xl font-semibold text-[#9D4DFF]">Send Medication</h2>
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <Input
-                    className="flex-1"
-                    placeholder="Medication Name"
-                    value={newMed.name}
-                    onChange={(e) => setNewMed({ ...newMed, name: e.target.value })}
-                  />
-                  <Input
-                    className="flex-1"
-                    placeholder="Dosage"
-                    value={newMed.dosage}
-                    onChange={(e) => setNewMed({ ...newMed, dosage: e.target.value })}
-                  />
-                  <Input
-                    className="flex-1"
-                    placeholder="Frequency"
-                    value={newMed.frequency}
-                    onChange={(e) => setNewMed({ ...newMed, frequency: e.target.value })}
-                  />
-                  <Button
-                    onClick={handleAddMedication}
-                    className="bg-[#9D4DFF] text-white w-full sm:w-auto"
-                  >
-                    <PlusCircle className="w-4 h-4" />
-                  </Button>
-                </div>
+                  {/* Show Medications when a date is selected */}
+                  {selectedMedication && (
+                    <Tabs defaultValue="details" className="mt-6">
+                      <TabsList>
+                        <TabsTrigger value="details">
+                          View Medications
+                        </TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="details">
+                        <div className="overflow-x-auto mt-2 max-h-50 overflow-y-auto">
+                          <table className="w-full text-sm">
+                            <thead className="bg-purple-300 dark:bg-purple-800">
+                              <tr>
+                                <th className="p-2 text-left">Name</th>
+                                <th className="p-2 text-left">Dosage</th>
+                                <th className="p-2 text-left">Frequency</th>
+                              </tr>
+                            </thead>
+                            <tbody className="bg-white dark:bg-purple-950">
+                              {selectedMedication.medications.map((m, idx) => (
+                                <tr key={idx} className="border-b">
+                                  <td className="p-2">{m.name}</td>
+                                  <td className="p-2">{m.dosage}</td>
+                                  <td className="p-2">{m.frequency}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                        <Button
+                          className="mt-3 flex gap-2 items-center"
+                          onClick={handleDownloadPdf}
+                        >
+                          <Download className="w-4 h-4" /> Download PDF
+                        </Button>
+                      </TabsContent>
+                    </Tabs>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
-                <ScrollArea className="flex-1">
-                  <table className="min-w-full text-left border-separate border-spacing-y-2">
-                    <thead>
-                      <tr className="bg-[#D7A9FF] text-black">
-                        <th className="p-2">Name</th>
-                        <th className="p-2">Dosage</th>
-                        <th className="p-2">Frequency</th>
-                        <th className="p-2">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {sendMedications.map((med, index) => (
-                        <tr key={index} className="bg-white text-black">
-                          <td className="p-2">{med.name}</td>
-                          <td className="p-2">{med.dosage}</td>
-                          <td className="p-2">{med.frequency}</td>
-                          <td className="p-2">
-                            <Button
-                              onClick={() => handleDeleteMedication(index)}
-                              className="bg-red-500 text-white px-3 py-1 text-sm"
-                            >
-                              Delete
-                            </Button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </ScrollArea>
-                <div className="text-right">
-                  <Button
-                    onClick={() => {
-                      if (sendMedications.length === 0) {
-                        alert("Please add at least one medication before sending.");
-                        return;
-                      }
-                      alert("Medications sent successfully!");
-                      setSendMedications([]);
-                    }}
-                    className="bg-[#9D4DFF] text-white mt-4"
-                  >
-                    Send
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {selectedTab === "View Reports" && (
-            <Card className="bg-[#F7EBFF] p-6 rounded-2xl max-h-[70vh] overflow-auto">
-              <CardContent className="space-y-4 h-full flex flex-col">
-                <h2 className="text-2xl font-semibold text-[#9D4DFF]">Uploaded Reports</h2>
-                <ScrollArea className="flex-1">
-                  <table className="min-w-full text-left border-separate border-spacing-y-2">
-                    <thead>
-                      <tr className="bg-[#D7A9FF] text-black">
-                        <th className="p-2">Date</th>
-                        <th className="p-2">Report Name</th>
-                        <th className="p-2">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {reports.map((report, index) => (
-                        <tr key={index} className="bg-white text-black">
-                          <td className="p-2">{report.date}</td>
-                          <td className="p-2">{report.name}</td>
-                          <td className="p-2 space-x-2">
-                            <Button className="bg-[#9D4DFF] text-white px-3 py-1 text-sm">
-                              View
-                            </Button>
-                            <Button className="bg-[#9D4DFF] text-white px-3 py-1 text-sm">
-                              Download
-                            </Button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          )}
-
-          {selectedTab === "Chat" && (
-            <Card className="bg-[#F7EBFF] p-6 rounded-2xl h-[70vh] flex flex-col">
-              <CardContent className="flex-1 flex flex-col overflow-auto">
-                <h2 className="text-xl font-semibold text-[#9D4DFF]">Chat with your Doctor</h2>
-                <ScrollArea className="flex-1 mt-2 bg-white rounded-md p-2 overflow-y-auto">
-                  {messages.map((msg, index) => (
-                    <div
-                      key={index}
-                      className={`p-2 rounded-md my-1 w-fit max-w-[80%] ${
-                        msg.sender === "user"
-                          ? "ml-auto bg-[#D7A9FF]"
-                          : "mr-auto bg-gray-300"
-                      }`}
-                    >
-                      {msg.text}
+            {activeSection === "reports" && (
+              <Card className="bg-purple-100 dark:bg-purple-900">
+                <CardContent className="p-4 space-y-4">
+                  <h2 className="text-xl font-semibold text-purple-800 dark:text-purple-100">
+                    Uploaded Reports
+                  </h2>
+                  {uploadedReports.length > 0 ? (
+                    <div className="space-y-2">
+                      <h3 className="font-medium text-purple-700 dark:text-purple-200">
+                        Available Files:
+                      </h3>
+                      <div className="max-h-64 overflow-y-auto space-y-2 pr-1">
+                        {uploadedReports.map((file, index) => (
+                          <div
+                            key={index}
+                            className="flex justify-between items-center bg-white dark:bg-purple-950 p-2 rounded shadow"
+                          >
+                            <span className="truncate">{file.name}</span>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => window.open(file.url, "_blank")}
+                              >
+                                View
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  const link = document.createElement("a");
+                                  link.href = file.url;
+                                  link.setAttribute("download", file.name); // Ensure file name is set
+                                  link.setAttribute("target", "_blank"); // Optional: open in new tab
+                                  document.body.appendChild(link);
+                                  link.click();
+                                  document.body.removeChild(link);
+                                }}
+                              >
+                                Download
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  ))}
-                </ScrollArea>
-                <div className="mt-2 flex gap-2">
-                  <Input
-                    value={chatInput}
-                    onChange={(e) => setChatInput(e.target.value)}
-                    placeholder="Type a message..."
-                  />
-                  <Button
-                    onClick={handleSendMessage}
-                    className="bg-[#9D4DFF] text-white"
-                  >
-                    Send
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                  ) : (
+                    <p className="text-purple-700 dark:text-purple-200">
+                      No reports available.
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+            {activeSection === "send Medication" && (
+              <Card className="bg-purple-100 dark:bg-purple-900">
+                <CardContent className="p-4">
+                  <h2 className="text-xl font-semibold text-purple-800 dark:text-purple-100 mb-4">
+                    Send Medication
+                  </h2>
 
-          {selectedTab === "Zoom Meeting" && (
-            <Card className="bg-[#F7EBFF] p-6 rounded-2xl">
-              <CardContent>
-                <h2 className="text-xl font-semibold text-[#9D4DFF]">Zoom Meeting</h2>
-                <p className="mt-2 text-sm">Coming soon...</p>
-              </CardContent>
-            </Card>
-          )}
+                  <div className="overflow-x-auto max-h-64 overflow-y-auto rounded-md">
+                    <table className="w-full text-sm bg-white dark:bg-purple-950 rounded-md">
+                      <thead className="bg-purple-300 dark:bg-purple-800 sticky top-0">
+                        <tr>
+                          <th className="p-2 text-left">Name</th>
+                          <th className="p-2 text-left">Dosage</th>
+                          <th className="p-2 text-left">Frequency</th>
+                          <th className="p-2 text-left">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {newMedications.map((med, idx) => (
+                          <tr key={idx} className="border-b border-purple-200">
+                            <td className="p-2">
+                              <Input
+                                value={med.name}
+                                onChange={(e) =>
+                                  handleMedicationChange(
+                                    idx,
+                                    "name",
+                                    e.target.value
+                                  )
+                                }
+                                className="bg-white dark:bg-purple-800"
+                              />
+                            </td>
+                            <td className="p-2">
+                              <Input
+                                value={med.dosage}
+                                onChange={(e) =>
+                                  handleMedicationChange(
+                                    idx,
+                                    "dosage",
+                                    e.target.value
+                                  )
+                                }
+                                className="bg-white dark:bg-purple-800"
+                              />
+                            </td>
+                            <td className="p-2">
+                              <Input
+                                value={med.frequency}
+                                onChange={(e) =>
+                                  handleMedicationChange(
+                                    idx,
+                                    "frequency",
+                                    e.target.value
+                                  )
+                                }
+                                className="bg-white dark:bg-purple-800"
+                              />
+                            </td>
+                            <td className="p-2">
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => handleRemoveMedication(idx)}
+                              >
+                                Remove
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="mt-4 flex gap-2">
+                    <Button onClick={handleAddMedication}>Add Row</Button>
+                    <Button onClick={handleSubmitMedications} variant="default">
+                      Send to Patient
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            {activeSection === "zoom" && (
+              <Card className="bg-purple-100 dark:bg-purple-900">
+                <CardContent className="p-4 space-y-2">
+                  <h2 className="text-xl font-semibold text-purple-800 dark:text-purple-100">
+                    Join Video Call
+                  </h2>
+                  <p className="text-sm text-purple-700 dark:text-purple-200">
+                    Click below to join your scheduled video consultation.
+                  </p>
+                  <Button className="bg-purple-600 text-white hover:bg-purple-700">
+                    Join Zoom Meeting
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </div>
       </div>
-      <Footer />
-    </div>
+      <UserFooter />
+    </>
   );
 }
