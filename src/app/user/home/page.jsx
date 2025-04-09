@@ -4,7 +4,6 @@ import UserFooter from "@/components/UserFooter";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { HeartPulse, Bot, Activity, FileText } from "lucide-react";
-
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-purple-50 dark:bg-purple-950 text-purple-900 dark:text-purple-100">
