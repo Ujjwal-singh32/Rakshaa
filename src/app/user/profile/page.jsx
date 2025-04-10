@@ -67,10 +67,15 @@ function MyProfile() {
     }
   };
 
-  if (loading || !userDetails) {
+  if (loading  || !userDetails) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-purple-700 dark:text-purple-200 text-xl">
-        Loading profile...
+      <div className="flex justify-center items-center py-20">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="w-16 h-16 border-4 border-purple-400 border-dashed rounded-full animate-spin dark:border-purple-300"></div>
+          <p className="text-purple-700 dark:text-purple-200 text-lg font-semibold animate-pulse">
+            Loading doctors...
+          </p>
+        </div>
       </div>
     );
   }
