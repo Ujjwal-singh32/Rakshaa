@@ -27,8 +27,7 @@ const registerPatient = async (req, res) => {
       weight,
       height,
       age,
-      password,
-      confirmPassword,
+      password
     } = req.body;
 
     if (!validator.isEmail(email)) {
@@ -42,13 +41,6 @@ const registerPatient = async (req, res) => {
       });
     }
 
-    if (password !== confirmPassword) {
-      return res.json({
-        success: false,
-        message: "Passwords do not match",
-      });
-    }
-
     const existingPatient = await patientModel.findOne({ email });
 
     if (existingPatient) {
@@ -58,11 +50,14 @@ const registerPatient = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    let imageUrl = null;
-    if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        resource_type: "image",
+    if (profilePic && typeof profilePic === "object" && profilePic.arrayBuffer) {
+      const buffer = Buffer.from(await profilePic.arrayBuffer());
+      const base64 = `data:${profilePic.type};base64,${buffer.toString("base64")}`;
+
+      const result = await cloudinary.uploader.upload(base64, {
+        folder: "rakshaa/patients",
       });
+
       imageUrl = result.secure_url;
     }
 
