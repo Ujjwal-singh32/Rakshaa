@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { MailIcon, LockIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 const roles = ["Patient", "Doctor", "Pathlab"];
-import { HeartPulse } from "lucide-react"; // Lucide icon
+import axios from "axios";
+
 const IconInput = ({ icon: Icon, ...props }) => (
   <div className="relative">
     <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
@@ -154,11 +155,29 @@ export default function AuthPage() {
     }
   };
 
-  // Dummy API
   const loginPatient = async (email, password) => {
-    console.log("Patient Login:", email, password);
-    router.push("/user/home");
+    try {
+      const response = await axios.post("/api/user/login", {
+        email,
+        password,
+      });
+
+      const data = response.data;
+      console.log("Login Response:", data);
+
+      if (data.success) {
+        // Save token if needed
+        localStorage.setItem("token", data.token);
+        toast.success("Successfully Logged In")
+        router.push("/user/home");
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+    }
   };
+
   const loginDoctor = async (email, password) => {
     console.log("Doctor Login:", email, password);
     router.push("/doctor/home");
@@ -169,11 +188,35 @@ export default function AuthPage() {
   };
 
   const signupPatient = async (data) => {
-    console.log("Patient Signup:", data);
-    if (data.profilePic)
-      console.log("Patient Image File:", data.profilePic.name);
-    router.push("/user/home");
+    try {
+      const formData = new FormData();
+
+      // Append all fields to FormData
+      Object.entries(data).forEach(([key, value]) => {
+        if (value) {
+          formData.append(key, value);
+        }
+      });
+
+      const response = await axios.post("/api/user/signup", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.data.success) {
+        console.log("Patient created:", response.data);
+        toast.success("Account Created Successfully")
+        router.push("/user/home");
+      }
+      else{
+        toast.error("Something Went Wrong")
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+    }
   };
+
   const signupDoctor = async (data) => {
     console.log("Doctor Signup:", data);
     if (data.profilePic)
@@ -203,7 +246,7 @@ export default function AuthPage() {
     const currentField = steps[step].field;
     const isImageField = steps[step].type === "image";
     const currentLabel = steps[step].label;
-  
+
     if (isImageField) {
       if (!currentData.profilePic) {
         setErrorMessage("Please upload a profile picture or click Skip.");
@@ -211,12 +254,12 @@ export default function AuthPage() {
       }
     } else {
       const value = currentData[currentField];
-  
+
       if (!value) {
         setErrorMessage(`${currentLabel} is required.`);
         return;
       }
-  
+
       // Phone validation
       if (currentField === "phone") {
         const isNumeric = /^\d{10,15}$/.test(value); // Adjust length if needed
@@ -225,7 +268,7 @@ export default function AuthPage() {
           return;
         }
       }
-  
+
       // Email validation
       if (currentField === "email") {
         const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -235,12 +278,11 @@ export default function AuthPage() {
         }
       }
     }
-  
+
     // Clear error and go to next
     setErrorMessage("");
     setStep((prev) => prev + 1);
   };
-  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-purple-200 via-purple-100 to-blue-100 p-4">
