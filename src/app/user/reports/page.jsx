@@ -87,7 +87,7 @@ export default function ReportsPage() {
                 Doctor: {appt.doctorName}
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                Patient: {user.name ? user.name : "patient name loading...."}
+                Patient: {user ? user.name :  "patient name loading...."}
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-300">
                 Disease: {appt.disease}
