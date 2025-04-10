@@ -47,8 +47,18 @@ export default function AuthPage() {
     password: "",
     specialization: "",
     phone: "",
+    qualification: "",
+    experience: "",
+    hospital: "",
+    address: "",
+    languages: "",
+    consultationFees: "",
+    achievements: "",
+    college: "",
+    pastHospitals: "",
     profilePic: null,
   });
+  
 
   const [pathlabData, setPathlabData] = useState({
     labName: "",
@@ -106,7 +116,16 @@ export default function AuthPage() {
           { label: "Password", field: "password", type: "password" },
           { label: "Specialization", field: "specialization" },
           { label: "Phone", field: "phone" },
-          { label: "Profile Picture", type: "image" },
+          { label: "Qualification", field: "qualification" },
+          { label: "Experience", field: "experience" },
+          { label: "Hospital", field: "hospital" },
+          { label: "Address", field: "address" },
+          { label: "Languages", field: "languages" },
+          { label: "Consultation Fees", field: "consultationFees" },
+          { label: "Achievements", field: "achievements" },
+          { label: "College", field: "college" },
+          { label: "Past Hospitals", field: "pastHospitals" },
+          { label: "Profile Picture", field: "profilePic", type: "image" },
         ];
       case "Pathlab":
         return [
@@ -115,7 +134,7 @@ export default function AuthPage() {
           { label: "Password", field: "password", type: "password" },
           { label: "Phone", field: "phone" },
           { label: "Lab Address", field: "labAddress" },
-          { label: "Profile Picture", type: "image" },
+          { label: "Profile Picture", field: "profilePic", type: "image" },
         ];
       default:
         return [];
@@ -218,16 +237,62 @@ export default function AuthPage() {
   };
 
   const signupDoctor = async (data) => {
-    console.log("Doctor Signup:", data);
-    if (data.profilePic)
-      console.log("Doctor Image File:", data.profilePic.name);
-    router.push("/doctor/home");
+    try {
+      const formData = new FormData();
+
+      // Append all fields to FormData
+      Object.entries(data).forEach(([key, value]) => {
+        if (value) {
+          formData.append(key, value);
+        }
+      });
+
+      const response = await axios.post("/api/doctor/signup", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.data.success) {
+        console.log("doctor created:", response.data);
+        toast.success("Account Created Successfully")
+        router.push("/doctor/home");
+      }
+      else{
+        toast.error("Something Went Wrong")
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+    }
   };
   const signupPathlab = async (data) => {
-    console.log("Pathlab Signup:", data);
-    if (data.profilePic)
-      console.log("Pathlab Image File:", data.profilePic.name);
-    router.push("/pathlab/home");
+    try {
+      const formData = new FormData();
+
+      // Append all fields to FormData
+      Object.entries(data).forEach(([key, value]) => {
+        if (value) {
+          formData.append(key, value);
+        }
+      });
+
+      const response = await axios.post("/api/pathlab/signup", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.data.success) {
+        console.log("pathlab signup:", response.data);
+        toast.success("Account Created Successfully")
+        router.push("/pathlab/home");
+      }
+      else{
+        toast.error("Something Went Wrong")
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+    }
   };
 
   const handleRoleChange = (newRole) => {
@@ -243,10 +308,17 @@ export default function AuthPage() {
     </div>
   );
   const handleNextStep = () => {
+    if (step >= steps.length) {
+      if (mode === "signup") {
+        handleSignup();
+      }
+      return;
+    }
+  
     const currentField = steps[step].field;
     const isImageField = steps[step].type === "image";
     const currentLabel = steps[step].label;
-
+  
     if (isImageField) {
       if (!currentData.profilePic) {
         setErrorMessage("Please upload a profile picture or click Skip.");
@@ -254,22 +326,20 @@ export default function AuthPage() {
       }
     } else {
       const value = currentData[currentField];
-
+  
       if (!value) {
         setErrorMessage(`${currentLabel} is required.`);
         return;
       }
-
-      // Phone validation
+  
       if (currentField === "phone") {
-        const isNumeric = /^\d{10,15}$/.test(value); // Adjust length if needed
+        const isNumeric = /^\d{10,15}$/.test(value);
         if (!isNumeric) {
           setErrorMessage("Please enter a valid phone number.");
           return;
         }
       }
-
-      // Email validation
+  
       if (currentField === "email") {
         const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
         if (!isValidEmail) {
@@ -278,11 +348,11 @@ export default function AuthPage() {
         }
       }
     }
-
-    // Clear error and go to next
+  
     setErrorMessage("");
     setStep((prev) => prev + 1);
   };
+  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-purple-200 via-purple-100 to-blue-100 p-4">
