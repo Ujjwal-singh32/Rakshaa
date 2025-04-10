@@ -1,68 +1,20 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import doctor1 from "@/assets/doctor1.jpg";
 import { useState, useEffect, useRef } from "react";
 import UserNavbar from "@/components/UserNavbar";
 import UserFooter from "@/components/UserFooter";
 import { useRouter } from "next/navigation";
-
-const doctors = [
-  {
-    id: 1,
-    name: "Dr. Ayesha Verma",
-    specialization: "Cardiologist",
-    bio: "Expert in heart health and cardiovascular diseases.",
-    image: doctor1,
-    price: 500,
-    rating: 4.8,
-  },
-  {
-    id: 2,
-    name: "Dr. Rohan Mehta",
-    specialization: "Neurologist",
-    bio: "Specializes in brain and nervous system treatments.",
-    image: doctor1,
-    price: 600,
-    rating: 4.7,
-  },
-  {
-    id: 3,
-    name: "Dr. Nisha Kapoor",
-    specialization: "Dermatologist",
-    bio: "Focused on skin care and modern dermatological procedures.",
-    image: doctor1,
-    price: 400,
-    rating: 4.5,
-  },
-  {
-    id: 4,
-    name: "Dr. Sameer Saxena",
-    specialization: "Orthopedic",
-    bio: "Performs bone surgeries with precision and care.",
-    image: doctor1,
-    price: 700,
-    rating: 4.6,
-  },
-  {
-    id: 5,
-    name: "Dr. Anjali Iyer",
-    specialization: "Pediatrician",
-    bio: "Caring for infants, children, and adolescents.",
-    image: doctor1,
-    price: 450,
-    rating: 4.9,
-  },
-];
+import axios from "axios";
 
 export default function DoctorSection() {
+  const [doctors, setDoctors] = useState([]);
   const router = useRouter();
   const [selectedSpecializations, setSelectedSpecializations] = useState([]);
   const [sortBy, setSortBy] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef();
-
+  const [loading, setLoading] = useState(true);
   const specializations = [
     ...new Set(doctors.map((doc) => doc.specialization)),
   ];
@@ -76,6 +28,22 @@ export default function DoctorSection() {
       setSelectedSpecializations([...selectedSpecializations, spec]);
     }
   };
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await axios.get("/api/user/all-doctors");
+        if (response.data.success) {
+          setDoctors(response.data.doctors);
+        }
+      } catch (error) {
+        console.error("Error fetching doctors:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -97,6 +65,18 @@ export default function DoctorSection() {
     filteredDoctors.sort((a, b) => a.price - b.price);
   } else if (sortBy === "rating") {
     filteredDoctors.sort((a, b) => b.rating - a.rating);
+  }
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-20">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="w-16 h-16 border-4 border-purple-400 border-dashed rounded-full animate-spin dark:border-purple-300"></div>
+          <p className="text-purple-700 dark:text-purple-200 text-lg font-semibold animate-pulse">
+            Loading doctors...
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -154,17 +134,20 @@ export default function DoctorSection() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
             {filteredDoctors.map((doctor) => (
               <div
-                key={doctor.id}
+                key={doctor._id}
                 className="bg-gradient-to-tr from-purple-200 via-white to-purple-100 dark:from-purple-800 dark:via-purple-950 dark:to-purple-900 shadow-md rounded-3xl p-5 transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] border border-purple-300 dark:border-purple-700"
               >
                 <div className="flex flex-col items-center text-center gap-2">
-                  <Image
-                    src={doctor.image}
-                    alt={doctor.name}
-                    width={80}
-                    height={80}
-                    className="rounded-full border-4 border-purple-400 dark:border-purple-600 shadow-md"
-                  />
+                  <div className="w-20 h-20 rounded-full border-4 border-purple-400 dark:border-purple-600 shadow-md overflow-hidden bg-black">
+                    <Image
+                      src={doctor.profilePic}
+                      alt={doctor.name}
+                      width={80}
+                      height={80}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+
                   <h2 className="text-xl font-bold text-purple-800 dark:text-purple-200">
                     {doctor.name}
                   </h2>
@@ -172,15 +155,15 @@ export default function DoctorSection() {
                     {doctor.specialization}
                   </p>
                   <p className="text-sm font-semibold text-gray-700 dark:text-gray-200 max-w-[90%]">
-                    {doctor.bio}
+                    {doctor.experience}
                   </p>
                   <p className="text-sm font-bold text-green-700 dark:text-green-400">
-                    ₹{doctor.price}
+                    ₹{doctor.consultationFees}
                   </p>
 
                   {/* Rating */}
                   <div className="flex items-center gap-1 text-yellow-400">
-                    {[...Array(Math.round(doctor.rating))].map((_, i) => (
+                    {[...Array(3)].map((_, i) => (
                       <svg
                         key={i}
                         xmlns="http://www.w3.org/2000/svg"
@@ -194,7 +177,7 @@ export default function DoctorSection() {
                   </div>
 
                   <button
-                    onClick={() => router.push(`/user/doctor/${doctor.id}`)}
+                    onClick={() => router.push(`/user/doctor/${doctor._id}`)}
                     className="mt-3 px-5 py-2 cursor-pointer rounded-full bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold shadow-md hover:scale-105 transition"
                   >
                     Take Appointment

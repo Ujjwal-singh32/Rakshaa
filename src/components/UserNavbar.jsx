@@ -13,7 +13,9 @@ import {
 import { useUser } from "@/context/UserContext";
 
 export default function Navbar() {
-  const { user, loading, } = useUser();
+  const userData = useUser();
+  const user = userData.user;
+  const loading = userData.loading;
   return (
     <header className="w-full bg-purple-100 dark:bg-purple-900 shadow-sm top-0 sticky z-50">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -42,7 +44,11 @@ export default function Navbar() {
           {/* Profile */}
           <Link href="/user/profile">
             <Avatar className="w-9 h-9 border-2 border-purple-400 hover:border-purple-600 transition">
-              <AvatarImage src= {user.profilePic} alt="Profile" />
+              {user?.profilePic ? (
+                <AvatarImage src={user.profilePic} alt="Profile" />
+              ) : (
+                <AvatarImage src="/default-avatar.png" alt="Default Avatar" />
+              )}
               <AvatarFallback>MP</AvatarFallback>
             </Avatar>
           </Link>

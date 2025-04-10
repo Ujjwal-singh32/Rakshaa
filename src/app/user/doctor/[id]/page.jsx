@@ -3,10 +3,12 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import doctor1 from "@/assets/doctor1.jpg";
 import UserNavbar from "@/components/UserNavbar";
 import UserFooter from "@/components/UserFooter";
-
+import { useEffect } from "react";
+import { useParams } from "next/navigation";
+import axios from "axios";
+import { useUser } from "@/context/UserContext";
 // Predefined slot times
 const timeSlots = {
   "10:00 AM": 3,
@@ -23,41 +25,93 @@ const isWeekday = (date) => {
 
 export default function DoctorDetailsPage() {
   const router = useRouter();
+  const { user } = useUser();
   const [date, setDate] = useState("");
+  const [disease, setDisease] = useState("");
   const [selectedSlot, setSelectedSlot] = useState("");
   const [showSlots, setShowSlots] = useState(false);
   const [isValidDay, setIsValidDay] = useState(false);
+  const params = useParams();
+  const doctorId = params.id;
+  console.log("doctor id from frontend", doctorId);
+  const [doctor, setDoctor] = useState(null);
 
-  const doctor = {
-    id: 1,
-    name: "Dr. Ayesha Verma",
-    specialization: "Cardiologist",
-    rating: 4.8,
-    price: 500,
-    experience: "10+ years",
-    education: "MBBS, MD (Cardiology) - AIIMS Delhi",
-    location: "Heart Care Clinic, New Delhi",
-    availability: "Mon - Fri, 10:00 AM - 4:00 PM",
-    image: doctor1,
-    bio: "Dr. Ayesha Verma is a renowned cardiologist with over a decade of experience in treating cardiovascular diseases. She is passionate about preventive heart care and advanced cardiac procedures.",
-  };
+  const [selectedDateObj, setSelectedDateObj] = useState(null); 
 
   const handleDateChange = (e) => {
     const selectedDate = new Date(e.target.value);
-    const formatted = selectedDate.toLocaleDateString("en-CA"); // yyyy-mm-dd
+  
+    const formatted = selectedDate.toLocaleDateString("en-CA"); 
     setDate(formatted);
+    setSelectedDateObj(selectedDate);
     setSelectedSlot("");
     setShowSlots(false);
     setIsValidDay(isWeekday(selectedDate));
   };
+  
+  useEffect(() => {
+    const fetchDoctorDetails = async () => {
+      try {
+        const res = await axios.post(
+          "/api/doctor/detailsbyId",
+          { doctorId },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        console.log("data doctor", res.data.doctor);
+
+        if (res.data.success) {
+          setDoctor(res.data.doctor);
+        } else {
+          console.error("Doctor not found");
+        }
+      } catch (err) {
+        console.error("Error fetching doctor:", err);
+      }
+    };
+
+    if (doctorId) {
+      fetchDoctorDetails();
+    }
+  }, [doctorId]);
+
+  if (!doctor) {
+    return (
+      <>
+        <UserNavbar />
+        <div className="min-h-screen flex items-center justify-center bg-purple-50 dark:bg-purple-900">
+          <p className="text-purple-800 dark:text-purple-200 text-lg">
+            Loading doctor details...
+          </p>
+        </div>
+        <UserFooter />
+      </>
+    );
+  }
 
   const handleAppointment = () => {
     if (!date || !selectedSlot) {
       alert("Please select a date and a valid slot.");
       return;
     }
-    router.push(`/user/doctor/${doctor.id}/booking`);
+  
+    const queryParams = new URLSearchParams({
+      doctorId: doctorId,
+      patientId: user._id,
+      doctorName: doctor.name,
+      date: selectedDateObj.toISOString(),
+      disease: disease,
+      consultationFee: doctor.consultationFees,
+      paymentMode: "online",
+    });
+  
+    router.push(`/user/doctor/${doctorId}/booking?${queryParams.toString()}`);
   };
+  
 
   return (
     <>
@@ -67,7 +121,7 @@ export default function DoctorDetailsPage() {
           {/* Doctor Info */}
           <div className="flex flex-col md:flex-row items-center gap-8">
             <Image
-              src={doctor.image}
+              src={doctor.profilePic}
               alt={doctor.name}
               width={160}
               height={160}
@@ -81,18 +135,19 @@ export default function DoctorDetailsPage() {
                 {doctor.specialization}
               </p>
               <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-                {doctor.education}
+                {doctor.qualification}
               </p>
               <p className="text-sm text-green-600 dark:text-green-400 font-bold">
-                ₹{doctor.price} per consultation
+                ₹{doctor.consultationFees} per consultation
               </p>
               <div className="flex items-center gap-1 justify-center md:justify-start text-yellow-400">
-                {[...Array(Math.round(doctor.rating))].map((_, i) => (
+                {[...Array(3)].map((_, i) => (
                   <svg
                     key={i}
-                    className="w-5 h-5"
+                    xmlns="http://www.w3.org/2000/svg"
                     fill="currentColor"
                     viewBox="0 0 24 24"
+                    className="w-4 h-4"
                   >
                     <path d="M12 .587l3.668 7.571 8.332 1.151-6.064 5.916 1.428 8.294L12 18.896l-7.364 4.623 1.428-8.294-6.064-5.916 8.332-1.151z" />
                   </svg>
@@ -107,7 +162,7 @@ export default function DoctorDetailsPage() {
               About Doctor
             </h3>
             <p className="text-sm leading-relaxed text-gray-800 dark:text-gray-200">
-              {doctor.bio}
+              {doctor.qualification}
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
@@ -120,19 +175,19 @@ export default function DoctorDetailsPage() {
               <div className="bg-purple-100 dark:bg-purple-800 p-4 rounded-xl">
                 <p className="font-semibold">Clinic Location</p>
                 <p className="text-sm text-gray-700 dark:text-gray-200">
-                  {doctor.location}
+                  {doctor.address}
                 </p>
               </div>
               <div className="bg-purple-100 dark:bg-purple-800 p-4 rounded-xl">
                 <p className="font-semibold">Availability</p>
                 <p className="text-sm text-gray-700 dark:text-gray-200">
-                  {doctor.availability}
+                  Mon-Fri (10 am - 6 Pm)
                 </p>
               </div>
               <div className="bg-purple-100 dark:bg-purple-800 p-4 rounded-xl">
                 <p className="font-semibold">Consultation Fee</p>
                 <p className="text-sm text-gray-700 dark:text-gray-200">
-                  ₹{doctor.price}
+                  ₹{doctor.consultationFees}
                 </p>
               </div>
             </div>
@@ -151,6 +206,19 @@ export default function DoctorDetailsPage() {
                 onChange={handleDateChange}
                 className="w-full px-3 py-2 rounded-lg border border-purple-300 dark:border-purple-700 bg-purple-100 dark:bg-purple-800 text-purple-900 dark:text-white"
               />
+            </div>
+            {/* Disease Input */}
+            <div className="mt-8">
+              <label className="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">
+                Describe Your Health Issue / Disease
+              </label>
+              <textarea
+                value={disease}
+                onChange={(e) => setDisease(e.target.value)}
+                rows={3}
+                className="w-full px-4 py-2 rounded-lg border border-purple-300 dark:border-purple-700 bg-purple-100 dark:bg-purple-800 text-purple-900 dark:text-white"
+                placeholder="E.g., Fever, Cough, Headache..."
+              ></textarea>
             </div>
 
             {/* Slot Reveal Button */}
@@ -204,7 +272,8 @@ export default function DoctorDetailsPage() {
                   </>
                 ) : (
                   <p className="text-center text-red-500 font-semibold">
-                    Doctor is not available on weekends. Please select a weekday.
+                    Doctor is not available on weekends. Please select a
+                    weekday.
                   </p>
                 )}
               </div>

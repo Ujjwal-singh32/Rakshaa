@@ -11,7 +11,7 @@ const UserProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const token = localStorage.getItem("token");
+      const token = await localStorage.getItem("token");
       console.log("token in contex" , token);
       if (!token) {
         setLoading(false);

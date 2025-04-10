@@ -20,7 +20,7 @@ const doctorBookingSchema = new mongoose.Schema({
     required: true,
   },
   disease: {
-    type: [String],
+    type: String,
     required: true,
   },
   status: {
