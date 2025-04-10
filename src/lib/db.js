@@ -23,6 +23,7 @@ async function connectDB() {
           useUnifiedTopology: true,
         })
         .then((mongoose) => {
+          console.log('Db Connected')
           return mongoose;
         });
   }

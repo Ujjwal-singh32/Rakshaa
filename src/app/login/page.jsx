@@ -20,15 +20,23 @@ const IconInput = ({ icon: Icon, ...props }) => (
 export default function AuthPage() {
   const [mode, setMode] = useState("login");
   const [role, setRole] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
   const [step, setStep] = useState(0);
   const router = useRouter();
   // Individual form states
   const [patientData, setPatientData] = useState({
     name: "",
     email: "",
-    password: "",
-    age: "",
     phone: "",
+    address: "",
+    emergencyContact: "",
+    bloodType: "",
+    allergies: "",
+    medications: "",
+    weight: "",
+    height: "",
+    age: "",
+    password: "",
     profilePic: null,
   });
 
@@ -77,11 +85,19 @@ export default function AuthPage() {
         return [
           { label: "Name", field: "name" },
           { label: "Email", field: "email" },
-          { label: "Password", field: "password", type: "password" },
-          { label: "Age", field: "age" },
           { label: "Phone", field: "phone" },
-          { label: "Profile Picture", type: "image" },
+          { label: "Address", field: "address" },
+          { label: "Emergency Contact", field: "emergencyContact" },
+          { label: "Blood Type", field: "bloodType" },
+          { label: "Allergies", field: "allergies" },
+          { label: "Medications", field: "medications" },
+          { label: "Weight(Kg)", field: "weight" },
+          { label: "Height(cm)", field: "height" },
+          { label: "Age(Years)", field: "age" },
+          { label: "Password", field: "password", type: "password" },
+          { label: "Profile Picture", field: "profilePic", type: "image" },
         ];
+
       case "Doctor":
         return [
           { label: "Name", field: "name" },
@@ -183,6 +199,48 @@ export default function AuthPage() {
       <div className="absolute w-80 h-80 bg-blue-400 opacity-40 rounded-full bottom-[-100px] left-[40%] animate-float3 blur-[100px]" />
     </div>
   );
+  const handleNextStep = () => {
+    const currentField = steps[step].field;
+    const isImageField = steps[step].type === "image";
+    const currentLabel = steps[step].label;
+  
+    if (isImageField) {
+      if (!currentData.profilePic) {
+        setErrorMessage("Please upload a profile picture or click Skip.");
+        return;
+      }
+    } else {
+      const value = currentData[currentField];
+  
+      if (!value) {
+        setErrorMessage(`${currentLabel} is required.`);
+        return;
+      }
+  
+      // Phone validation
+      if (currentField === "phone") {
+        const isNumeric = /^\d{10,15}$/.test(value); // Adjust length if needed
+        if (!isNumeric) {
+          setErrorMessage("Please enter a valid phone number.");
+          return;
+        }
+      }
+  
+      // Email validation
+      if (currentField === "email") {
+        const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+        if (!isValidEmail) {
+          setErrorMessage("Please enter a valid email address.");
+          return;
+        }
+      }
+    }
+  
+    // Clear error and go to next
+    setErrorMessage("");
+    setStep((prev) => prev + 1);
+  };
+  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-purple-200 via-purple-100 to-blue-100 p-4">
@@ -331,27 +389,27 @@ export default function AuthPage() {
                                 {currentData.profilePic.name}
                               </p>
                             )}
-                            <Button
-                              variant="ghost"
-                              onClick={() => {
-                                handleImageChange(null);
-                                setStep((prev) => prev + 1);
-                              }}
-                            >
-                              Skip
-                            </Button>
                           </div>
                         </div>
                       ) : (
-                        <Input
-                          placeholder={steps[step].label}
-                          type={steps[step].type || "text"}
-                          value={currentData[steps[step].field]}
-                          onChange={(e) =>
-                            handleChange(steps[step].field, e.target.value)
-                          }
-                          className="py-6 rounded-full bg-gray-100"
-                        />
+                        <div className="space-y-1">
+                          <Input
+                            placeholder={steps[step].label}
+                            type={steps[step].type || "text"}
+                            value={currentData[steps[step].field] || ""}
+                            onChange={(e) =>
+                              handleChange(steps[step].field, e.target.value)
+                            }
+                            className={`py-6 rounded-full bg-gray-100 ${
+                              errorMessage ? "border border-red-500" : ""
+                            }`}
+                          />
+                          {errorMessage && (
+                            <p className="text-red-500 text-sm ml-2">
+                              {errorMessage}
+                            </p>
+                          )}
+                        </div>
                       )}
 
                       <div className="flex justify-between">
@@ -372,7 +430,7 @@ export default function AuthPage() {
                         ) : (
                           <Button
                             className="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-6 py-3"
-                            onClick={() => setStep((prev) => prev + 1)}
+                            onClick={handleNextStep}
                           >
                             Next
                           </Button>
