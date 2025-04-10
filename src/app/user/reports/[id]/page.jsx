@@ -11,6 +11,8 @@ import UserFooter from "@/components/UserFooter";
 import { useRef, useEffect } from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { useUser } from "@/context/UserContext";
+import axios from "axios";
 
 import {
   Select,
@@ -19,12 +21,13 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { useParams } from "next/navigation";
 export default function AppointmentDetails() {
   const [activeSection, setActiveSection] = useState("chat");
   const [selectedMedication, setSelectedMedication] = useState(null);
   const [uploadedReports, setUploadedReports] = useState([]);
   const [isClient, setIsClient] = useState(false);
-
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     setIsClient(true);
   }, []);
@@ -248,8 +251,48 @@ export default function AppointmentDetails() {
     doc.save(`Medication_${selectedMedication.date}.pdf`);
   };
 
-  if (!isClient) return null;
+  const { id } = useParams();
+  const [booking, setBooking] = useState(null);
+  const { user } = useUser();
 
+  useEffect(() => {
+    const fetchBookingDetails = async () => {
+      try {
+        const res = await axios.post("/api/booking/detailsbyId", {
+          bookingId: id,
+        });
+
+        if (res.data.success) {
+          setBooking(res.data.booking);
+        } else {
+          console.error("Failed to fetch booking details:", res.data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching booking details:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchBookingDetails();
+    }
+  }, [id]);
+
+  if (!isClient) return null;
+  console.log("booking", booking);
+  if (!isClient || loading || !booking) {
+    return (
+      <div className="flex justify-center items-center py-20">
+      <div className="flex flex-col items-center space-y-4">
+        <div className="w-16 h-16 border-4 border-purple-400 border-dashed rounded-full animate-spin dark:border-purple-300"></div>
+        <p className="text-purple-700 dark:text-purple-200 text-lg font-semibold animate-pulse">
+          Loading Appointment Details...
+        </p>
+      </div>
+    </div>
+    );
+  }
   return (
     <>
       <UserNavbar />
@@ -264,16 +307,25 @@ export default function AppointmentDetails() {
                   Appointment Details
                 </h2>
                 <p>
-                  <strong>Patient Name:</strong> John Doe
+                  <strong>Patient Name:</strong>{" "}
+                  {user ? user.name : "patient name loading!!"}
                 </p>
                 <p>
-                  <strong>Doctor Name:</strong> Dr. Sakhsam Verma
+                  <strong>Doctor Name:</strong>{" "}
+                  {booking.doctorName || "doctor name loading !!"}
                 </p>
                 <p>
-                  <strong>Date:</strong> 2025-04-06
+                  <strong>Date: </strong>
+                  {new Date(booking.date).toLocaleDateString("en-US", {
+                  weekday: "short",
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}
                 </p>
                 <p>
-                  <strong>Disease:</strong> Flu and Fever
+                  <strong>Disease:</strong>{" "}
+                  {booking.disease || "disease loading"}
                 </p>
               </CardContent>
             </Card>
@@ -303,7 +355,7 @@ export default function AppointmentDetails() {
               <Card className="bg-purple-100 dark:bg-purple-900">
                 <CardContent className="p-4 space-y-3">
                   <h2 className="text-xl justify-center text-center font-semibold text-purple-800 dark:text-purple-100">
-                    Chat with Dr. Sakhsam Verma
+                    Chat with Dr.{booking.doctorName || "name loading!!"}
                   </h2>
                   <div className="h-80 overflow-y-auto bg-white dark:bg-purple-950 rounded-md p-2 space-y-2">
                     {messages.map((msg, index) => (

@@ -73,7 +73,7 @@ function MyProfile() {
         <div className="flex flex-col items-center space-y-4">
           <div className="w-16 h-16 border-4 border-purple-400 border-dashed rounded-full animate-spin dark:border-purple-300"></div>
           <p className="text-purple-700 dark:text-purple-200 text-lg font-semibold animate-pulse">
-            Loading doctors...
+            Loading Profile Details...
           </p>
         </div>
       </div>
