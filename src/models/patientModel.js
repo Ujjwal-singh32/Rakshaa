@@ -18,3 +18,6 @@ const patientSchema = new mongoose.Schema({
 
 const patientModel = mongoose.model("Patient", patientSchema);
 export default patientModel;
+
+
+
