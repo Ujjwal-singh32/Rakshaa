@@ -35,6 +35,6 @@ const pathlabBookingSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-const PathlabBooking = mongoose.model('PathlabBooking', pathlabBookingSchema);
+const PathlabBooking = mongoose.models.PathlabBooking || mongoose.model('PathlabBooking', pathlabBookingSchema);
 
 export default PathlabBooking;

@@ -10,15 +10,17 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import doctor1 from "@/assets/doctor1.jpg";
+import { useUser } from "@/context/UserContext";
+
 export default function Navbar() {
+  const { user, loading, } = useUser();
   return (
     <header className="w-full bg-purple-100 dark:bg-purple-900 shadow-sm top-0 sticky z-50">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Left: Logo */}
         <div className="flex items-center">
           <Link
-            href="/"
+            href="/user/home"
             className="text-xl font-bold text-purple-700 dark:text-purple-200"
           >
             🩺 Rakshaa
@@ -40,7 +42,7 @@ export default function Navbar() {
           {/* Profile */}
           <Link href="/user/profile">
             <Avatar className="w-9 h-9 border-2 border-purple-400 hover:border-purple-600 transition">
-              <AvatarImage src= "https://www.mepmiddleeast.com/cloud/2023/01/10/Narendra-Modi.jpg" alt="Profile" />
+              <AvatarImage src= {user.profilePic} alt="Profile" />
               <AvatarFallback>MP</AvatarFallback>
             </Avatar>
           </Link>

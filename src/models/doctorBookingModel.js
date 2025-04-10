@@ -39,6 +39,6 @@ const doctorBookingSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-const DoctorBooking = mongoose.model('DoctorBooking', doctorBookingSchema);
+const DoctorBooking = mongoose.models.DoctorBooking ||mongoose.model('DoctorBooking', doctorBookingSchema);
 
 export default DoctorBooking;

@@ -1,24 +1,33 @@
 "use client";
 import * as React from "react";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import UserNavbar from "@/components/UserNavbar";
-
+import { useUser } from "@/context/UserContext";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 function MyProfile() {
+  const router = useRouter();
   const [isEditing, setIsEditing] = React.useState(false);
-
-  const [userDetails, setUserDetails] = React.useState({
-    name: "John Doe",
-    email: "johndoe@example.com",
-    phone: "+1 234 567 890",
-    address: "1234 Elm St, Springfield, IL",
-    emergencyContact: "+1 987 654 3210",
-    bloodType: "O+",
-    allergies: "Peanuts, Shellfish",
-    medications: "Aspirin (daily)",
-    weight: "75 kg",
-    height: "180 cm",
-    age: "30 years",
-  });
+  const { user, loading, } = useUser();
+  // console.log("user details", user);
+  const [userDetails, setUserDetails] = React.useState(null);
+  React.useEffect(() => {
+    if (user) {
+      setUserDetails({
+        name: user.name || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        address: user.address || "",
+        emergencyContact: user.emergencyContact || "",
+        bloodType: user.bloodType || "",
+        allergies: user.allergies || "",
+        medications: user.medications || "",
+        weight: user.weight || "",
+        height: user.height || "",
+        age: user.age || "",
+      });
+    }
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,8 +38,46 @@ function MyProfile() {
   };
 
   const toggleEdit = () => setIsEditing(!isEditing);
-  const handleSaveChanges = () => setIsEditing(false);
 
+  const handleSaveChanges = async () => {
+    try {
+      const res = await fetch("/api/user/update", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user._id,
+          ...userDetails,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        toast.success("Profile Updated!!");
+        setIsEditing(false);
+        router.push("/user/profile");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (err) {
+      console.error("Error updating profile:", err);
+      alert("An error occurred. Please try again.");
+    }
+  };
+
+  if (loading || !userDetails) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-purple-700 dark:text-purple-200 text-xl">
+        Loading profile...
+      </div>
+    );
+  }
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    router.push("/login");
+  };
   return (
     <>
       <UserNavbar />
@@ -77,7 +124,7 @@ function MyProfile() {
             <div className="bg-purple-200 dark:bg-purple-800 p-6 rounded-xl w-full lg:w-1/3 shadow-xl">
               <div className="flex justify-center mb-4">
                 <img
-                  src="https://www.mepmiddleeast.com/cloud/2023/01/10/Narendra-Modi.jpg"
+                  src={user.profilePic}
                   alt="User"
                   className="w-36 h-36 rounded-full object-cover"
                 />
@@ -85,7 +132,7 @@ function MyProfile() {
 
               <div className="flex flex-col sm:flex-row justify-between gap-4 mb-6">
                 <Button
-                  onClick={() => console.log("Logging out...")}
+                  onClick={() => handleLogout()}
                   className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md w-full sm:w-auto"
                 >
                   Logout
@@ -99,19 +146,21 @@ function MyProfile() {
               </div>
 
               <div className="space-y-4">
-                {["name", "email", "phone", "address", "emergencyContact"].map((key) => (
-                  <div
-                    key={key}
-                    className="flex flex-col lg:flex-row lg:justify-between text-md"
-                  >
-                    <span className="text-purple-800 dark:text-purple-200 font-semibold capitalize">
-                      {key.replace(/([A-Z])/g, " $1")}:
-                    </span>
-                    <span className="text-purple-600 dark:text-purple-400 text-right lg:ml-2">
-                      {userDetails[key]}
-                    </span>
-                  </div>
-                ))}
+                {["name", "email", "phone", "address", "emergencyContact"].map(
+                  (key) => (
+                    <div
+                      key={key}
+                      className="flex flex-col lg:flex-row lg:justify-between text-md"
+                    >
+                      <span className="text-purple-800 dark:text-purple-200 font-semibold capitalize">
+                        {key.replace(/([A-Z])/g, " $1")}:
+                      </span>
+                      <span className="text-purple-600 dark:text-purple-400 text-right lg:ml-2">
+                        {userDetails[key]}
+                      </span>
+                    </div>
+                  )
+                )}
               </div>
             </div>
 
@@ -122,10 +171,7 @@ function MyProfile() {
               </h3>
               <div className="space-y-4">
                 {[
-                  "bloodPressure",
-                  "sugarLevel",
                   "bloodType",
-                  "medicalConditions",
                   "allergies",
                   "medications",
                   "weight",
