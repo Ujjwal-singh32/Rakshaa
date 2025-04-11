@@ -13,7 +13,8 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { useUser } from "@/context/UserContext";
 import axios from "axios";
-
+import { Send } from "lucide-react";
+import { toast } from "react-toastify";
 import {
   Select,
   SelectTrigger,
@@ -184,6 +185,7 @@ export default function AppointmentDetails() {
     const newReports = files.map((file) => ({
       name: file.name,
       url: URL.createObjectURL(file),
+      file: file, 
     }));
     setUploadedReports((prev) => [...prev, ...newReports]);
 
@@ -279,18 +281,52 @@ export default function AppointmentDetails() {
     }
   }, [id]);
 
+  const handleSendReports = async () => {
+    if (uploadedReports.length === 0) {
+      alert("Please upload at least one report before sending.");
+      return;
+    }
+    const patientId = user._id;
+    const doctorId = booking.doctorId;
+
+    const formData = new FormData();
+    formData.append("patientId", patientId);
+    formData.append("doctorId", doctorId);
+
+    uploadedReports.forEach((file) => {
+      formData.append("reports", file instanceof File ? file : file.file);
+    });
+
+    try {
+      const response = await axios.post("/api/user/send-reports", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.data.success) {
+        toast.success("Reports Sent");
+        setUploadedReports([]);
+      } else {
+        toast.success("Failed to Send Reports");
+      }
+    } catch (error) {
+      console.error("Error sending reports:", error);
+    }
+  };
+
   if (!isClient) return null;
-  console.log("booking", booking);
+  // console.log("booking", booking);
   if (!isClient || loading || !booking) {
     return (
       <div className="flex justify-center items-center py-20">
-      <div className="flex flex-col items-center space-y-4">
-        <div className="w-16 h-16 border-4 border-purple-400 border-dashed rounded-full animate-spin dark:border-purple-300"></div>
-        <p className="text-purple-700 dark:text-purple-200 text-lg font-semibold animate-pulse">
-          Loading Appointment Details...
-        </p>
+        <div className="flex flex-col items-center space-y-4">
+          <div className="w-16 h-16 border-4 border-purple-400 border-dashed rounded-full animate-spin dark:border-purple-300"></div>
+          <p className="text-purple-700 dark:text-purple-200 text-lg font-semibold animate-pulse">
+            Loading Appointment Details...
+          </p>
+        </div>
       </div>
-    </div>
     );
   }
   return (
@@ -317,11 +353,11 @@ export default function AppointmentDetails() {
                 <p>
                   <strong>Date: </strong>
                   {new Date(booking.date).toLocaleDateString("en-US", {
-                  weekday: "short",
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })}
+                    weekday: "short",
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
                 </p>
                 <p>
                   <strong>Disease:</strong>{" "}
@@ -451,46 +487,59 @@ export default function AppointmentDetails() {
             )}
 
             {activeSection === "reports" && (
-              <Card className="bg-purple-100 dark:bg-purple-900">
-                <CardContent className="p-4 space-y-4">
-                  <h2 className="text-xl font-semibold text-purple-800 dark:text-purple-100">
-                    Upload Reports
-                  </h2>
-                  <Input
-                    type="file"
-                    multiple
-                    onChange={handleReportUpload}
-                    className="bg-white dark:bg-purple-950"
-                    ref={(ref) => (fileInputRef.current = ref)}
-                  />
+              <>
+                <Card className="bg-purple-100 dark:bg-purple-900">
+                  <CardContent className="p-4 space-y-4">
+                    <h2 className="text-xl font-semibold text-purple-800 dark:text-purple-100">
+                      Upload Reports
+                    </h2>
+                    <Input
+                      type="file"
+                      multiple
+                      onChange={handleReportUpload}
+                      className="bg-white dark:bg-purple-950"
+                      ref={(ref) => (fileInputRef.current = ref)}
+                    />
 
-                  {/* Uploaded Reports List with Scroll */}
-                  {uploadedReports.length > 0 && (
-                    <div className="space-y-2">
-                      <h3 className="font-medium text-purple-700 dark:text-purple-200">
-                        Uploaded Files:
-                      </h3>
-                      <div className="max-h-64 overflow-y-auto space-y-2 pr-1">
-                        {uploadedReports.map((file, index) => (
-                          <div
-                            key={index}
-                            className="flex justify-between items-center bg-white dark:bg-purple-950 p-2 rounded shadow"
-                          >
-                            <span className="truncate">{file.name}</span>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => window.open(file.url, "_blank")}
+                    {/* Uploaded Reports List with Scroll */}
+                    {uploadedReports.length > 0 && (
+                      <div className="space-y-2">
+                        <h3 className="font-medium text-purple-700 dark:text-purple-200">
+                          Uploaded Files:
+                        </h3>
+                        <div className="max-h-44 overflow-y-auto space-y-2 pr-1">
+                          {uploadedReports.map((file, index) => (
+                            <div
+                              key={index}
+                              className="flex justify-between items-center bg-white dark:bg-purple-950 p-2 rounded shadow"
                             >
-                              See
-                            </Button>
-                          </div>
-                        ))}
+                              <span className="truncate">{file.name}</span>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => window.open(file.url, "_blank")}
+                              >
+                                See
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Send Button */}
+                <div className="mt-4 flex justify-end">
+                  <Button
+                    className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
+                    onClick={handleSendReports}
+                  >
+                    <Send className="w-4 h-4" />
+                    Send Reports
+                  </Button>
+                </div>
+              </>
             )}
 
             {activeSection === "zoom" && (

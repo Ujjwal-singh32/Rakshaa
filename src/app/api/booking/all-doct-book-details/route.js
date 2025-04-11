@@ -9,7 +9,7 @@ export async function GET() {
 
   try {
     const bookings = await bookingModel.find().sort({ date: -1 }); // latest first
-
+    // console.log("bookings from the backend side" , bookings);
     return NextResponse.json({
       success: true,
       bookings,
