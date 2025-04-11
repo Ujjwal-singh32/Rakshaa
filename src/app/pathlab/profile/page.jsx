@@ -1,44 +1,76 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { LogOut, Pencil, Save, X } from "lucide-react";
-import LabFooter from "@/components/LabFooter";
+import { usePathlab } from "@/context/pathlabContext";
 import LabNavbar from "@/components/LabNavbar";
+import LabFooter from "@/components/LabFooter";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
-const Page = () => {
-  const initialLab = {
-    name: "HealthPlus Diagnostics",
-    email: "contact@healthpluslab.com",
-    address: "123 Wellness Street, New Delhi, India",
-    phone: "+91 9876543210",
-    image: "https://www.mepmiddleeast.com/cloud/2023/01/10/Narendra-Modi.jpg",
-  };
-
-  const [lab, setLab] = useState(initialLab);
+const PathlabProfilePage = () => {
+  const { pathlab, setPathlab, loading } = usePathlab();
   const [editMode, setEditMode] = useState(false);
-  const [tempLab, setTempLab] = useState(initialLab);
+  const [tempLab, setTempLab] = useState({});
+  const router = useRouter();
+
+  useEffect(() => {
+    if (pathlab) {
+      setTempLab(pathlab);
+    }
+  }, [pathlab]);
+
+  const handleChange = (field, value) => {
+    setTempLab((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleEditProfile = () => {
     setEditMode(true);
   };
 
-  const handleSave = () => {
-    setLab(tempLab);
+   
+  const handleCancel = () => {
+    setTempLab(pathlab);
     setEditMode(false);
   };
 
-  const handleCancel = () => {
-    setTempLab(lab);
-    setEditMode(false);
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.put("/api/pathlab/update", tempLab, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.data.success) {
+        setPathlab(res.data.updatedPathlab);
+        setEditMode(false);
+      } else {
+        alert("Failed to update pathlab profile.");
+      }
+    } catch (err) {
+      console.error("Save error:", err);
+      alert("Error updating profile.");
+    }
   };
 
   const handleLogout = () => {
-    console.log("Logout clicked");
+    localStorage.removeItem("token");
+    router.push("/pathlab/login");
   };
 
-  const handleChange = (field, value) => {
-    setTempLab({ ...tempLab, [field]: value });
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-purple-700 dark:text-purple-200 text-xl">
+        Loading profile...
+      </div>
+    );
+  }
+
+  if (!pathlab) {
+    return <div className="p-10 text-center">No pathlab data found.</div>;
+  }
 
   return (
     <>
@@ -47,26 +79,31 @@ const Page = () => {
         <div className="bg-white dark:bg-purple-900 border border-purple-200 dark:border-purple-700 rounded-2xl shadow-2xl max-w-3xl w-full p-6 sm:p-10 space-y-6">
           <div className="flex flex-col sm:flex-row items-center gap-6">
             <img
-              src={lab.image}
+              src={tempLab.profilePic || "https://via.placeholder.com/150"}
               alt="Lab"
               className="w-32 h-32 rounded-full border-4 border-purple-300 dark:border-purple-700 object-cover shadow-md"
             />
             <div className="text-center sm:text-left space-y-2 w-full">
-              {["name", "email", "address", "phone"].map((field) => (
+              {["labName", "email", "labAddress", "phone"].map((field) => (
                 <div key={field}>
                   <p className="text-sm font-semibold text-purple-700 dark:text-purple-300 capitalize">
-                    {field}:
+                    {field === "labName"
+                      ? "Name"
+                      : field === "labAddress"
+                      ? "Address"
+                      : field.charAt(0).toUpperCase() + field.slice(1)}
+                    :
                   </p>
                   {editMode ? (
                     <input
                       type="text"
-                      value={tempLab[field]}
+                      value={tempLab[field] || ""}
                       onChange={(e) => handleChange(field, e.target.value)}
                       className="w-full mt-1 p-2 rounded-md bg-purple-100 dark:bg-purple-800 text-purple-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-500"
                     />
                   ) : (
                     <p className="text-sm text-gray-800 dark:text-gray-300">
-                      {lab[field]}
+                      {pathlab[field]}
                     </p>
                   )}
                 </div>
@@ -116,5 +153,4 @@ const Page = () => {
   );
 };
 
-export default Page;
-  
+export default PathlabProfilePage;

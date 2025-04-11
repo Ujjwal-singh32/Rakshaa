@@ -4,9 +4,11 @@ import { useState } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Stethoscope, Menu } from "lucide-react";
 import Link from "next/link";
+import { useDoctor } from "@/context/doctorContext";
 
 export default function DocNav() {
   const [menuOpen, setMenuOpen] = useState(false);
+    const { doctor } = useDoctor();
 
   return (
     <nav className="bg-purple-100 dark:bg-purple-900 shadow-md sticky top-0 z-50 px-4 py-3">
@@ -50,7 +52,7 @@ export default function DocNav() {
           <Link href="/doctor/profile">
             <Avatar className="w-9 h-9 border-2 border-purple-400 hover:border-purple-600 transition">
               <AvatarImage
-                src="https://i.pinimg.com/736x/47/34/89/473489f7b154c89fd81f5e4bc5421425.jpg"
+                src={doctor?.profilePic }
                 alt="Doctor Profile"
               />
               <AvatarFallback>DR</AvatarFallback>

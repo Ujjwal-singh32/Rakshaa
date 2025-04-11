@@ -9,14 +9,19 @@ import { toast } from "react-toastify";
 const roles = ["Patient", "Doctor", "Pathlab"];
 import axios from "axios";
 
-const IconInput = ({ icon: Icon, ...props }) => (
+const IconInput = ({ icon: Icon, onKeyDown, ...props }) => (
   <div className="relative">
     <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
       <Icon size={16} />
     </span>
-    <Input className="pl-10 py-6 rounded-full bg-gray-100 text-sm" {...props} />
+    <Input
+      className="pl-10 py-6 rounded-full bg-gray-100 text-sm"
+      onKeyDown={onKeyDown}
+      {...props}
+    />
   </div>
 );
+
 
 export default function AuthPage() {
   const [mode, setMode] = useState("login");
@@ -85,6 +90,14 @@ export default function AuthPage() {
   const handleChange = (field, value) => {
     setFormData({ [field]: value });
   };
+  
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleNextStep(); // Go to next step
+    }
+  };
+  
 
   const handleImageChange = (file) => {
     setFormData({ profilePic: file });
@@ -198,12 +211,48 @@ export default function AuthPage() {
   };
 
   const loginDoctor = async (email, password) => {
-    console.log("Doctor Login:", email, password);
-    router.push("/doctor/home");
+    try {
+      const response = await axios.post("/api/doctor/login", {
+        email,
+        password,
+      });
+
+      const data = response.data;
+      console.log("Login Response:", data);
+
+      if (data.success) {
+        // Save token if needed
+        localStorage.setItem("drtoken", data.token);
+        toast.success("Successfully Logged In")
+        router.push("/doctor/home");
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+    }
   };
   const loginPathlab = async (email, password) => {
-    console.log("Pathlab Login:", email, password);
-    router.push("/pathlab/home");
+    try {
+      const response = await axios.post("/api/pathlab/login", {
+        email,
+        password,
+      });
+
+      const data = response.data;
+      console.log("Login Response:", data);
+
+      if (data.success) {
+        // Save token if needed
+        localStorage.setItem("pttoken", data.token);
+        toast.success("Successfully Logged In")
+        router.push("/pathlab/home");
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+    }
   };
 
   const signupPatient = async (data) => {
@@ -423,6 +472,7 @@ export default function AuthPage() {
                       placeholder="Your Email"
                       value={currentData.email}
                       onChange={(e) => handleChange("email", e.target.value)}
+                      onKeyDown={handleKeyDown}
                     />
                     <IconInput
                       icon={LockIcon}
@@ -430,6 +480,7 @@ export default function AuthPage() {
                       type="password"
                       value={currentData.password}
                       onChange={(e) => handleChange("password", e.target.value)}
+                      onKeyDown={handleKeyDown}
                     />
                     <div className="flex items-center justify-between text-sm text-gray-500">
                       <label className="flex items-center gap-2">

@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { usePathlab } from "@/context/pathlabContext";
+
 import {
   Sheet,
   SheetContent,
@@ -12,6 +14,7 @@ import {
 } from "@/components/ui/sheet";
 
 export default function LabNavbar() {
+  const { pathlab } = usePathlab();
   return (
     <header className="w-full bg-purple-100 dark:bg-purple-900 shadow-sm top-0 sticky z-50">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -39,7 +42,7 @@ export default function LabNavbar() {
           <Link href="/pathlab/profile">
             <Avatar className="w-9 h-9 border-2 border-purple-400 hover:border-purple-600 transition">
               <AvatarImage
-                src="https://www.mepmiddleeast.com/cloud/2023/01/10/Narendra-Modi.jpg"
+                src={pathlab.profilePic}
                 alt="Profile"
               />
               <AvatarFallback>PL</AvatarFallback>
