@@ -3,7 +3,7 @@ import validator from "validator";
 import bcrypt from "bcryptjs";
 import { v2 as cloudinary } from "cloudinary";
 import jwt from "jsonwebtoken";
-import pathLabModel from "@/models/PathLab";
+import pathLabModel from "@/models/pathLabModel";
 import connectDB from "@/lib/db";
 
 cloudinary.config({
