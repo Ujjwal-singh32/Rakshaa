@@ -1,41 +1,32 @@
+// models/Medication.js
+
 import mongoose from "mongoose";
 
 const medicationSchema = new mongoose.Schema({
-  url: {
-    type: String,
+  doctorId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Doctor",
+    required: true,
+  },
+  patientId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User", // assuming User model for patients
     required: true,
   },
   date: {
-    type: Date,
-    default: Date.now,
+    type: String, // format: YYYY-MM-DD
+    required: true,
   },
+  medications: [
+    {
+      name: { type: String, required: true },
+      dosage: { type: String, required: true },
+      frequency: { type: String, required: true },
+    },
+  ],
 });
 
-const medicationRecordSchema = new mongoose.Schema(
-  {
-    bookingId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Booking",
-      required: true,
-    },
-    patientId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Patient",
-      required: true,
-    },
-    doctorId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Doctor",
-      required: true,
-    },
-    medications: [medicationSchema],
-  },
-  { timestamps: true }
-);
+const Medication =
+  mongoose.models.Medication || mongoose.model("Medication", medicationSchema);
 
-// Avoid OverwriteModelError
-const MedicationRecord =
-  mongoose.models.MedicationRecord ||
-  mongoose.model("MedicationRecord", medicationRecordSchema);
-
-export default MedicationRecord;
+export default Medication;

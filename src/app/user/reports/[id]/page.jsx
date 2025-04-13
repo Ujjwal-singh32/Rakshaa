@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { io } from "socket.io-client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Download } from "lucide-react";
 import UserNavbar from "@/components/UserNavbar";
 import UserFooter from "@/components/UserFooter";
-import { useRef, useEffect } from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { useUser } from "@/context/UserContext";
@@ -29,153 +29,28 @@ export default function AppointmentDetails() {
   const [uploadedReports, setUploadedReports] = useState([]);
   const [isClient, setIsClient] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedDoctorId, setSelectedDoctorId] = useState(null);
+  const [receivedMedication, setReceivedMedication] = useState([]);
+  const [availableDoctors, setAvailableDoctors] = useState([]);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [messages, setMessages] = useState([]);
+  const messagesEndRef = useRef(null);
+
+  const receiverId = booking.doctorId; 
+  const senderId = user._id;
+
   useEffect(() => {
     setIsClient(true);
   }, []);
-  const medicationData = [
-    {
-      date: "2025-04-06",
-      medications: [
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-      ],
-    },
-    {
-      date: "2025-04-07",
-      medications: [
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-      ],
-    },
-    {
-      date: "2025-04-08",
-      medications: [
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-      ],
-    },
-    {
-      date: "2025-04-09",
-      medications: [
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-      ],
-    },
-    {
-      date: "2015-09-05",
-      medications: [
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-      ],
-    },
-    {
-      date: "2025-04-10",
-      medications: [
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-      ],
-    },
-    {
-      date: "2025-04-11",
-      medications: [
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-      ],
-    },
-    {
-      date: "2025-04-12",
-      medications: [
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-      ],
-    },
-    {
-      date: "2025-04-13",
-      medications: [
-        {
-          name: "Amoxicillin",
-          dosage: "250mg",
-          frequency: "Three times a day",
-        },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-      ],
-    },
-  ];
-
+  const socket = useRef(
+    io("http://localhost:3001", {
+      autoConnect: false,
+      auth: {
+        token: localStorage.getItem("token") || "", 
+      },
+    })
+  ).current;
+  
   const fileInputRef = useRef(null);
 
   const handleReportUpload = (e) => {
@@ -185,7 +60,7 @@ export default function AppointmentDetails() {
     const newReports = files.map((file) => ({
       name: file.name,
       url: URL.createObjectURL(file),
-      file: file, 
+      file: file,
     }));
     setUploadedReports((prev) => [...prev, ...newReports]);
 
@@ -195,34 +70,10 @@ export default function AppointmentDetails() {
     }
   };
 
-  const [messages, setMessages] = useState([
-    {
-      text: "Hello, Doctor!",
-      sender: "user",
-      time: new Date().toLocaleTimeString(),
-    },
-    {
-      text: "Hi, how are you feeling today?",
-      sender: "doctor",
-      time: new Date().toLocaleTimeString(),
-    },
-  ]);
   const [messageInput, setMessageInput] = useState("");
 
-  const handleSendMessage = () => {
-    if (!messageInput.trim()) return;
-
-    const newMessage = {
-      text: messageInput,
-      sender: "user",
-      time: new Date().toLocaleTimeString(),
-    };
-    setMessages([...messages, newMessage]);
-    setMessageInput("");
-  };
-
   const handleSelectChange = (date) => {
-    const med = medicationData.find((m) => m.date === date);
+    const med = receivedMedication.find((m) => m.date === date);
     setSelectedMedication(med);
   };
   const handleDownloadPdf = () => {
@@ -256,6 +107,23 @@ export default function AppointmentDetails() {
   const { id } = useParams();
   const [booking, setBooking] = useState(null);
   const { user } = useUser();
+  useEffect(() => {
+    if (!selectedDate) return;
+
+    const fetchDoctors = async () => {
+      try {
+        const res = await fetch(
+          `/api/appointments/doctors?date=${selectedDate}`
+        );
+        const data = await res.json();
+        setAvailableDoctors(data);
+      } catch (err) {
+        console.error("Failed to fetch doctors", err);
+      }
+    };
+
+    fetchDoctors();
+  }, [selectedDate]);
 
   useEffect(() => {
     const fetchBookingDetails = async () => {
@@ -280,6 +148,39 @@ export default function AppointmentDetails() {
       fetchBookingDetails();
     }
   }, [id]);
+
+  const handleReceiveMedication = async () => {
+    if (!selectedDoctorId || !selectedDate || !user?._id) {
+      toast.error("Please select a doctor and date.");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/medication/receive", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          doctorId: selectedDoctorId,
+          patientId: user._id,
+          date: selectedDate,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        toast.success("Medication fetched successfully!");
+        setReceivedMedication(data.medication);
+      } else {
+        toast.error(data.message || "Failed to receive medication.");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong!");
+    }
+  };
 
   const handleSendReports = async () => {
     if (uploadedReports.length === 0) {
@@ -314,6 +215,50 @@ export default function AppointmentDetails() {
       console.error("Error sending reports:", error);
     }
   };
+
+  useEffect(() => {
+    if (activeSection === "chat") {
+      socket.connect();
+
+      // Join room with both participants
+      socket.emit("join", { userId: senderId });
+
+      // Listen for incoming messages
+      socket.on("newMessage", (msg) => {
+        setMessages((prev) => [...prev, msg]);
+      });
+      
+    }
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [activeSection, senderId]);
+
+  const handleSendMessage = () => {
+    if (messageInput.trim() === "") return;
+
+    const newMessage = {
+      text: messageInput,
+      sender: senderId,
+      receiverId: receiverId,
+      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    };
+
+    // Emit message to server
+    socket.emit("sendMessage", {
+      to: receiverId,
+      message: newMessage,
+    });
+
+    // Append to current UI
+    setMessages((prev) => [...prev, newMessage]);
+    setMessageInput("");
+  };
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   if (!isClient) return null;
   // console.log("booking", booking);
@@ -393,23 +338,27 @@ export default function AppointmentDetails() {
                   <h2 className="text-xl justify-center text-center font-semibold text-purple-800 dark:text-purple-100">
                     Chat with Dr.{booking.doctorName || "name loading!!"}
                   </h2>
+
                   <div className="h-80 overflow-y-auto bg-white dark:bg-purple-950 rounded-md p-2 space-y-2">
                     {messages.map((msg, index) => (
                       <div
                         key={index}
                         className={`text-sm p-2 rounded w-fit ${
-                          msg.sender === "user"
+                          msg.sender === senderId
                             ? "bg-pink-300 dark:bg-purple-800 ml-auto text-right"
-                            : "bg-purple-300 dark:bg-purple-700 ml-auto text-left"
+                            : "bg-purple-300 dark:bg-purple-700 mr-auto text-left"
                         }`}
                       >
-                        <p>{msg.text}</p>
+                        <p>{String(msg.text)}</p>
+
                         <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
                           {msg.time}
                         </p>
                       </div>
                     ))}
+                    <div ref={messagesEndRef} />
                   </div>
+
                   <div className="flex gap-2">
                     <Input
                       placeholder="Type your message..."
@@ -436,7 +385,7 @@ export default function AppointmentDetails() {
                       <SelectValue placeholder="Select a date" />
                     </SelectTrigger>
                     <SelectContent>
-                      {medicationData.map((med, index) => (
+                      {receivedMedication.map((med, index) => (
                         <SelectItem key={index} value={med.date}>
                           {med.date}
                         </SelectItem>
@@ -445,6 +394,48 @@ export default function AppointmentDetails() {
                   </Select>
 
                   {/* Show Medications when a date is selected */}
+                  {/* Doctor and Date Selection Section */}
+                  <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mt-6">
+                    {/* Doctor Dropdown */}
+                    <Select
+                      onValueChange={(value) => setSelectedDoctorId(value)}
+                    >
+                      <SelectTrigger className="w-[200px] bg-white dark:bg-purple-800 border-purple-300 dark:border-purple-700">
+                        <SelectValue placeholder="Select Doctor" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableDoctors.map((doctor) => (
+                          <SelectItem key={doctor._id} value={doctor._id}>
+                            {doctor.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    {/* Date Dropdown */}
+                    <Select onValueChange={(value) => setSelectedDate(value)}>
+                      <SelectTrigger className="w-[200px] bg-white dark:bg-purple-800 border-purple-300 dark:border-purple-700">
+                        <SelectValue placeholder="Select Date" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {receivedMedication.map((med, idx) => (
+                          <SelectItem key={idx} value={med.date}>
+                            {med.date}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    {/* Fetch Medication Button */}
+                    <Button
+                      className="bg-purple-600 text-white hover:bg-purple-700"
+                      onClick={handleReceiveMedication}
+                    >
+                      Fetch Medication
+                    </Button>
+                  </div>
+
+                  {/* Show Medication Table if Data Exists */}
                   {selectedMedication && (
                     <Tabs defaultValue="details" className="mt-6">
                       <TabsList>

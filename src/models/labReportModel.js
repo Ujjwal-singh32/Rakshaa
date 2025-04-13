@@ -1,16 +1,5 @@
 import mongoose from "mongoose";
 
-const reportSchema = new mongoose.Schema({
-  url: {
-    type: String,
-    required: true,
-  },
-  date: {
-    type: Date,
-    default: Date.now,
-  },
-});
-
 const labReportSchema = new mongoose.Schema(
   {
     patientId: {
@@ -23,12 +12,23 @@ const labReportSchema = new mongoose.Schema(
       ref: "Pathlab",
       required: true,
     },
-    reports: [reportSchema],
+    reports: [
+      {
+        url: {
+          type: String,
+          required: true,
+        },
+        date: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );
 
-// Avoid OverwriteModelError
+
 const LabReport =
   mongoose.models.LabReport || mongoose.model("LabReport", labReportSchema);
 
