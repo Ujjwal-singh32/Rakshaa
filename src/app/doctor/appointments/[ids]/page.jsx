@@ -22,6 +22,7 @@ import {
 export default function AppointmentDetails() {
   const [activeSection, setActiveSection] = useState("chat");
   const [selectedMedication, setSelectedMedication] = useState(null);
+  const [medicationData, setMedicationData] = useState([]);
   const [uploadedReports, setUploadedReports] = useState([
     {
       name: "Blood_Test_Report.pdf",
@@ -76,156 +77,43 @@ export default function AppointmentDetails() {
     setNewMedications(updated);
   };
 
-  const handleSubmitMedications = () => {
-    console.log("Submitted Medications:", newMedications);
-    alert("Medications sent to patient!");
+  const handleSubmitMedications = async () => {
+    try {
+      const res = await fetch("/api/medications/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          patientId: "12345", // replace with actual patient ID or email
+          medications: newMedications,
+        }),
+      });
+  
+      const data = await res.json();
+      if (data.success) {
+        alert("Medications sent to patient!");
+      } else {
+        alert("Failed to send medications");
+      }
+    } catch (error) {
+      console.error("Error sending medications:", error);
+      alert("Error sending medications");
+    }
   };
+  
   useEffect(() => {
     setIsClient(true);
   }, []);
-  const medicationData = [
-    {
-      date: "2025-04-06",
-      medications: [
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-      ],
-    },
-    {
-      date: "2025-04-07",
-      medications: [
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-      ],
-    },
-    {
-      date: "2025-04-08",
-      medications: [
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-      ],
-    },
-    {
-      date: "2025-04-09",
-      medications: [
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-      ],
-    },
-    {
-      date: "2015-09-05",
-      medications: [
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-      ],
-    },
-    {
-      date: "2025-04-10",
-      medications: [
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-      ],
-    },
-    {
-      date: "2025-04-11",
-      medications: [
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-      ],
-    },
-    {
-      date: "2025-04-12",
-      medications: [
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-      ],
-    },
-    {
-      date: "2025-04-13",
-      medications: [
-        {
-          name: "Amoxicillin",
-          dosage: "250mg",
-          frequency: "Three times a day",
-        },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-        { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-        { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-      ],
-    },
-  ];
+  useEffect(() => {
+    const fetchMeds = async () => {
+      const res = await fetch(`/api/medications?patientId=12345`);
+      const data = await res.json();
+      setMedicationData(data.medications);
+    };
+  
+    fetchMeds();
+  }, []);
 
   const fileInputRef = useRef(null);
 
