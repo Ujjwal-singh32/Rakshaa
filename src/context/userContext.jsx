@@ -2,8 +2,8 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
-
-const UserContext = createContext();
+import { usePathname } from "next/navigation";
+const UserContext = createContext({});
 
 const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -12,7 +12,7 @@ const UserProvider = ({ children }) => {
   useEffect(() => {
     const fetchUser = async () => {
       const token = await localStorage.getItem("token");
-      console.log("token in contex" , token);
+      console.log("token in contex", token);
       if (!token) {
         setLoading(false);
         return;
@@ -26,10 +26,10 @@ const UserProvider = ({ children }) => {
         });
 
         if (res.data.success) {
-            // console.log("checking the response", res.data.user)
+          // console.log("checking the response", res.data.user)
           setUser(res.data.user);
         } else {
-            console.log("asdcasd")
+          console.log("asdcasd");
           setUser(null);
         }
       } catch (error) {
@@ -46,7 +46,7 @@ const UserProvider = ({ children }) => {
   const userId = user?._id || user?.id || null;
 
   return (
-    <UserContext.Provider value={{ user, setUser, loading,userId }}>
+    <UserContext.Provider value={{ user, setUser, loading, userId }}>
       {children}
     </UserContext.Provider>
   );

@@ -35,8 +35,37 @@ export default function AppointmentDetails() {
   const [selectedDate, setSelectedDate] = useState("");
   const [messages, setMessages] = useState([]);
   const messagesEndRef = useRef(null);
+  const { id } = useParams();
+  const [booking, setBooking] = useState(null);
+  const { user } = useUser();
+  useEffect(() => {
+    const fetchBookingDetails = async () => {
+      try {
+        const res = await axios.post("/api/booking/detailsbyId", {
+          bookingId: id,
+        });
 
-  const receiverId = booking.doctorId; 
+        if (res.data.success) {
+          setBooking(res.data.booking);
+        } else {
+          console.error("Failed to fetch booking details:", res.data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching booking details:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchBookingDetails();
+    }
+  }, [id]);
+  
+    if (loading || !booking || !user || !booking.doctorId) {
+    return <div>Loading appointment details...</div>;
+  }
+  const receiverId = booking.doctorId;
   const senderId = user._id;
 
   useEffect(() => {
@@ -46,11 +75,11 @@ export default function AppointmentDetails() {
     io("http://localhost:3001", {
       autoConnect: false,
       auth: {
-        token: localStorage.getItem("token") || "", 
+        token: localStorage.getItem("token") || "",
       },
     })
   ).current;
-  
+
   const fileInputRef = useRef(null);
 
   const handleReportUpload = (e) => {
@@ -104,9 +133,6 @@ export default function AppointmentDetails() {
     doc.save(`Medication_${selectedMedication.date}.pdf`);
   };
 
-  const { id } = useParams();
-  const [booking, setBooking] = useState(null);
-  const { user } = useUser();
   useEffect(() => {
     if (!selectedDate) return;
 
@@ -124,30 +150,6 @@ export default function AppointmentDetails() {
 
     fetchDoctors();
   }, [selectedDate]);
-
-  useEffect(() => {
-    const fetchBookingDetails = async () => {
-      try {
-        const res = await axios.post("/api/booking/detailsbyId", {
-          bookingId: id,
-        });
-
-        if (res.data.success) {
-          setBooking(res.data.booking);
-        } else {
-          console.error("Failed to fetch booking details:", res.data.message);
-        }
-      } catch (error) {
-        console.error("Error fetching booking details:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (id) {
-      fetchBookingDetails();
-    }
-  }, [id]);
 
   const handleReceiveMedication = async () => {
     if (!selectedDoctorId || !selectedDate || !user?._id) {
@@ -227,7 +229,6 @@ export default function AppointmentDetails() {
       socket.on("newMessage", (msg) => {
         setMessages((prev) => [...prev, msg]);
       });
-      
     }
 
     return () => {
@@ -242,7 +243,10 @@ export default function AppointmentDetails() {
       text: messageInput,
       sender: senderId,
       receiverId: receiverId,
-      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      time: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
     };
 
     // Emit message to server

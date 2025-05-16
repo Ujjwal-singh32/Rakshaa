@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 const roles = ["Patient", "Doctor", "Pathlab"];
 import axios from "axios";
 
+
 const IconInput = ({ icon: Icon, onKeyDown, ...props }) => (
   <div className="relative">
     <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
@@ -21,7 +22,6 @@ const IconInput = ({ icon: Icon, onKeyDown, ...props }) => (
     />
   </div>
 );
-
 
 export default function AuthPage() {
   const [mode, setMode] = useState("login");
@@ -63,7 +63,6 @@ export default function AuthPage() {
     pastHospitals: "",
     profilePic: null,
   });
-  
 
   const [pathlabData, setPathlabData] = useState({
     labName: "",
@@ -90,14 +89,13 @@ export default function AuthPage() {
   const handleChange = (field, value) => {
     setFormData({ [field]: value });
   };
-  
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       handleNextStep(); // Go to next step
     }
   };
-  
 
   const handleImageChange = (file) => {
     setFormData({ profilePic: file });
@@ -200,10 +198,11 @@ export default function AuthPage() {
       if (data.success) {
         // Save token if needed
         localStorage.setItem("token", data.token);
-        toast.success("Successfully Logged In")
-        router.push("/user/home");
+        toast.success("Successfully Logged In");
+        // router.push("/user/home");
+        window.location.href = "/user/home";
       } else {
-        toast.error(data.message)
+        toast.error(data.message);
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -212,6 +211,7 @@ export default function AuthPage() {
 
   const loginDoctor = async (email, password) => {
     try {
+      localStorage.clear();
       const response = await axios.post("/api/doctor/login", {
         email,
         password,
@@ -223,10 +223,12 @@ export default function AuthPage() {
       if (data.success) {
         // Save token if needed
         localStorage.setItem("drtoken", data.token);
-        toast.success("Successfully Logged In")
-        router.push("/doctor/home");
+        toast.success("Successfully Logged In");
+        // router.push("/doctor/home");
+        // here we have changed the direct routing to refreshed routing because there was a bug that all time same user details are displayed 
+        window.location.href = "/doctor/home";
       } else {
-        toast.error(data.message)
+        toast.error(data.message);
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -234,6 +236,7 @@ export default function AuthPage() {
   };
   const loginPathlab = async (email, password) => {
     try {
+      localStorage.clear();
       const response = await axios.post("/api/pathlab/login", {
         email,
         password,
@@ -245,10 +248,11 @@ export default function AuthPage() {
       if (data.success) {
         // Save token if needed
         localStorage.setItem("pttoken", data.token);
-        toast.success("Successfully Logged In")
-        router.push("/pathlab/home");
+        toast.success("Successfully Logged In");
+        // router.push("/pathlab/home");
+        window.location.href = "/pathlab/home";
       } else {
-        toast.error(data.message)
+        toast.error(data.message);
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -257,6 +261,7 @@ export default function AuthPage() {
 
   const signupPatient = async (data) => {
     try {
+      localStorage.clear();
       const formData = new FormData();
 
       // Append all fields to FormData
@@ -274,11 +279,10 @@ export default function AuthPage() {
 
       if (response.data.success) {
         console.log("Patient created:", response.data);
-        toast.success("Account Created Successfully")
-        router.push("/user/home");
-      }
-      else{
-        toast.error("Something Went Wrong")
+        toast.success("Account Created Successfully Now login");
+        router.push("/login");
+      } else {
+        toast.error("Something Went Wrong");
       }
     } catch (error) {
       console.error("Signup error:", error);
@@ -287,6 +291,7 @@ export default function AuthPage() {
 
   const signupDoctor = async (data) => {
     try {
+      localStorage.clear();
       const formData = new FormData();
 
       // Append all fields to FormData
@@ -304,11 +309,10 @@ export default function AuthPage() {
 
       if (response.data.success) {
         console.log("doctor created:", response.data);
-        toast.success("Account Created Successfully")
-        router.push("/doctor/home");
-      }
-      else{
-        toast.error("Something Went Wrong")
+        toast.success("Account Created Successfully Now Login!!");
+        router.push("/login");
+      } else {
+        toast.error("Something Went Wrong");
       }
     } catch (error) {
       console.error("Signup error:", error);
@@ -316,6 +320,7 @@ export default function AuthPage() {
   };
   const signupPathlab = async (data) => {
     try {
+      localStorage.clear();
       const formData = new FormData();
 
       // Append all fields to FormData
@@ -333,11 +338,10 @@ export default function AuthPage() {
 
       if (response.data.success) {
         console.log("pathlab signup:", response.data);
-        toast.success("Account Created Successfully")
-        router.push("/pathlab/home");
-      }
-      else{
-        toast.error("Something Went Wrong")
+        toast.success("Account Created Successfully Now login");
+        router.push("/login");
+      } else {
+        toast.error("Something Went Wrong");
       }
     } catch (error) {
       console.error("Signup error:", error);
@@ -363,11 +367,11 @@ export default function AuthPage() {
       }
       return;
     }
-  
+
     const currentField = steps[step].field;
     const isImageField = steps[step].type === "image";
     const currentLabel = steps[step].label;
-  
+
     if (isImageField) {
       if (!currentData.profilePic) {
         setErrorMessage("Please upload a profile picture or click Skip.");
@@ -375,12 +379,12 @@ export default function AuthPage() {
       }
     } else {
       const value = currentData[currentField];
-  
+
       if (!value) {
         setErrorMessage(`${currentLabel} is required.`);
         return;
       }
-  
+
       if (currentField === "phone") {
         const isNumeric = /^\d{10,15}$/.test(value);
         if (!isNumeric) {
@@ -388,7 +392,7 @@ export default function AuthPage() {
           return;
         }
       }
-  
+
       if (currentField === "email") {
         const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
         if (!isValidEmail) {
@@ -397,11 +401,10 @@ export default function AuthPage() {
         }
       }
     }
-  
+
     setErrorMessage("");
     setStep((prev) => prev + 1);
   };
-  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-purple-200 via-purple-100 to-blue-100 p-4">

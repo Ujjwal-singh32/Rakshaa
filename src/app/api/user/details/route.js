@@ -15,6 +15,8 @@ export async function GET(req) {
       return NextResponse.json({ success: false, message: "No token provided" }, { status: 401 });
     }
 
+    console.log("secret printing",process.env.JWT_SECRET)
+    console.log("token checking" , token)
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const user = await patientModel.findById(decoded.id).select("-password");
