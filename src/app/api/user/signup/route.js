@@ -22,7 +22,7 @@ const createToken = (id) => {
 export async function POST(req) {
   try {
     await connectDB();
-
+    console.log("hiii this is the debugging line")
     const formData = await req.formData();
     const data = {};
     formData.forEach((value, key) => {
