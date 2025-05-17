@@ -38,6 +38,7 @@ export default function AppointmentDetails() {
   const { id } = useParams();
   const [booking, setBooking] = useState(null);
   const { user } = useUser();
+  
   useEffect(() => {
     const fetchBookingDetails = async () => {
       try {

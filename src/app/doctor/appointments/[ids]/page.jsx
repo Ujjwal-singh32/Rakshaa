@@ -11,7 +11,9 @@ import UserFooter from "@/components/UserFooter";
 import { useRef, useEffect } from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-
+import { useParams } from "next/navigation";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import {
   Select,
   SelectTrigger,
@@ -19,10 +21,42 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { toast } from "react-toastify";
 export default function AppointmentDetails() {
+  const { ids } = useParams();
   const [activeSection, setActiveSection] = useState("chat");
   const [selectedMedication, setSelectedMedication] = useState(null);
   const [medicationData, setMedicationData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const [messages, setMessages] = useState([
+    {
+      text: "Hello, Doctor!",
+      sender: "user",
+      time: new Date().toLocaleTimeString(),
+    },
+    {
+      text: "Hi, how are you feeling today?",
+      sender: "doctor",
+      time: new Date().toLocaleTimeString(),
+    },
+  ]);
+  const [messageInput, setMessageInput] = useState("");
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  useEffect(() => {
+    const fetchMeds = async () => {
+      const res = await fetch(`/api/medications?patientId=12345`);
+      const data = await res.json();
+      setMedicationData(data.medications);
+    };
+
+    fetchMeds();
+  }, []);
+
+  const fileInputRef = useRef(null);
+
   const [uploadedReports, setUploadedReports] = useState([
     {
       name: "Blood_Test_Report.pdf",
@@ -53,10 +87,53 @@ export default function AppointmentDetails() {
         "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
     },
   ]);
+  const [booking, setBooking] = useState(null);
   const [isClient, setIsClient] = useState(false);
   const [newMedications, setNewMedications] = useState([
     { name: "", dosage: "", frequency: "" },
   ]);
+
+  useEffect(() => {
+    const fetchBookingDetails = async () => {
+      try {
+        const res = await axios.post("/api/booking/detailsbyId", {
+          bookingId: ids,
+        });
+
+        if (res.data.success) {
+          setBooking(res.data.booking);
+        } else {
+          console.error("Failed to fetch booking details:", res.data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching booking details:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (ids) {
+      fetchBookingDetails();
+    }
+  }, [ids]);
+
+  if (
+    loading ||
+    !booking ||
+    !booking.doctorId.name ||
+    !booking.patientId.name
+  ) {
+    return (
+      <div className="flex justify-center items-center py-20">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="w-16 h-16 border-4 border-purple-400 border-dashed rounded-full animate-spin dark:border-purple-300"></div>
+          <p className="text-purple-700 dark:text-purple-200 text-lg font-semibold animate-pulse">
+            Loading Appointment Details...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const handleAddMedication = () => {
     setNewMedications([
@@ -89,7 +166,7 @@ export default function AppointmentDetails() {
           medications: newMedications,
         }),
       });
-  
+
       const data = await res.json();
       if (data.success) {
         alert("Medications sent to patient!");
@@ -101,21 +178,6 @@ export default function AppointmentDetails() {
       alert("Error sending medications");
     }
   };
-  
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-  useEffect(() => {
-    const fetchMeds = async () => {
-      const res = await fetch(`/api/medications?patientId=12345`);
-      const data = await res.json();
-      setMedicationData(data.medications);
-    };
-  
-    fetchMeds();
-  }, []);
-
-  const fileInputRef = useRef(null);
 
   const handleReportUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -132,20 +194,6 @@ export default function AppointmentDetails() {
       fileInputRef.current.value = "";
     }
   };
-
-  const [messages, setMessages] = useState([
-    {
-      text: "Hello, Doctor!",
-      sender: "user",
-      time: new Date().toLocaleTimeString(),
-    },
-    {
-      text: "Hi, how are you feeling today?",
-      sender: "doctor",
-      time: new Date().toLocaleTimeString(),
-    },
-  ]);
-  const [messageInput, setMessageInput] = useState("");
 
   const handleSendMessage = () => {
     if (!messageInput.trim()) return;
@@ -191,6 +239,22 @@ export default function AppointmentDetails() {
     // Save PDF
     doc.save(`Medication_${selectedMedication.date}.pdf`);
   };
+  const handleMarkCompleted = async () => {
+    try {
+      const res = await axios.post("/api/booking/markcomplete", {
+        bookingId: ids,
+      });
+      if (res.data.success) {
+        toast.success("Status Updated");
+        router.push("/doctor/appointments");
+      } else {
+        toast.error("Error Occured");
+      }
+    } catch (error) {
+      toast.error("Error Occured");
+      console.log(error);
+    }
+  };
 
   if (!isClient) return null;
 
@@ -208,38 +272,63 @@ export default function AppointmentDetails() {
                   Appointment Details
                 </h2>
                 <p>
-                  <strong>Patient Name:</strong> John Doe
+                  <strong>Patient Name:</strong>{" "}
+                  {booking.patientId.name
+                    ? booking.patientId.name
+                    : "patient name loading!!"}
                 </p>
                 <p>
-                  <strong>Doctor Name:</strong> Dr. Sakhsam Verma
+                  <strong>Doctor Name:</strong>
+                  {booking.doctorId.name
+                    ? booking.doctorId.name
+                    : "Doctor name loading!!"}
                 </p>
                 <p>
-                  <strong>Date:</strong> 2025-04-06
+                  <strong>Date:</strong>{" "}
+                  {new Date(booking.date).toLocaleDateString("en-US", {
+                    weekday: "short",
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
                 </p>
                 <p>
-                  <strong>Disease:</strong> Flu and Fever
+                  <strong>Disease:</strong>{" "}
+                  {booking.disease || "disease loading"}
                 </p>
+                <div className="pt-4">
+                  <button
+                    onClick={handleMarkCompleted}
+                    className="w-full sm:w-auto px-6 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-800 transition-colors duration-300"
+                  >
+                    Mark as Completed
+                  </button>
+                </div>
               </CardContent>
             </Card>
 
             {/* Navigation Buttons */}
             <div className="space-y-3">
-              {["chat", "medications", "send Medication", "reports", "zoom"].map(
-                (section) => (
-                  <Button
-                    key={section}
-                    variant={activeSection === section ? "default" : "outline"}
-                    className="w-full capitalize"
-                    onClick={() => setActiveSection(section)}
-                  >
-                    {section === "reports"
-                      ? "View Reports"
-                      : section === "zoom"
-                      ? "Zoom Meeting"
-                      : section}
-                  </Button>
-                )
-              )}
+              {[
+                "chat",
+                "medications",
+                "send Medication",
+                "reports",
+                "zoom",
+              ].map((section) => (
+                <Button
+                  key={section}
+                  variant={activeSection === section ? "default" : "outline"}
+                  className="w-full capitalize"
+                  onClick={() => setActiveSection(section)}
+                >
+                  {section === "reports"
+                    ? "View Reports"
+                    : section === "zoom"
+                    ? "Zoom Meeting"
+                    : section}
+                </Button>
+              ))}
             </div>
           </div>
 

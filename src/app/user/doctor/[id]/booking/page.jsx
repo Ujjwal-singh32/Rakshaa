@@ -24,6 +24,7 @@ const MakePayment = () => {
   const disease = searchParams.get("disease");
   const fee = searchParams.get("consultationFee");
   const paymentMode = searchParams.get("paymentMode");
+  const patientName = searchParams.get("patientName");
 
   const handlePayment = async () => {
     setLoading(true);
@@ -61,6 +62,7 @@ const MakePayment = () => {
               doctorId,
               doctorName,
               patientId,
+              patientName,
               date,
               disease,
               consultationFee: fee,

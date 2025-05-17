@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 import connectDB from "@/lib/db";
-import Doctor from "@/models/doctorModel";
+import doctorModel from "@/models/doctorModel";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -12,32 +12,39 @@ cloudinary.config({
 export async function PUT(req) {
   try {
     await connectDB();
-    const formData = await req.formData();
-
-    const id = formData.get("id"); // pass this from frontend
-    if (!id) {
-      return NextResponse.json({ success: false, message: "Missing doctor ID" });
+    const body = await req.json();
+    const { doctorId, ...updatedData } = body;
+    if (!doctorId) {
+      return NextResponse.json({
+        success: false,
+        message: "Missing doctor ID",
+      });
     }
 
-    const updatedFields = {};
-    formData.forEach((value, key) => {
-      if (key !== "profilePic" && key !== "id") {
-        updatedFields[key] = value;
-      }
+    const updatedDoctor = await doctorModel
+      .findByIdAndUpdate(
+        doctorId,
+        { $set: updatedData },
+        { new: true, runValidators: true }
+      )
+      .select("-password");
+
+    if (!updatedDoctor) {
+      return NextResponse.json(
+        { success: false, message: "Doctor not found" },
+        { status: 404 }
+      );
+    }
+    return NextResponse.json({
+      success: true,
+      message: "Profile updated successfully",
+      doctor: updatedDoctor,
     });
-
-    const file = formData.get("profilePic");
-    if (file && file.arrayBuffer) {
-      const buffer = Buffer.from(await file.arrayBuffer());
-      const base64 = `data:${file.type};base64,${buffer.toString("base64")}`;
-      const result = await cloudinary.uploader.upload(base64, { folder: "rakshaa/doctors" });
-      updatedFields.profilePic = result.secure_url;
-    }
-
-    const updatedDoctor = await Doctor.findByIdAndUpdate(id, updatedFields, { new: true });
-    return NextResponse.json({ success: true, doctor: updatedDoctor });
   } catch (err) {
     console.error("Update error:", err);
-    return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, message: "Server error" },
+      { status: 500 }
+    );
   }
 }

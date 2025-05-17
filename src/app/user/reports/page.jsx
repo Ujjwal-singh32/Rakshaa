@@ -13,11 +13,14 @@ export default function ReportsPage() {
   const [activeTab, setActiveTab] = useState("started");
   const [appointments, setAppointments] = useState([]);
   const router = useRouter();
-  const { user } = useUser();
+  const { user, userId } = useUser();
   useEffect(() => {
+     if (!userId) return; 
     const fetchAppointments = async () => {
       try {
-        const res = await axios.get("/api/booking/all-doct-book-details");
+        const res = await axios.post("/api/booking/all-doct-book-details", {
+          patientId: userId,
+        });
         if (res.data.success) {
           // console.log("bookings" , res.data.bookings)
           setAppointments(res.data.bookings);
@@ -30,7 +33,7 @@ export default function ReportsPage() {
     };
 
     fetchAppointments();
-  }, []);
+  }, [userId]);
   console.log("appointments", appointments);
   const filteredAppointments = appointments
     .filter((a) => a.status === activeTab)
@@ -87,7 +90,7 @@ export default function ReportsPage() {
                 Doctor: {appt.doctorName}
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                Patient: {user ? user.name :  "patient name loading...."}
+                Patient: {user ? user.name : "patient name loading...."}
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-300">
                 Disease: {appt.disease}
