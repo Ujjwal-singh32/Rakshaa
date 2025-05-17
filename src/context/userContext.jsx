@@ -44,9 +44,10 @@ const UserProvider = ({ children }) => {
   }, []);
 
   const userId = user?._id || user?.id || null;
+  const patientName = user?.name || user?.name || null;
 
   return (
-    <UserContext.Provider value={{ user, setUser, loading, userId }}>
+    <UserContext.Provider value={{ user, setUser, loading, userId,patientName }}>
       {children}
     </UserContext.Provider>
   );

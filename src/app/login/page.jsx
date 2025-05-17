@@ -230,7 +230,6 @@ export default function AuthPage() {
 
   const loginDoctor = async (email, password) => {
     try {
-      localStorage.clear();
       const response = await axios.post("/api/doctor/login", {
         email,
         password,
@@ -255,7 +254,6 @@ export default function AuthPage() {
   };
   const loginPathlab = async (email, password) => {
     try {
-      localStorage.clear();
       const response = await axios.post("/api/pathlab/login", {
         email,
         password,
@@ -280,7 +278,6 @@ export default function AuthPage() {
 
   const signupPatient = async (data) => {
     try {
-      localStorage.clear();
       const formData = new FormData();
 
       // Append all fields to FormData
@@ -311,7 +308,6 @@ export default function AuthPage() {
 
   const signupDoctor = async (data) => {
     try {
-      localStorage.clear();
       const formData = new FormData();
 
       // Append all fields to FormData
@@ -340,7 +336,6 @@ export default function AuthPage() {
   };
   const signupPathlab = async (data) => {
     try {
-      localStorage.clear();
       const formData = new FormData();
 
       // Append all fields to FormData

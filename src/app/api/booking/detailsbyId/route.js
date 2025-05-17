@@ -1,4 +1,3 @@
-
 import connectDB from "@/lib/db";
 import bookingModel from "@/models/doctorBookingModel";
 import { NextResponse } from "next/server";
@@ -10,13 +9,22 @@ export async function POST(req) {
     const { bookingId } = body;
 
     if (!bookingId) {
-      return NextResponse.json({ success: false, message: "Missing bookingId" }, { status: 400 });
+      return NextResponse.json(
+        { success: false, message: "Missing bookingId" },
+        { status: 400 }
+      );
     }
     console.log("bookingId received:", bookingId);
-    const booking = await bookingModel.findById(bookingId);
+    const booking = await bookingModel
+      .findById(bookingId)
+      .populate("patientId", "name")
+      .populate("doctorId", "name");
 
     if (!booking) {
-      return NextResponse.json({ success: false, message: "booking not found" }, { status: 404 });
+      return NextResponse.json(
+        { success: false, message: "booking not found" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json({

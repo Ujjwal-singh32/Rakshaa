@@ -107,6 +107,7 @@ export default function DoctorDetailsPage() {
       disease: disease,
       consultationFee: doctor.consultationFees,
       paymentMode: "online",
+      patientName:user.name
     });
   
     router.push(`/user/doctor/${doctorId}/booking?${queryParams.toString()}`);
