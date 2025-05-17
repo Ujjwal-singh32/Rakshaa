@@ -9,7 +9,6 @@ import { toast } from "react-toastify";
 const roles = ["Patient", "Doctor", "Pathlab"];
 import axios from "axios";
 
-
 const IconInput = ({ icon: Icon, onKeyDown, ...props }) => (
   <div className="relative">
     <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
@@ -105,18 +104,33 @@ export default function AuthPage() {
     switch (role) {
       case "Patient":
         return [
-          { label: "Name", field: "name" },
-          { label: "Email", field: "email" },
-          { label: "Phone", field: "phone" },
-          { label: "Address", field: "address" },
-          { label: "Emergency Contact", field: "emergencyContact" },
-          { label: "Blood Type", field: "bloodType" },
-          { label: "Allergies", field: "allergies" },
-          { label: "Medications", field: "medications" },
-          { label: "Weight(Kg)", field: "weight" },
-          { label: "Height(cm)", field: "height" },
-          { label: "Age(Years)", field: "age" },
-          { label: "Password", field: "password", type: "password" },
+          { label: "Name", field: "name", type: "text", required: true },
+          { label: "Email", field: "email", type: "email", required: true },
+          { label: "Phone", field: "phone", type: "tel", required: true },
+          { label: "Address", field: "address", type: "text" },
+          {
+            label: "Emergency Contact",
+            field: "emergencyContact",
+            type: "tel",
+          },
+          {
+            label: "Blood Type",
+            field: "bloodType",
+            type: "select",
+            options: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+            required: true,
+          },
+          { label: "Allergies", field: "allergies", type: "text" },
+          { label: "Medications", field: "medications", type: "text" },
+          { label: "Weight (Kg)", field: "weight", type: "number" },
+          { label: "Height (cm)", field: "height", type: "number" },
+          { label: "Age (Years)", field: "age", type: "number", min: 0 },
+          {
+            label: "Password",
+            field: "password",
+            type: "password",
+            required: true,
+          },
           { label: "Profile Picture", field: "profilePic", type: "image" },
         ];
 
@@ -132,7 +146,12 @@ export default function AuthPage() {
           { label: "Hospital", field: "hospital" },
           { label: "Address", field: "address" },
           { label: "Languages", field: "languages" },
-          { label: "Consultation Fees", field: "consultationFees" },
+          {
+            label: "Consultation Fees",
+            field: "consultationFees",
+            type: "number",
+            min: 0,
+          },
           { label: "Achievements", field: "achievements" },
           { label: "College", field: "college" },
           { label: "Past Hospitals", field: "pastHospitals" },
@@ -225,7 +244,7 @@ export default function AuthPage() {
         localStorage.setItem("drtoken", data.token);
         toast.success("Successfully Logged In");
         // router.push("/doctor/home");
-        // here we have changed the direct routing to refreshed routing because there was a bug that all time same user details are displayed 
+        // here we have changed the direct routing to refreshed routing because there was a bug that all time same user details are displayed
         window.location.href = "/doctor/home";
       } else {
         toast.error(data.message);
@@ -280,7 +299,8 @@ export default function AuthPage() {
       if (response.data.success) {
         console.log("Patient created:", response.data);
         toast.success("Account Created Successfully Now login");
-        router.push("/login");
+        // since it is signed up so move it to login mode
+        setMode("login");
       } else {
         toast.error("Something Went Wrong");
       }
@@ -310,7 +330,7 @@ export default function AuthPage() {
       if (response.data.success) {
         console.log("doctor created:", response.data);
         toast.success("Account Created Successfully Now Login!!");
-        router.push("/login");
+        setMode("login");
       } else {
         toast.error("Something Went Wrong");
       }
@@ -339,7 +359,7 @@ export default function AuthPage() {
       if (response.data.success) {
         console.log("pathlab signup:", response.data);
         toast.success("Account Created Successfully Now login");
-        router.push("/login");
+        setMode("login");
       } else {
         toast.error("Something Went Wrong");
       }
@@ -385,7 +405,7 @@ export default function AuthPage() {
         return;
       }
 
-      if (currentField === "phone") {
+      if (currentField === "phone" || currentField === "emergencyContact") {
         const isNumeric = /^\d{10,15}$/.test(value);
         if (!isNumeric) {
           setErrorMessage("Please enter a valid phone number.");
@@ -559,17 +579,41 @@ export default function AuthPage() {
                         </div>
                       ) : (
                         <div className="space-y-1">
-                          <Input
-                            placeholder={steps[step].label}
-                            type={steps[step].type || "text"}
-                            value={currentData[steps[step].field] || ""}
-                            onChange={(e) =>
-                              handleChange(steps[step].field, e.target.value)
-                            }
-                            className={`py-6 rounded-full bg-gray-100 ${
-                              errorMessage ? "border border-red-500" : ""
-                            }`}
-                          />
+                          {steps[step].type === "select" ? (
+                            <select
+                              className={`w-full py-4 px-4 rounded-full bg-gray-100 text-gray-700 border ${
+                                errorMessage
+                                  ? "border-red-500"
+                                  : "border-transparent"
+                              }`}
+                              value={currentData[steps[step].field] || ""}
+                              onChange={(e) =>
+                                handleChange(steps[step].field, e.target.value)
+                              }
+                            >
+                              <option value="">
+                                Select {steps[step].label}
+                              </option>
+                              {steps[step].options.map((option) => (
+                                <option key={option} value={option}>
+                                  {option}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            <Input
+                              placeholder={steps[step].label}
+                              type={steps[step].type || "text"}
+                              value={currentData[steps[step].field] || ""}
+                              onChange={(e) =>
+                                handleChange(steps[step].field, e.target.value)
+                              }
+                              onKeyDown={handleKeyDown}
+                              className={`py-6 rounded-full bg-gray-100 ${
+                                errorMessage ? "border border-red-500" : ""
+                              }`}
+                            />
+                          )}
                           {errorMessage && (
                             <p className="text-red-500 text-sm ml-2">
                               {errorMessage}
