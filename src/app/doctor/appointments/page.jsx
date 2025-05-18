@@ -68,7 +68,7 @@ export default function AppointmentPage() {
         <div className="flex flex-wrap gap-3 mb-6 w-full justify-center">
           <button
             onClick={() => setActiveTab("started")}
-            className={`px-4 py-2 rounded-lg font-semibold text-sm sm:text-base ${
+            className={`px-4 py-2 rounded-3xl font-semibold text-sm sm:text-base ${
               activeTab === "started"
                 ? "bg-purple-700 text-white"
                 : "bg-purple-200 text-purple-800"
@@ -78,7 +78,7 @@ export default function AppointmentPage() {
           </button>
           <button
             onClick={() => setActiveTab("upcoming")}
-            className={`px-4 py-2 rounded-lg font-semibold text-sm sm:text-base ${
+            className={`px-4 py-2 rounded-3xl font-semibold text-sm sm:text-base ${
               activeTab === "upcoming"
                 ? "bg-purple-700 text-white"
                 : "bg-purple-200 text-purple-800"
@@ -114,7 +114,7 @@ export default function AppointmentPage() {
               {appt.status === "started" && (
                 <Link
                   href={`/doctor/appointments/${appt._id}`}
-                  className="inline-block mt-3 bg-purple-600 text-white px-4 py-1 rounded hover:bg-purple-700"
+                  className="inline-block mt-3 bg-purple-600 text-white px-4 py-1 rounded-3xl hover:bg-purple-700"
                 >
                   View Details
                 </Link>
