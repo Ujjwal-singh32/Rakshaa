@@ -1,5 +1,3 @@
-// models/Medication.js
-
 import mongoose from "mongoose";
 
 const medicationSchema = new mongoose.Schema({
@@ -10,11 +8,11 @@ const medicationSchema = new mongoose.Schema({
   },
   patientId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User", // assuming User model for patients
+    ref: "Patient",
     required: true,
   },
   date: {
-    type: String, // format: YYYY-MM-DD
+    type: Date,
     required: true,
   },
   medications: [

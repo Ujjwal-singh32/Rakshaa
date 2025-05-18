@@ -36,24 +36,14 @@ export default function AppointmentDetails() {
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  useEffect(() => {
-    const fetchMeds = async () => {
-      const res = await fetch(`/api/medications?patientId=12345`);
-      const data = await res.json();
-      setMedicationData(data.medications);
-    };
-
-    fetchMeds();
-  }, []);
+  
 
   const fileInputRef = useRef(null);
 
   const [uploadedReports, setUploadedReports] = useState([
     {
       name: "Blood_Test_Report.pdf",
-      url:
-        "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+      url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
     },
     {
       name: "X-Ray_Result.png",
@@ -61,13 +51,11 @@ export default function AppointmentDetails() {
     },
     {
       name: "MRI_Scan_Report.pdf",
-      url:
-        "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+      url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
     },
     {
       name: "Blood_Test_Report.pdf",
-      url:
-        "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+      url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
     },
     {
       name: "X-Ray_Result.png",
@@ -75,8 +63,7 @@ export default function AppointmentDetails() {
     },
     {
       name: "MRI_Scan_Report.pdf",
-      url:
-        "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+      url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
     },
   ]);
   const [booking, setBooking] = useState(null);
@@ -109,9 +96,6 @@ export default function AppointmentDetails() {
     }
   }, [ids]);
 
-  const senderId = booking?.doctorId?._id || booking?.doctorId || null; // Doctor is sender
-  const receiverId = booking?.patientId?._id || booking?.patientId || null; // Patient is receiver
-
   useEffect(() => {
     setIsClient(true);
   }, []);
@@ -119,6 +103,32 @@ export default function AppointmentDetails() {
   // useEffect(() => {
   //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   // }, [messages]);
+
+  const senderId = booking?.doctorId?._id || booking?.doctorId || null; // Doctor is sender
+  const receiverId = booking?.patientId?._id || booking?.patientId || null; // Patient is receiver
+
+  
+
+  useEffect(() => {
+  const fetchMeds = async () => {
+    try {
+      const res = await fetch(`/api/medications?patientId=${receiverId}`);
+      const data = await res.json();
+      console.log("data fetch:", data);
+
+      if (data.success && Array.isArray(data.medications)) {
+        setMedicationData(data.medications);
+      } else {
+        setMedicationData([]);
+      }
+    } catch (err) {
+      console.error("Error fetching meds:", err);
+      setMedicationData([]);
+    }
+  };
+
+  if (receiverId) fetchMeds();
+}, [receiverId]);
 
   const socket = useRef(null);
 
@@ -188,7 +198,8 @@ export default function AppointmentDetails() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          patientId: "12345", // replace with actual patient ID or email
+          patientId: receiverId, // valid ObjectId
+          doctorId: senderId, // valid ObjectId
           medications: newMedications,
         }),
       });
@@ -197,7 +208,7 @@ export default function AppointmentDetails() {
       if (data.success) {
         alert("Medications sent to patient!");
       } else {
-        alert("Failed to send medications");
+        alert("Failed to send medications: " + data.error);
       }
     } catch (error) {
       console.error("Error sending medications:", error);
@@ -245,8 +256,10 @@ export default function AppointmentDetails() {
     setMessageInput("");
     console.log(messages);
   };
-  const handleSelectChange = (date) => {
-    const med = medicationData.find((m) => m.date === date);
+  const handleSelectChange = (isoDate) => {
+    const med = medicationData.find(
+      (m) => new Date(m.date).toISOString() === isoDate
+    );
     setSelectedMedication(med);
   };
 
@@ -430,8 +443,12 @@ export default function AppointmentDetails() {
                     </SelectTrigger>
                     <SelectContent>
                       {medicationData.map((med, index) => (
-                        <SelectItem key={index} value={med.date}>
-                          {med.date}
+                        <SelectItem
+                          key={index}bv
+                          value={new Date(med.date).toISOString()}
+                        >
+                          {new Date(med.date).toLocaleDateString()}{" "}
+                          {new Date(med.date).toLocaleDateString()}
                         </SelectItem>
                       ))}
                     </SelectContent>

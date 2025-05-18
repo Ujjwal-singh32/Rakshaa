@@ -30,12 +30,9 @@ export default function AppointmentDetails() {
   const [uploadedReports, setUploadedReports] = useState([]);
   const [isClient, setIsClient] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [selectedDoctorId, setSelectedDoctorId] = useState(null);
   const [receivedMedication, setReceivedMedication] = useState([]);
-  const [availableDoctors, setAvailableDoctors] = useState([]);
   const [selectedDate, setSelectedDate] = useState("");
   const [messages, setMessages] = useState([]);
-  const messagesEndRef = useRef(null);
   const { id } = useParams();
   const [booking, setBooking] = useState(null);
   const { user } = useUser();
@@ -65,6 +62,9 @@ export default function AppointmentDetails() {
     }
   }, [id]);
 
+  
+
+
   const senderId = booking?.patientId?._id || booking?.patientId || null;
   // console.log("secsd" ,senderId);?\
 
@@ -80,6 +80,24 @@ export default function AppointmentDetails() {
   // useEffect(() => {
   //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   // }, [messages]);
+  useEffect(() => {
+  const fetchMedications = async () => {
+    try {
+      const res = await fetch(
+        `/api/medications?patientId=${senderId}&doctorId=${receiverId}`
+      );
+      const data = await res.json();
+      console.log("Fetched medications:", data);
+      setReceivedMedication(data.medications);
+    } catch (error) {
+      console.error("Error fetching medications:", error);
+    }
+  };
+
+  if (receiverId && senderId) {
+    fetchMedications();
+  }
+}, [receiverId, senderId]);
 
   const fileInputRef = useRef(null);
 
@@ -107,23 +125,7 @@ export default function AppointmentDetails() {
   }, [receiverId, senderId, activeSection]);
 
   const [messageInput, setMessageInput] = useState("");
-  useEffect(() => {
-    if (!selectedDate) return;
 
-    const fetchDoctors = async () => {
-      try {
-        const res = await fetch(
-          `/api/appointments/doctors?date=${selectedDate}`
-        );
-        const data = await res.json();
-        setAvailableDoctors(data);
-      } catch (err) {
-        console.error("Failed to fetch doctors", err);
-      }
-    };
-
-    fetchDoctors();
-  }, [selectedDate]);
 
   if (loading || !receiverId || !senderId) {
     return <div>Loading appointment details...</div>;
@@ -146,10 +148,7 @@ export default function AppointmentDetails() {
     }
   };
 
-  const handleSelectChange = (date) => {
-    const med = receivedMedication.find((m) => m.date === date);
-    setSelectedMedication(med);
-  };
+  
   const handleDownloadPdf = () => {
     if (!selectedMedication) return;
 
@@ -178,38 +177,13 @@ export default function AppointmentDetails() {
     doc.save(`Medication_${selectedMedication.date}.pdf`);
   };
 
-  const handleReceiveMedication = async () => {
-    if (!selectedDoctorId || !selectedDate || !user?._id) {
-      toast.error("Please select a doctor and date.");
-      return;
-    }
+  const filteredMeds = receivedMedication;
 
-    try {
-      const res = await fetch("/api/medication/receive", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          doctorId: selectedDoctorId,
-          patientId: user._id,
-          date: selectedDate,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        toast.success("Medication fetched successfully!");
-        setReceivedMedication(data.medication);
-      } else {
-        toast.error(data.message || "Failed to receive medication.");
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("Something went wrong!");
-    }
-  };
+const handleDateSelect = (date) => {
+  setSelectedDate(date);
+  const med = filteredMeds.find((m) => m.date === date);
+  setSelectedMedication(med);
+};
 
   const handleSendReports = async () => {
     if (uploadedReports.length === 0) {
@@ -388,109 +362,66 @@ export default function AppointmentDetails() {
             )}
 
             {activeSection === "medications" && (
-              <Card className="bg-purple-100 dark:bg-purple-900">
-                <CardContent className="p-4">
-                  <h2 className="text-xl font-semibold text-purple-800 dark:text-purple-100 mb-4">
-                    Medications
-                  </h2>
+  <Card className="bg-purple-100 dark:bg-purple-900">
+    <CardContent className="p-4">
+      <h2 className="text-xl font-semibold text-purple-800 dark:text-purple-100 mb-4">
+        Medications
+      </h2>
 
-                  {/* Date Dropdown */}
-                  <Select onValueChange={handleSelectChange}>
-                    <SelectTrigger className="w-[200px] bg-white dark:bg-purple-800 border-purple-300 dark:border-purple-700 mb-4">
-                      <SelectValue placeholder="Select a date" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {receivedMedication.map((med, index) => (
-                        <SelectItem key={index} value={med.date}>
-                          {med.date}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+      {/* Date Dropdown */}
+      <Select onValueChange={handleDateSelect}>
+        <SelectTrigger className="w-[200px] bg-white dark:bg-purple-800 border-purple-300 dark:border-purple-700 mb-4">
+          <SelectValue placeholder="Select a date" />
+        </SelectTrigger>
+        <SelectContent>
+          {filteredMeds.map((med, index) => (
+            <SelectItem key={index} value={med.date}>
+              {med.date}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
-                  {/* Show Medications when a date is selected */}
-                  {/* Doctor and Date Selection Section */}
-                  <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mt-6">
-                    {/* Doctor Dropdown */}
-                    <Select
-                      onValueChange={(value) => setSelectedDoctorId(value)}
-                    >
-                      <SelectTrigger className="w-[200px] bg-white dark:bg-purple-800 border-purple-300 dark:border-purple-700">
-                        <SelectValue placeholder="Select Doctor" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableDoctors.map((doctor) => (
-                          <SelectItem key={doctor._id} value={doctor._id}>
-                            {doctor.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+      {/* Show Medication Table if a Date is Selected */}
+      {selectedMedication && (
+        <Tabs defaultValue="details" className="mt-6">
+          <TabsList>
+            <TabsTrigger value="details">View Medications</TabsTrigger>
+          </TabsList>
+          <TabsContent value="details">
+            <div className="overflow-x-auto mt-2 max-h-50 overflow-y-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-purple-300 dark:bg-purple-800">
+                  <tr>
+                    <th className="p-2 text-left">Name</th>
+                    <th className="p-2 text-left">Dosage</th>
+                    <th className="p-2 text-left">Frequency</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white dark:bg-purple-950">
+                  {selectedMedication.medications.map((m, idx) => (
+                    <tr key={idx} className="border-b">
+                      <td className="p-2">{m.name}</td>
+                      <td className="p-2">{m.dosage}</td>
+                      <td className="p-2">{m.frequency}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <Button
+              className="mt-3 flex gap-2 items-center"
+              onClick={handleDownloadPdf}
+            >
+              <Download className="w-4 h-4" /> Download PDF
+            </Button>
+          </TabsContent>
+        </Tabs>
+      )}
+    </CardContent>
+  </Card>
+)}
 
-                    {/* Date Dropdown */}
-                    <Select onValueChange={(value) => setSelectedDate(value)}>
-                      <SelectTrigger className="w-[200px] bg-white dark:bg-purple-800 border-purple-300 dark:border-purple-700">
-                        <SelectValue placeholder="Select Date" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {receivedMedication.map((med, idx) => (
-                          <SelectItem key={idx} value={med.date}>
-                            {med.date}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-
-                    {/* Fetch Medication Button */}
-                    <Button
-                      className="bg-purple-600 text-white hover:bg-purple-700"
-                      onClick={handleReceiveMedication}
-                    >
-                      Fetch Medication
-                    </Button>
-                  </div>
-
-                  {/* Show Medication Table if Data Exists */}
-                  {selectedMedication && (
-                    <Tabs defaultValue="details" className="mt-6">
-                      <TabsList>
-                        <TabsTrigger value="details">
-                          View Medications
-                        </TabsTrigger>
-                      </TabsList>
-                      <TabsContent value="details">
-                        <div className="overflow-x-auto mt-2 max-h-50 overflow-y-auto">
-                          <table className="w-full text-sm">
-                            <thead className="bg-purple-300 dark:bg-purple-800">
-                              <tr>
-                                <th className="p-2 text-left">Name</th>
-                                <th className="p-2 text-left">Dosage</th>
-                                <th className="p-2 text-left">Frequency</th>
-                              </tr>
-                            </thead>
-                            <tbody className="bg-white dark:bg-purple-950">
-                              {selectedMedication.medications.map((m, idx) => (
-                                <tr key={idx} className="border-b">
-                                  <td className="p-2">{m.name}</td>
-                                  <td className="p-2">{m.dosage}</td>
-                                  <td className="p-2">{m.frequency}</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                        <Button
-                          className="mt-3 flex gap-2 items-center"
-                          onClick={handleDownloadPdf}
-                        >
-                          <Download className="w-4 h-4" /> Download PDF
-                        </Button>
-                      </TabsContent>
-                    </Tabs>
-                  )}
-                </CardContent>
-              </Card>
-            )}
 
             {activeSection === "reports" && (
               <>
