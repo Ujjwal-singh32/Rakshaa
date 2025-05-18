@@ -23,6 +23,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { useParams } from "next/navigation";
+
 export default function AppointmentDetails() {
   const [activeSection, setActiveSection] = useState("chat");
   const [selectedMedication, setSelectedMedication] = useState(null);
@@ -38,7 +39,7 @@ export default function AppointmentDetails() {
   const { id } = useParams();
   const [booking, setBooking] = useState(null);
   const { user } = useUser();
-  
+
   useEffect(() => {
     const fetchBookingDetails = async () => {
       try {
@@ -47,6 +48,7 @@ export default function AppointmentDetails() {
         });
 
         if (res.data.success) {
+          console.log("debugging", res.data.booking);
           setBooking(res.data.booking);
         } else {
           console.error("Failed to fetch booking details:", res.data.message);
@@ -62,26 +64,70 @@ export default function AppointmentDetails() {
       fetchBookingDetails();
     }
   }, [id]);
-  
-    if (loading || !booking || !user || !booking.doctorId) {
-    return <div>Loading appointment details...</div>;
-  }
-  const receiverId = booking.doctorId;
-  const senderId = user._id;
+
+  const senderId = booking?.patientId?._id || booking?.patientId || null;
+  // console.log("secsd" ,senderId);?\
+
+  const receiverId = booking?.doctorId?._id || booking?.doctorId || null; // Doctor is receiver
+
+  // console.log("sender Id in patient side" , senderId);
+  // console.log("receiver Id in patient side" , receiverId);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
-  const socket = useRef(
-    io("http://localhost:3001", {
-      autoConnect: false,
-      auth: {
-        token: localStorage.getItem("token") || "",
-      },
-    })
-  ).current;
+
+  // useEffect(() => {
+  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // }, [messages]);
 
   const fileInputRef = useRef(null);
+
+  const socket = useRef(null);
+
+  useEffect(() => {
+    if (!receiverId || !senderId || activeSection !== "chat") return;
+
+    const token = localStorage.getItem("token") || "";
+
+    socket.current = io("http://localhost:3001", {
+      autoConnect: true,
+      auth: { token },
+    });
+
+    socket.current.emit("join", { userId: senderId });
+
+    socket.current.on("newMessage", (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+
+    return () => {
+      socket.current?.disconnect();
+    };
+  }, [receiverId, senderId, activeSection]);
+
+  const [messageInput, setMessageInput] = useState("");
+  useEffect(() => {
+    if (!selectedDate) return;
+
+    const fetchDoctors = async () => {
+      try {
+        const res = await fetch(
+          `/api/appointments/doctors?date=${selectedDate}`
+        );
+        const data = await res.json();
+        setAvailableDoctors(data);
+      } catch (err) {
+        console.error("Failed to fetch doctors", err);
+      }
+    };
+
+    fetchDoctors();
+  }, [selectedDate]);
+
+  if (loading || !receiverId || !senderId) {
+    return <div>Loading appointment details...</div>;
+  }
 
   const handleReportUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -99,8 +145,6 @@ export default function AppointmentDetails() {
       fileInputRef.current.value = "";
     }
   };
-
-  const [messageInput, setMessageInput] = useState("");
 
   const handleSelectChange = (date) => {
     const med = receivedMedication.find((m) => m.date === date);
@@ -133,24 +177,6 @@ export default function AppointmentDetails() {
     // Save PDF
     doc.save(`Medication_${selectedMedication.date}.pdf`);
   };
-
-  useEffect(() => {
-    if (!selectedDate) return;
-
-    const fetchDoctors = async () => {
-      try {
-        const res = await fetch(
-          `/api/appointments/doctors?date=${selectedDate}`
-        );
-        const data = await res.json();
-        setAvailableDoctors(data);
-      } catch (err) {
-        console.error("Failed to fetch doctors", err);
-      }
-    };
-
-    fetchDoctors();
-  }, [selectedDate]);
 
   const handleReceiveMedication = async () => {
     if (!selectedDoctorId || !selectedDate || !user?._id) {
@@ -219,24 +245,6 @@ export default function AppointmentDetails() {
     }
   };
 
-  useEffect(() => {
-    if (activeSection === "chat") {
-      socket.connect();
-
-      // Join room with both participants
-      socket.emit("join", { userId: senderId });
-
-      // Listen for incoming messages
-      socket.on("newMessage", (msg) => {
-        setMessages((prev) => [...prev, msg]);
-      });
-    }
-
-    return () => {
-      socket.disconnect();
-    };
-  }, [activeSection, senderId]);
-
   const handleSendMessage = () => {
     if (messageInput.trim() === "") return;
 
@@ -251,7 +259,7 @@ export default function AppointmentDetails() {
     };
 
     // Emit message to server
-    socket.emit("sendMessage", {
+    socket.current.emit("sendMessage", {
       to: receiverId,
       message: newMessage,
     });
@@ -259,11 +267,8 @@ export default function AppointmentDetails() {
     // Append to current UI
     setMessages((prev) => [...prev, newMessage]);
     setMessageInput("");
+    console.log("this is the messages", messages);
   };
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
 
   if (!isClient) return null;
   // console.log("booking", booking);
@@ -344,7 +349,7 @@ export default function AppointmentDetails() {
                     Chat with Dr.{booking.doctorName || "name loading!!"}
                   </h2>
 
-                  <div className="h-80 overflow-y-auto bg-white dark:bg-purple-950 rounded-md p-2 space-y-2">
+                  <div className="h-68 overflow-y-auto bg-white dark:bg-purple-950 rounded-md p-2 space-y-2">
                     {messages.map((msg, index) => (
                       <div
                         key={index}
@@ -361,7 +366,7 @@ export default function AppointmentDetails() {
                         </p>
                       </div>
                     ))}
-                    <div ref={messagesEndRef} />
+                    {/* <div ref={messagesEndRef} /> */}
                   </div>
 
                   <div className="flex gap-2">
@@ -369,6 +374,11 @@ export default function AppointmentDetails() {
                       placeholder="Type your message..."
                       value={messageInput}
                       onChange={(e) => setMessageInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleSendMessage();
+                        }
+                      }}
                       className="flex-1"
                     />
                     <Button onClick={handleSendMessage}>Send</Button>

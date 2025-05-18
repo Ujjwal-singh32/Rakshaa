@@ -14,6 +14,7 @@ import autoTable from "jspdf-autotable";
 import { useParams } from "next/navigation";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { io } from "socket.io-client";
 import {
   Select,
   SelectTrigger,
@@ -29,22 +30,13 @@ export default function AppointmentDetails() {
   const [medicationData, setMedicationData] = useState([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const [messages, setMessages] = useState([
-    {
-      text: "Hello, Doctor!",
-      sender: "user",
-      time: new Date().toLocaleTimeString(),
-    },
-    {
-      text: "Hi, how are you feeling today?",
-      sender: "doctor",
-      time: new Date().toLocaleTimeString(),
-    },
-  ]);
+  const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState("");
+
   useEffect(() => {
     setIsClient(true);
   }, []);
+
   useEffect(() => {
     const fetchMeds = async () => {
       const res = await fetch(`/api/medications?patientId=12345`);
@@ -116,6 +108,40 @@ export default function AppointmentDetails() {
       fetchBookingDetails();
     }
   }, [ids]);
+
+  const senderId = booking?.doctorId?._id || booking?.doctorId || null; // Doctor is sender
+  const receiverId = booking?.patientId?._id || booking?.patientId || null; // Patient is receiver
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // useEffect(() => {
+  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // }, [messages]);
+
+  const socket = useRef(null);
+
+  useEffect(() => {
+    if (!receiverId || !senderId || activeSection !== "chat") return;
+
+    const token = localStorage.getItem("drtoken") || "";
+
+    socket.current = io("http://localhost:3001", {
+      autoConnect: true,
+      auth: { token },
+    });
+
+    socket.current.emit("join", { userId: senderId });
+
+    socket.current.on("newMessage", (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+
+    return () => {
+      socket.current?.disconnect();
+    };
+  }, [receiverId, senderId, activeSection]);
 
   if (
     loading ||
@@ -196,17 +222,29 @@ export default function AppointmentDetails() {
   };
 
   const handleSendMessage = () => {
-    if (!messageInput.trim()) return;
+    if (messageInput.trim() === "") return;
 
     const newMessage = {
       text: messageInput,
-      sender: "user",
-      time: new Date().toLocaleTimeString(),
+      sender: senderId,
+      receiverId: receiverId,
+      time: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
     };
-    setMessages([...messages, newMessage]);
-    setMessageInput("");
-  };
 
+    // Emit message to server
+    socket.current.emit("sendMessage", {
+      to: receiverId,
+      message: newMessage,
+    });
+
+    // Append to current UI
+    setMessages((prev) => [...prev, newMessage]);
+    setMessageInput("");
+    console.log(messages);
+  };
   const handleSelectChange = (date) => {
     const med = medicationData.find((m) => m.date === date);
     setSelectedMedication(med);
@@ -338,19 +376,22 @@ export default function AppointmentDetails() {
               <Card className="bg-purple-100 dark:bg-purple-900">
                 <CardContent className="p-4 space-y-3">
                   <h2 className="text-xl justify-center text-center font-semibold text-purple-800 dark:text-purple-100">
-                    Chat with John Doe
+                    Chat with{" "}
+                    {booking.patientId.name
+                      ? booking.patientId.name
+                      : "patient name loading!!"}
                   </h2>
-                  <div className="h-80 overflow-y-auto bg-white dark:bg-purple-950 rounded-md p-2 space-y-2">
+                  <div className="h-95 overflow-y-auto bg-white dark:bg-purple-950 rounded-md p-2 space-y-2">
                     {messages.map((msg, index) => (
                       <div
                         key={index}
                         className={`text-sm p-2 rounded w-fit ${
-                          msg.sender === "user"
+                          msg.sender === senderId
                             ? "bg-pink-300 dark:bg-purple-800 ml-auto text-right"
-                            : "bg-purple-300 dark:bg-purple-700 ml-auto text-left"
+                            : "bg-purple-300 dark:bg-purple-700 mr-auto text-left"
                         }`}
                       >
-                        <p>{msg.text}</p>
+                        <p>{String(msg.text)}</p>
                         <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
                           {msg.time}
                         </p>
@@ -362,6 +403,11 @@ export default function AppointmentDetails() {
                       placeholder="Type your message..."
                       value={messageInput}
                       onChange={(e) => setMessageInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleSendMessage();
+                        }
+                      }}
                       className="flex-1"
                     />
                     <Button onClick={handleSendMessage}>Send</Button>
