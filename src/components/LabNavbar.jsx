@@ -32,9 +32,12 @@ export default function LabNavbar() {
         <nav className="hidden md:flex gap-6">
           <NavLink href="/pathlab/home" label="Home" />
           <NavLink href="/pathlab/pending-reports" label="Pending Reports" />
-          <NavLink href="/pathlab/completed-reports" label="Reports Submitted" />
+          <NavLink
+            href="/pathlab/completed-reports"
+            label="Reports Submitted"
+          />
           <NavLink href="/pathlab/tests" label="Test Offered" />
-        </nav>  
+        </nav>
 
         {/* Right: Profile and Mobile Menu */}
         <div className="flex items-center gap-4">
@@ -42,7 +45,11 @@ export default function LabNavbar() {
           <Link href="/pathlab/profile">
             <Avatar className="w-9 h-9 border-2 border-purple-400 hover:border-purple-600 transition">
               <AvatarImage
-                src={pathlab.profilePic}
+                src={
+                  pathlab && pathlab.profilePic
+                    ? pathlab.profilePic
+                    : "https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg"
+                }
                 alt="Profile"
               />
               <AvatarFallback>PL</AvatarFallback>
@@ -66,8 +73,14 @@ export default function LabNavbar() {
                 </SheetHeader>
                 <nav className="flex flex-col gap-4 mt-6 ml-5 text-purple-800 dark:text-purple-100">
                   <NavLink href="/pathlab" label="Home" />
-                  <NavLink href="/pathlab/pending-reports" label="Pending Reports" />
-                  <NavLink href="/pathlab/completed-reports" label="Reports Submitted" />
+                  <NavLink
+                    href="/pathlab/pending-reports"
+                    label="Pending Reports"
+                  />
+                  <NavLink
+                    href="/pathlab/completed-reports"
+                    label="Reports Submitted"
+                  />
                   <NavLink href="/pathlab/tests" label="Test Offered" />
                 </nav>
               </SheetContent>

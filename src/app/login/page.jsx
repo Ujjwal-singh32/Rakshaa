@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { MailIcon, LockIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-const roles = ["Patient", "Doctor", "Pathlab"];
+const roles = ["Patient", "Doctor"];
 import axios from "axios";
 
 const IconInput = ({ icon: Icon, onKeyDown, ...props }) => (
@@ -63,26 +63,16 @@ export default function AuthPage() {
     profilePic: null,
   });
 
-  const [pathlabData, setPathlabData] = useState({
-    labName: "",
-    email: "",
-    password: "",
-    phone: "",
-    labAddress: "",
-    profilePic: null,
-  });
 
   const getFormData = () => {
     if (role === "Patient") return patientData;
     if (role === "Doctor") return doctorData;
-    if (role === "Pathlab") return pathlabData;
     return {};
   };
 
   const setFormData = (data) => {
     if (role === "Patient") setPatientData((prev) => ({ ...prev, ...data }));
     if (role === "Doctor") setDoctorData((prev) => ({ ...prev, ...data }));
-    if (role === "Pathlab") setPathlabData((prev) => ({ ...prev, ...data }));
   };
 
   const handleChange = (field, value) => {
@@ -157,15 +147,6 @@ export default function AuthPage() {
           { label: "Past Hospitals", field: "pastHospitals" },
           { label: "Profile Picture", field: "profilePic", type: "image" },
         ];
-      case "Pathlab":
-        return [
-          { label: "Lab Name", field: "labName" },
-          { label: "Email", field: "email" },
-          { label: "Password", field: "password", type: "password" },
-          { label: "Phone", field: "phone" },
-          { label: "Lab Address", field: "labAddress" },
-          { label: "Profile Picture", field: "profilePic", type: "image" },
-        ];
       default:
         return [];
     }
@@ -182,9 +163,7 @@ export default function AuthPage() {
         await loginPatient(email, password);
       } else if (role === "Doctor") {
         await loginDoctor(email, password);
-      } else if (role === "Pathlab") {
-        await loginPathlab(email, password);
-      }
+      } 
     } catch (error) {
       console.error("Login failed", error);
     }
@@ -196,8 +175,6 @@ export default function AuthPage() {
         await signupPatient(patientData);
       } else if (role === "Doctor") {
         await signupDoctor(doctorData);
-      } else if (role === "Pathlab") {
-        await signupPathlab(pathlabData);
       }
     } catch (error) {
       console.error("Signup failed", error);
@@ -252,30 +229,6 @@ export default function AuthPage() {
       console.error("Login error:", error);
     }
   };
-  const loginPathlab = async (email, password) => {
-    try {
-      const response = await axios.post("/api/pathlab/login", {
-        email,
-        password,
-      });
-
-      const data = response.data;
-      console.log("Login Response:", data);
-
-      if (data.success) {
-        // Save token if needed
-        localStorage.setItem("pttoken", data.token);
-        toast.success("Successfully Logged In");
-        // router.push("/pathlab/home");
-        window.location.href = "/pathlab/home";
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-    }
-  };
-
   const signupPatient = async (data) => {
     try {
       const formData = new FormData();
@@ -326,34 +279,6 @@ export default function AuthPage() {
       if (response.data.success) {
         console.log("doctor created:", response.data);
         toast.success("Account Created Successfully Now Login!!");
-        setMode("login");
-      } else {
-        toast.error("Something Went Wrong");
-      }
-    } catch (error) {
-      console.error("Signup error:", error);
-    }
-  };
-  const signupPathlab = async (data) => {
-    try {
-      const formData = new FormData();
-
-      // Append all fields to FormData
-      Object.entries(data).forEach(([key, value]) => {
-        if (value) {
-          formData.append(key, value);
-        }
-      });
-
-      const response = await axios.post("/api/pathlab/signup", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      if (response.data.success) {
-        console.log("pathlab signup:", response.data);
-        toast.success("Account Created Successfully Now login");
         setMode("login");
       } else {
         toast.error("Something Went Wrong");
@@ -450,7 +375,7 @@ export default function AuthPage() {
                 <h2 className="text-3xl font-bold text-center text-purple-700 mb-6">
                   Select Your Role
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="flex justify-center gap-4">
                   {roles.map((r) => (
                     <Button
                       key={r}

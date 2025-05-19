@@ -20,22 +20,20 @@ export const metadata = {
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import DoctorProvider from "@/context/doctorContext";
-import PathlabProvider from "@/context/pathlabContext";
-
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <PathlabProvider>
+        
         <UserProvider>
           <DoctorProvider>
             {children}
             <ToastContainer position="top-right" autoClose={3000} />
           </DoctorProvider>
         </UserProvider>
-        </PathlabProvider>
+        
       </body>
     </html>
   );
