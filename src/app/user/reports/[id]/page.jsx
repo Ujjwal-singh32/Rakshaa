@@ -62,9 +62,6 @@ export default function AppointmentDetails() {
     }
   }, [id]);
 
-  
-
-
   const senderId = booking?.patientId?._id || booking?.patientId || null;
   // console.log("secsd" ,senderId);?\
 
@@ -81,23 +78,23 @@ export default function AppointmentDetails() {
   //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   // }, [messages]);
   useEffect(() => {
-  const fetchMedications = async () => {
-    try {
-      const res = await fetch(
-        `/api/medications?patientId=${senderId}&doctorId=${receiverId}`
-      );
-      const data = await res.json();
-      console.log("Fetched medications:", data);
-      setReceivedMedication(data.medications);
-    } catch (error) {
-      console.error("Error fetching medications:", error);
-    }
-  };
+    const fetchMedications = async () => {
+      try {
+        const res = await fetch(
+          `/api/medications?patientId=${senderId}&doctorId=${receiverId}`
+        );
+        const data = await res.json();
+        console.log("Fetched medications:", data.medications);
+        setReceivedMedication(data.medications);
+      } catch (error) {
+        console.error("Error fetching medications:", error);
+      }
+    };
 
-  if (receiverId && senderId) {
-    fetchMedications();
-  }
-}, [receiverId, senderId]);
+    if (receiverId && senderId) {
+      fetchMedications();
+    }
+  }, [receiverId, senderId]);
 
   const fileInputRef = useRef(null);
 
@@ -126,7 +123,6 @@ export default function AppointmentDetails() {
 
   const [messageInput, setMessageInput] = useState("");
 
-
   if (loading || !receiverId || !senderId) {
     return <div>Loading appointment details...</div>;
   }
@@ -148,7 +144,6 @@ export default function AppointmentDetails() {
     }
   };
 
-  
   const handleDownloadPdf = () => {
     if (!selectedMedication) return;
 
@@ -179,11 +174,11 @@ export default function AppointmentDetails() {
 
   const filteredMeds = receivedMedication;
 
-const handleDateSelect = (date) => {
-  setSelectedDate(date);
-  const med = filteredMeds.find((m) => m.date === date);
-  setSelectedMedication(med);
-};
+  const handleDateSelect = (date) => {
+    setSelectedDate(date);
+    const med = filteredMeds.find((m) => m.date === date);
+    setSelectedMedication(med);
+  };
 
   const handleSendReports = async () => {
     if (uploadedReports.length === 0) {
@@ -362,66 +357,72 @@ const handleDateSelect = (date) => {
             )}
 
             {activeSection === "medications" && (
-  <Card className="bg-purple-100 dark:bg-purple-900">
-    <CardContent className="p-4">
-      <h2 className="text-xl font-semibold text-purple-800 dark:text-purple-100 mb-4">
-        Medications
-      </h2>
+              <Card className="bg-purple-100 dark:bg-purple-900">
+                <CardContent className="p-4">
+                  <h2 className="text-xl font-semibold text-purple-800 dark:text-purple-100 mb-4">
+                    Medications
+                  </h2>
 
-      {/* Date Dropdown */}
-      <Select onValueChange={handleDateSelect}>
-        <SelectTrigger className="w-[200px] bg-white dark:bg-purple-800 border-purple-300 dark:border-purple-700 mb-4">
-          <SelectValue placeholder="Select a date" />
-        </SelectTrigger>
-        <SelectContent>
-          {filteredMeds.map((med, index) => (
-            <SelectItem key={index} value={med.date}>
-              {med.date}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+                  {/* Date Dropdown */}
+                  <Select onValueChange={handleDateSelect}>
+                    <SelectTrigger className="w-[200px] bg-white dark:bg-purple-800 border-purple-300 dark:border-purple-700 mb-4">
+                      <SelectValue placeholder="Select a date" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {filteredMeds.map((med, index) => (
+                        <SelectItem key={index} value={med.date}>
+                          {new Intl.DateTimeFormat("en-US", {
+                            weekday: "short",
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          }).format(new Date(med.date))}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
 
-      {/* Show Medication Table if a Date is Selected */}
-      {selectedMedication && (
-        <Tabs defaultValue="details" className="mt-6">
-          <TabsList>
-            <TabsTrigger value="details">View Medications</TabsTrigger>
-          </TabsList>
-          <TabsContent value="details">
-            <div className="overflow-x-auto mt-2 max-h-50 overflow-y-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-purple-300 dark:bg-purple-800">
-                  <tr>
-                    <th className="p-2 text-left">Name</th>
-                    <th className="p-2 text-left">Dosage</th>
-                    <th className="p-2 text-left">Frequency</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white dark:bg-purple-950">
-                  {selectedMedication.medications.map((m, idx) => (
-                    <tr key={idx} className="border-b">
-                      <td className="p-2">{m.name}</td>
-                      <td className="p-2">{m.dosage}</td>
-                      <td className="p-2">{m.frequency}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <Button
-              className="mt-3 flex gap-2 items-center"
-              onClick={handleDownloadPdf}
-            >
-              <Download className="w-4 h-4" /> Download PDF
-            </Button>
-          </TabsContent>
-        </Tabs>
-      )}
-    </CardContent>
-  </Card>
-)}
-
+                  {/* Show Medication Table if a Date is Selected */}
+                  {selectedMedication && (
+                    <Tabs defaultValue="details" className="mt-6">
+                      <TabsList>
+                        <TabsTrigger value="details">
+                          View Medications
+                        </TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="details">
+                        <div className="overflow-x-auto mt-2 max-h-50 overflow-y-auto">
+                          <table className="w-full text-sm">
+                            <thead className="bg-purple-300 dark:bg-purple-800">
+                              <tr>
+                                <th className="p-2 text-left">Name</th>
+                                <th className="p-2 text-left">Dosage</th>
+                                <th className="p-2 text-left">Frequency</th>
+                              </tr>
+                            </thead>
+                            <tbody className="bg-white dark:bg-purple-950">
+                              {selectedMedication.medications.map((m, idx) => (
+                                <tr key={idx} className="border-b">
+                                  <td className="p-2">{m.name}</td>
+                                  <td className="p-2">{m.dosage}</td>
+                                  <td className="p-2">{m.frequency}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                        <Button
+                          className="mt-3 flex gap-2 items-center"
+                          onClick={handleDownloadPdf}
+                        >
+                          <Download className="w-4 h-4" /> Download PDF
+                        </Button>
+                      </TabsContent>
+                    </Tabs>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
             {activeSection === "reports" && (
               <>

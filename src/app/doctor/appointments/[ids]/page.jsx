@@ -206,13 +206,13 @@ export default function AppointmentDetails() {
 
       const data = await res.json();
       if (data.success) {
-        alert("Medications sent to patient!");
+        toast.success("Medications sent to patient!");  
       } else {
-        alert("Failed to send medications: " + data.error);
+        toast.error("Failed to send medications: " + data.error);
       }
     } catch (error) {
       console.error("Error sending medications:", error);
-      alert("Error sending medications");
+      toast.error("Error sending medications");
     }
   };
 
@@ -448,7 +448,7 @@ export default function AppointmentDetails() {
                           value={new Date(med.date).toISOString()}
                         >
                           {new Date(med.date).toLocaleDateString()}{" "}
-                          {new Date(med.date).toLocaleDateString()}
+
                         </SelectItem>
                       ))}
                     </SelectContent>
