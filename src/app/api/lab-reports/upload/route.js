@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import LabReport from "@/models/labReport";
+import LabReport from "@/models/labReportModel";
 import jwt from "jsonwebtoken";
 import connectDB from "@/lib/db";
 

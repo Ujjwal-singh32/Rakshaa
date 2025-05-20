@@ -1,8 +1,8 @@
 // app/api/appointments/doctors/route.js
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
-import Doctor from "@/models/Doctor";
-import DoctorBooking from "@/models/DoctorBooking";
+import Doctor from "@/models/doctorModel";
+import DoctorBooking from "@/models/doctorBookingModel";
 
 export async function GET(req) {
   try {

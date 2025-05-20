@@ -8,17 +8,22 @@ export async function GET(req) {
     await connectDB();
 
     const { searchParams } = new URL(req.url);
-  const doctorId = searchParams.get("doctorId");
+    const doctorId = searchParams.get("doctorId");
+    const patientId = searchParams.get("patientId");
 
-    if (!doctorId) {
-      return NextResponse.json({ error: "Doctor ID is required" }, { status: 400 });
+    if (!doctorId || !patientId) {
+      return NextResponse.json(
+        { error: "Both doctorId and patientId are required" },
+        { status: 400 }
+      );
     }
 
     // Find all DoctorReport documents for this doctor
-    const doctorReports = await DoctorReport.find({ doctorId })
-      .populate("patientId", "name email") 
+    const doctorReports = await DoctorReport.find({ doctorId, patientId })
+      .populate("patientId", "name email")
       .sort({ createdAt: -1 });
-      console.log(doctorReports);
+
+    console.log(doctorReports);
 
     // Flatten all reports into one array with metadata
     const allReports = doctorReports.flatMap((doc) =>
@@ -34,6 +39,9 @@ export async function GET(req) {
     return NextResponse.json({ reports: allReports }, { status: 200 });
   } catch (error) {
     console.error("Error fetching doctor reports:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

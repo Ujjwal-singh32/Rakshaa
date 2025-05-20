@@ -34,7 +34,7 @@ export default function DocNav() {
           <Link href="/doctor/appointments" className="hover:text-purple-700 font-bold">
             Appointments
           </Link>
-          <Link href="/predict-disease" className="hover:text-purple-700 font-bold">
+          <Link href="/doctor/ml" className="hover:text-purple-700 font-bold">
             Disease-prediction
           </Link>
         </div>
