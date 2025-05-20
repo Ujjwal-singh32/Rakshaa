@@ -83,51 +83,52 @@ export default function AppointmentDetails() {
   const receiverId = booking?.patientId?._id || booking?.patientId || null; // Patient is receiver
 
   const handleCreateZoomMeeting = async () => {
-  try {
-    const res = await fetch("/api/zoom/createMeeting", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        appointmentId: booking._id,
-        doctorId: senderId,
-        patientId: receiverId,
-        doctorName: senderId ? booking.doctorId.name : "Doctor name loading!!",
-        patientName: receiverId ? booking.patientId.name : "Patient name loading!!",
-        date: new Date().toISOString(),
-        duration: 30,
-      }),
-    });
+    try {
+      const res = await fetch("/api/zoom/createMeeting", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          appointmentId: booking._id,
+          doctorId: senderId,
+          patientId: receiverId,
+          doctorName: senderId
+            ? booking.doctorId.name
+            : "Doctor name loading!!",
+          patientName: receiverId
+            ? booking.patientId.name
+            : "Patient name loading!!",
+          date: new Date().toISOString(),
+          duration: 30,
+        }),
+      });
 
-    const data = await res.json();
-    console.log("Zoom meeting created:", data);
+      const data = await res.json();
+      console.log("Zoom meeting created:", data);
 
-    if (data?.join_url) {
-      const popup = window.open(
-        data.join_url,
-        "_blank",
-        "width=1000,height=700,toolbar=no,scrollbars=yes,resizable=yes"
-      );
-      if (popup) popup.focus();
-      else alert("Popup blocked! Please allow popups for this site.");
-    } else {
-      alert("Failed to create Zoom meeting.");
+      if (data?.join_url) {
+        const popup = window.open(
+          data.join_url,
+          "_blank",
+          "width=1000,height=700,toolbar=no,scrollbars=yes,resizable=yes"
+        );
+        if (popup) popup.focus();
+        else alert("Popup blocked! Please allow popups for this site.");
+      } else {
+        alert("Failed to create Zoom meeting.");
+      }
+    } catch (error) {
+      console.error("Error creating Zoom meeting:", error);
+      alert("An error occurred while starting the Zoom meeting.");
     }
-  } catch (error) {
-    console.error("Error creating Zoom meeting:", error);
-    alert("An error occurred while starting the Zoom meeting.");
-  }
-};
-
-
-
-
-  
-
+  };
 
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const res = await fetch(`/api/doctor/reports?doctorId=${senderId}`);
+        const res = await fetch(
+          `/api/doctor/reports?doctorId=${senderId}&patientId=${receiverId}`
+        );
+
         const data = await res.json();
 
         if (res.ok) {
@@ -663,25 +664,23 @@ export default function AppointmentDetails() {
               </Card>
             )}
             {activeSection === "zoom" && (
-  <Card className="bg-purple-100 dark:bg-purple-900">
-    <CardContent className="p-4 space-y-2">
-      <h2 className="text-xl font-semibold text-purple-800 dark:text-purple-100">
-        Start Video Call
-      </h2>
-      <p className="text-sm text-purple-700 dark:text-purple-200">
-        Click below to create and join a Zoom video consultation.
-      </p>
-      <Button
-        className="bg-purple-600 text-white hover:bg-purple-700"
-        onClick={handleCreateZoomMeeting}
-      >
-        Start Zoom Meeting
-      </Button>
-    </CardContent>
-  </Card>
-)}
-
-
+              <Card className="bg-purple-100 dark:bg-purple-900">
+                <CardContent className="p-4 space-y-2">
+                  <h2 className="text-xl font-semibold text-purple-800 dark:text-purple-100">
+                    Start Video Call
+                  </h2>
+                  <p className="text-sm text-purple-700 dark:text-purple-200">
+                    Click below to create and join a Zoom video consultation.
+                  </p>
+                  <Button
+                    className="bg-purple-600 text-white hover:bg-purple-700"
+                    onClick={handleCreateZoomMeeting}
+                  >
+                    Start Zoom Meeting
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>

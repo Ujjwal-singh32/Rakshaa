@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import Select from "react-select";
 import { Brain } from "lucide-react";
-import UserNavbar from "@/components/UserNavbar";
-import UserFooter from "@/components/UserFooter";
+import DocNav from "@/components/DocNavbar";
+import Footer from "@/components/UserFooter";
 
 const symptomsDict = {
   itching: 0,
@@ -187,7 +187,7 @@ export default function MLPredictionPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-purple-100 dark:bg-purple-900 transition-colors duration-500 ease-in-out">
-      <UserNavbar />
+      <DocNav />
 
       <main className="flex-grow py-16 px-4 animate-fade-in">
         <div className="max-w-4xl mx-auto text-center space-y-10">
@@ -343,7 +343,7 @@ export default function MLPredictionPage() {
         <div className="border-t-2 bg-purple-500 border-purple-200 rounded-full" />
       </div>
 
-      <UserFooter />
+      <Footer />
     </div>
   );
 }
