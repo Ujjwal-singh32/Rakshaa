@@ -36,41 +36,16 @@ export default function AppointmentDetails() {
   useEffect(() => {
     setIsClient(true);
   }, []);
-  
 
   const fileInputRef = useRef(null);
 
-  const [uploadedReports, setUploadedReports] = useState([
-    {
-      name: "Blood_Test_Report.pdf",
-      url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-    },
-    {
-      name: "X-Ray_Result.png",
-      url: "https://via.placeholder.com/800x600.png?text=X-Ray+Image",
-    },
-    {
-      name: "MRI_Scan_Report.pdf",
-      url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-    },
-    {
-      name: "Blood_Test_Report.pdf",
-      url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-    },
-    {
-      name: "X-Ray_Result.png",
-      url: "https://via.placeholder.com/800x600.png?text=X-Ray+Image",
-    },
-    {
-      name: "MRI_Scan_Report.pdf",
-      url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-    },
-  ]);
   const [booking, setBooking] = useState(null);
   const [isClient, setIsClient] = useState(false);
   const [newMedications, setNewMedications] = useState([
     { name: "", dosage: "", frequency: "" },
   ]);
+
+  const [uploadedReports, setUploadedReports] = useState([]);
 
   useEffect(() => {
     const fetchBookingDetails = async () => {
@@ -107,28 +82,94 @@ export default function AppointmentDetails() {
   const senderId = booking?.doctorId?._id || booking?.doctorId || null; // Doctor is sender
   const receiverId = booking?.patientId?._id || booking?.patientId || null; // Patient is receiver
 
+  const handleCreateZoomMeeting = async () => {
+  try {
+    const res = await fetch("/api/zoom/createMeeting", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        appointmentId: booking._id,
+        doctorId: senderId,
+        patientId: receiverId,
+        doctorName: senderId ? booking.doctorId.name : "Doctor name loading!!",
+        patientName: receiverId ? booking.patientId.name : "Patient name loading!!",
+        date: new Date().toISOString(),
+        duration: 30,
+      }),
+    });
+
+    const data = await res.json();
+    console.log("Zoom meeting created:", data);
+
+    if (data?.join_url) {
+      const popup = window.open(
+        data.join_url,
+        "_blank",
+        "width=1000,height=700,toolbar=no,scrollbars=yes,resizable=yes"
+      );
+      if (popup) popup.focus();
+      else alert("Popup blocked! Please allow popups for this site.");
+    } else {
+      alert("Failed to create Zoom meeting.");
+    }
+  } catch (error) {
+    console.error("Error creating Zoom meeting:", error);
+    alert("An error occurred while starting the Zoom meeting.");
+  }
+};
+
+
+
+
   
 
-  useEffect(() => {
-  const fetchMeds = async () => {
-    try {
-      const res = await fetch(`/api/medications?patientId=${receiverId}`);
-      const data = await res.json();
-      console.log("data fetch:", data);
 
-      if (data.success && Array.isArray(data.medications)) {
-        setMedicationData(data.medications);
-      } else {
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const res = await fetch(`/api/doctor/reports?doctorId=${senderId}`);
+        const data = await res.json();
+
+        if (res.ok) {
+          const transformed = data.reports.map((r, i) => ({
+            name: `Report_${i + 1} (${r.patientName || "Unknown"})`,
+            url: r.url,
+            date: new Date(r.date).toLocaleDateString(),
+          }));
+          setUploadedReports(transformed);
+        } else {
+          console.log("report error");
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (senderId) fetchReports();
+  }, [senderId]);
+
+  useEffect(() => {
+    const fetchMeds = async () => {
+      try {
+        const res = await fetch(`/api/medications?patientId=${receiverId}`);
+        const data = await res.json();
+        console.log("data fetch:", data);
+
+        if (data.success && Array.isArray(data.medications)) {
+          setMedicationData(data.medications);
+        } else {
+          setMedicationData([]);
+        }
+      } catch (err) {
+        console.error("Error fetching meds:", err);
         setMedicationData([]);
       }
-    } catch (err) {
-      console.error("Error fetching meds:", err);
-      setMedicationData([]);
-    }
-  };
+    };
 
-  if (receiverId) fetchMeds();
-}, [receiverId]);
+    if (receiverId) fetchMeds();
+  }, [receiverId]);
 
   const socket = useRef(null);
 
@@ -153,12 +194,7 @@ export default function AppointmentDetails() {
     };
   }, [receiverId, senderId, activeSection]);
 
-  if (
-    loading ||
-    !booking ||
-    !booking.doctorId.name ||
-    !booking.patientId.name
-  ) {
+  if (loading || !booking || !senderId || !receiverId) {
     return (
       <div className="flex justify-center items-center py-20">
         <div className="flex flex-col items-center space-y-4">
@@ -206,29 +242,13 @@ export default function AppointmentDetails() {
 
       const data = await res.json();
       if (data.success) {
-        toast.success("Medications sent to patient!");  
+        toast.success("Medications sent to patient!");
       } else {
         toast.error("Failed to send medications: " + data.error);
       }
     } catch (error) {
       console.error("Error sending medications:", error);
       toast.error("Error sending medications");
-    }
-  };
-
-  const handleReportUpload = (e) => {
-    const files = Array.from(e.target.files);
-    if (files.length === 0) return;
-
-    const newReports = files.map((file) => ({
-      name: file.name,
-      url: URL.createObjectURL(file),
-    }));
-    setUploadedReports((prev) => [...prev, ...newReports]);
-
-    // Reset file input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
     }
   };
 
@@ -324,15 +344,13 @@ export default function AppointmentDetails() {
                 </h2>
                 <p>
                   <strong>Patient Name:</strong>{" "}
-                  {booking.patientId.name
+                  {receiverId
                     ? booking.patientId.name
                     : "patient name loading!!"}
                 </p>
                 <p>
                   <strong>Doctor Name:</strong>
-                  {booking.doctorId.name
-                    ? booking.doctorId.name
-                    : "Doctor name loading!!"}
+                  {senderId ? booking.doctorId.name : "Doctor name loading!!"}
                 </p>
                 <p>
                   <strong>Date:</strong>{" "}
@@ -444,11 +462,11 @@ export default function AppointmentDetails() {
                     <SelectContent>
                       {medicationData.map((med, index) => (
                         <SelectItem
-                          key={index}bv
+                          key={index}
+                          bv
                           value={new Date(med.date).toISOString()}
                         >
                           {new Date(med.date).toLocaleDateString()}{" "}
-
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -513,7 +531,17 @@ export default function AppointmentDetails() {
                             key={index}
                             className="flex justify-between items-center bg-white dark:bg-purple-950 p-2 rounded shadow"
                           >
-                            <span className="truncate">{file.name}</span>
+                            <div>
+                              <span className="truncate font-medium">
+                                {file.name}
+                              </span>
+                              <div className="text-xs text-gray-600 dark:text-gray-400">
+                                Uploaded on: {file.date || "Unknown date"}
+                                {file.patientName && (
+                                  <> | Patient: {file.patientName}</>
+                                )}
+                              </div>
+                            </div>
                             <div className="flex gap-2">
                               <Button
                                 size="sm"
@@ -528,8 +556,8 @@ export default function AppointmentDetails() {
                                 onClick={() => {
                                   const link = document.createElement("a");
                                   link.href = file.url;
-                                  link.setAttribute("download", file.name); // Ensure file name is set
-                                  link.setAttribute("target", "_blank"); // Optional: open in new tab
+                                  link.setAttribute("download", file.name);
+                                  link.setAttribute("target", "_blank");
                                   document.body.appendChild(link);
                                   link.click();
                                   document.body.removeChild(link);
@@ -550,6 +578,7 @@ export default function AppointmentDetails() {
                 </CardContent>
               </Card>
             )}
+
             {activeSection === "send Medication" && (
               <Card className="bg-purple-100 dark:bg-purple-900">
                 <CardContent className="p-4">
@@ -634,20 +663,25 @@ export default function AppointmentDetails() {
               </Card>
             )}
             {activeSection === "zoom" && (
-              <Card className="bg-purple-100 dark:bg-purple-900">
-                <CardContent className="p-4 space-y-2">
-                  <h2 className="text-xl font-semibold text-purple-800 dark:text-purple-100">
-                    Join Video Call
-                  </h2>
-                  <p className="text-sm text-purple-700 dark:text-purple-200">
-                    Click below to join your scheduled video consultation.
-                  </p>
-                  <Button className="bg-purple-600 text-white hover:bg-purple-700">
-                    Join Zoom Meeting
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
+  <Card className="bg-purple-100 dark:bg-purple-900">
+    <CardContent className="p-4 space-y-2">
+      <h2 className="text-xl font-semibold text-purple-800 dark:text-purple-100">
+        Start Video Call
+      </h2>
+      <p className="text-sm text-purple-700 dark:text-purple-200">
+        Click below to create and join a Zoom video consultation.
+      </p>
+      <Button
+        className="bg-purple-600 text-white hover:bg-purple-700"
+        onClick={handleCreateZoomMeeting}
+      >
+        Start Zoom Meeting
+      </Button>
+    </CardContent>
+  </Card>
+)}
+
+
           </div>
         </div>
       </div>
