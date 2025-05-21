@@ -1,27 +1,36 @@
-import { getToken } from "next-auth/jwt"; 
+// /api/appointments/user-upcoming (GET)
 import Appointment from "@/models/meetingModel";
 import connectDB from "@/lib/db";
 
 export async function GET(req) {
   try {
     await connectDB();
-    const token = await getToken({ req });
 
-    if (!token || !token.id) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
+    const { searchParams } = new URL(req.url);
+    const appointmentId = searchParams.get("appointmentId");
+
+    if (!appointmentId) {
+      return new Response(JSON.stringify({ error: "Missing appoinmentId" }), {
+        status: 400,
       });
     }
 
     const upcomingAppointment = await Appointment.findOne({
-      patientId: token.id,
-      meetingLink: { $exists: true, $ne: null },
-      date: { $gte: new Date() },
-    })
-      .sort({ date: 1 }) 
-      .select("meetingLink");
+      appointmentId
+    }).select("meetingLink");
+    if (!upcomingAppointment) {
+      console.error("No upcoming appointment found");
+      return new Response(
+        JSON.stringify({ error: "No upcoming appointment found" }),
+        {
+          status: 404,
+        }
+      );
+    }
 
-    return Response.json({ meetingLink: upcomingAppointment?.meetingLink || null });
+    return Response.json({
+      meetingLink: upcomingAppointment?.meetingLink || null,
+    });
   } catch (err) {
     console.error("Error fetching appointment:", err);
     return new Response(JSON.stringify({ error: "Server error" }), {
