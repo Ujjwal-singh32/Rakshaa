@@ -66,34 +66,30 @@ export default function AppointmentDetails() {
   const senderId = booking?.patientId?._id || booking?.patientId || null;
   // console.log("secsd" ,senderId);?\
 
-  const receiverId = booking?.doctorId?._id || booking?.doctorId || null; // Doctor is receiver
+  const receiverId = booking?.doctorId?._id || booking?.doctorId || null; 
 
-  // console.log("sender Id in patient side" , senderId);
-  // console.log("receiver Id in patient side" , receiverId);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
  useEffect(() => {
-    const fetchAppointment = async () => {
-      try {
-        const res = await fetch("/api/appointments/user-upcoming");
-        const data = await res.json();
-        if (res.ok && data.meetingLink) {
-          setMeetingLink(data.meetingLink);
-        }
-      } catch (err) {
-        console.error("Failed to fetch appointment:", err);
+  const fetchAppointment = async () => {
+    try {
+      const res = await fetch(`/api/appointments/user-upcoming?appointmentId=${booking._id}`);
+      const data = await res.json();
+      if (res.ok && data.meetingLink) {
+        setMeetingLink(data.meetingLink);
       }
-    };
+    } catch (err) {
+      console.error("Failed to fetch appointment:", err);
+    }
+  };
 
-    fetchAppointment();
-  }, []);
+  fetchAppointment();
+}, [senderId]); 
 
-  // useEffect(() => {
-  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  // }, [messages]);
+
   useEffect(() => {
     const fetchMedications = async () => {
       try {
@@ -496,31 +492,50 @@ export default function AppointmentDetails() {
               </>
             )}
 
-            {activeSection === "zoom" &&
-    meetingLink && (
-      <Card className="bg-purple-100 dark:bg-purple-900">
-        <CardContent className="p-4 space-y-2">
-          <h2 className="text-xl font-semibold text-purple-800 dark:text-purple-100">
-            Join Video Call
-          </h2>
-          <p className="text-sm text-purple-700 dark:text-purple-200">
-            Click below to join your scheduled video consultation.
-          </p>
-          <Button
-            className="bg-purple-600 text-white hover:bg-purple-700"
-            onClick={() =>
-              window.open(
-                meetingLink,
-                "_blank",
-                "width=1000,height=700,toolbar=no,scrollbars=yes,resizable=yes"
-              )
-            }
-          >
-            Join Zoom Meeting
-          </Button>
-        </CardContent>
-      </Card>
+            {activeSection === "zoom" && (
+  meetingLink ? (
+    <Card className="bg-purple-100 dark:bg-purple-900">
+      <CardContent className="p-4 space-y-2">
+        <h2 className="text-xl font-semibold text-purple-800 dark:text-purple-100">
+          Join Video Call
+        </h2>
+        <p className="text-sm text-purple-700 dark:text-purple-200">
+          Click below to join your scheduled video consultation.
+        </p>
+        <Button
+          className="bg-purple-600 text-white hover:bg-purple-700"
+          onClick={() =>
+            window.open(
+              meetingLink,
+              "_blank",
+              "width=1000,height=700,toolbar=no,scrollbars=yes,resizable=yes"
+            )
+          }
+        >
+          Join Zoom Meeting
+        </Button>
+      </CardContent>
+    </Card>
+  ) : (
+    <Card className="bg-yellow-100 dark:bg-yellow-900">
+      <CardContent className="p-4 space-y-2">
+        <h2 className="text-xl font-semibold text-yellow-800 dark:text-yellow-100">
+          Waiting for Doctor to Start Meeting
+        </h2>
+        <p className="text-sm text-yellow-700 dark:text-yellow-200">
+          Please wait while the doctor connects. This page will update automatically once the meeting is live.
+        </p>
+        <Button
+          className="bg-yellow-600 text-white hover:bg-yellow-700"
+          onClick={() => window.location.reload()}
+        >
+          Refresh Page
+        </Button>
+      </CardContent>
+    </Card>
+  )
 )}
+
 
 
 

@@ -18,11 +18,11 @@ export async function POST(req) {
       startTime,
       duration,
     });
-    console.log("appoinmentId:" ,appointmentId)
     // Update appointment with Zoom meeting info
    await Appointment.create({
-  doctorId,            // Required
-  patientId,           // Required
+  appointmentId,      
+  doctorId,            
+  patientId,           
   date,                
   status: "scheduled", 
   meetingLink: zoomRes.join_url,
