@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Select from "react-select";
 import { Brain } from "lucide-react";
 import DocNav from "@/components/DocNavbar";
-import Footer from "@/components/UserFooter";
+import DoctorFooter from "@/components/DocFooter";
 
 const symptomsDict = {
   itching: 0,
@@ -343,7 +343,7 @@ export default function MLPredictionPage() {
         <div className="border-t-2 bg-purple-500 border-purple-200 rounded-full" />
       </div>
 
-      <Footer />
+      <DoctorFooter />
     </div>
   );
 }

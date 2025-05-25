@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import DocNav from "@/components/DocNavbar";
-import Footer from "@/components/UserFooter";
+import DoctorFooter from "@/components/DocFooter";
 import Link from "next/link";
 import axios from "axios";
 import { useDoctor } from "@/context/doctorContext";
@@ -132,7 +132,7 @@ export default function AppointmentPage() {
         </div>
       </div>
 
-      <Footer />
+      <DoctorFooter />
     </div>
   );
 }

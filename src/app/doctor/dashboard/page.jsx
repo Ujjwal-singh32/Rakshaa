@@ -1,45 +1,48 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Download, Eye } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { useState } from "react";
 import DocNav from "@/components/DocNavbar";
-import Footer from "@/components/UserFooter";
+import DoctorFooter from "@/components/DocFooter";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 
 export default function DoctorDashboard() {
   const [date, setDate] = useState(new Date());
-  const holidays = ["2025-04-14", "2025-04-25", "2025-05-01"];
+  const [recentAppointments, setRecentAppointments] = useState([]);
+  const [holidays, setHolidays] = useState([]);
+  const [medicineList, setMedicineList] = useState([]);
 
-  const recentAppointments = [
-    {
-      name: "Ravi Kumar",
-      disease: "Flu",
-    },
-    {
-      name: "Anjali Sharma",
-      disease: "Dengue",
-    },
-    {
-      name: "Amit Verma",
-      disease: "Chikungunya",
-    },
-  ];
+  const doctorId = "doctor_id_here"; // Ideally, fetch from auth context or session
 
-  const medicineList = [
-    { name: "Paracetamol", dosage: "500mg", frequency: "Twice a day" },
-    { name: "Vitamin C", dosage: "1000mg", frequency: "Once a day" },
-    { name: "Azithromycin", dosage: "250mg", frequency: "Once a day" },
-    { name: "Cetirizine", dosage: "10mg", frequency: "Once at night" },
-    { name: "Ibuprofen", dosage: "400mg", frequency: "Twice a day" },
-  ];
+  useEffect(() => {
+    // Fetch appointments
+    fetch(`/api/doctor/recent-appointments?doctorId=${doctorId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) setRecentAppointments(data.appointments);
+      });
+
+    // Fetch holidays
+    fetch(`/api/doctor/holidays`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) setHolidays(data.holidays);
+      });
+
+    // Fetch medicine list if needed (optional)
+    fetch(`/api/doctor/medications`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) setMedicineList(data.medicines);
+      });
+  }, []);
 
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-purple-50 dark:bg-purple-950 text-purple-900 dark:text-purple-100">
-        {/* Navbar */}
         <DocNav />
 
         <section className="px-6 py-10">
@@ -116,16 +119,17 @@ export default function DoctorDashboard() {
         <section className="px-6 py-10">
           <h2 className="text-3xl font-bold mb-6">Schedule & Holidays</h2>
           <div className="bg-white dark:bg-purple-900 p-4 rounded-xl shadow w-full max-w-full overflow-x-auto">
-            <div className="w-full min-w-[250px] max-w-full overflow-x-auto">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                modifiers={{ holiday: holidays.map((date) => new Date(date)) }}
-                modifiersClassNames={{ holiday: "bg-red-200 text-red-800" }}
-              />
-            </div>
-
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={setDate}
+              modifiers={{
+                holiday: holidays.map((date) => new Date(date)),
+              }}
+              modifiersClassNames={{
+                holiday: "bg-red-200 text-red-800",
+              }}
+            />
             <div className="mt-4 text-sm">
               <strong>Holidays:</strong>
               <ul className="list-disc ml-6 mt-1">
@@ -136,7 +140,7 @@ export default function DoctorDashboard() {
             </div>
           </div>
         </section>
-        <Footer />
+        <DoctorFooter />
       </div>
     </TooltipProvider>
   );
