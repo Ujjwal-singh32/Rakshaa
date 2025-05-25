@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Download } from "lucide-react";
 import DocNav from "@/components/DocNavbar";
-import UserFooter from "@/components/UserFooter";
+import UserDoctorFooter from "@/components/DocFooter";
 import { useRef, useEffect } from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -684,7 +684,7 @@ export default function AppointmentDetails() {
           </div>
         </div>
       </div>
-      <UserFooter />
+      <UserDoctorFooter />
     </>
   );
 }

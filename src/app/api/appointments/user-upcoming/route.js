@@ -10,17 +10,20 @@ export async function GET(req) {
     const appointmentId = searchParams.get("appointmentId");
 
     if (!appointmentId) {
-      return new Response(JSON.stringify({ error: "Missing appoinmentId" }), {
+      return new Response(JSON.stringify({ error: "Missing appointmentId" }), {
         status: 400,
       });
     }
 
     const upcomingAppointment = await Appointment.findOne({
-      appointmentId
-    }).select("meetingLink");
+      appointmentId,
+      status: "scheduled", // only fetch if status is 'scheduled'
+    });
+
     if (!upcomingAppointment) {
-      console.error("No upcoming appointment found");
+      console.error("No upcoming scheduled appointment found");
       return new Response(
+      
         JSON.stringify({ error: "No upcoming appointment found" }),
         {
           status: 404,
@@ -28,9 +31,14 @@ export async function GET(req) {
       );
     }
 
+    // Mark the appointment as completed (so it doesn't reappear)
+    upcomingAppointment.status = "completed";
+    await upcomingAppointment.save();
+
     return Response.json({
-      meetingLink: upcomingAppointment?.meetingLink || null,
+      meetingLink: upcomingAppointment.meetingLink || null,
     });
+
   } catch (err) {
     console.error("Error fetching appointment:", err);
     return new Response(JSON.stringify({ error: "Server error" }), {

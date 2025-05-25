@@ -14,7 +14,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import DocNav from "@/components/DocNavbar";
-import Footer from "@/components/UserFooter";
+import DoctorFooter from "@/components/DocFooter";
 
 export default function DoctorHomePage() {
   return (
@@ -136,7 +136,7 @@ export default function DoctorHomePage() {
             );
           })}
         </section>
-        <Footer />
+        <DoctorFooter />
       </div>
     </TooltipProvider>
   );
