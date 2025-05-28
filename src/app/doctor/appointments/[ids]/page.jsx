@@ -377,7 +377,7 @@ export default function AppointmentDetails() {
                 <div className="pt-4">
                   <button
                     onClick={handleMarkCompleted}
-                    className="w-full sm:w-auto px-6 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-800 transition-colors duration-300"
+                    className="w-full sm:w-auto px-6 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-800 transition-colors duration-300 cursor-pointer"
                   >
                     Mark as Completed
                   </button>
@@ -397,7 +397,7 @@ export default function AppointmentDetails() {
                 <Button
                   key={section}
                   variant={activeSection === section ? "default" : "outline"}
-                  className="w-full capitalize"
+                  className="w-full capitalize cursor-pointer"
                   onClick={() => setActiveSection(section)}
                 >
                   {section === "reports"
@@ -511,10 +511,10 @@ export default function AppointmentDetails() {
                           </table>
                         </div>
                         <Button
-                          className="mt-3 flex gap-2 items-center"
+                          className="mt-3 flex gap-2 items-center cursor-pointer"
                           onClick={handleDownloadPdf}
                         >
-                          <Download className="w-4 h-4" /> Download PDF
+                          <Download className="w-4 h-4 cursor-pointer" /> Download PDF
                         </Button>
                       </TabsContent>
                     </Tabs>
@@ -681,7 +681,7 @@ export default function AppointmentDetails() {
                     Click below to create and join a Zoom video consultation.
                   </p>
                   <Button
-                    className="bg-purple-600 text-white hover:bg-purple-700"
+                    className="bg-purple-600 text-white hover:bg-purple-700 cursor-pointer"
                     onClick={handleCreateZoomMeeting}
                   >
                     Start Zoom Meeting

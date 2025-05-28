@@ -231,7 +231,7 @@ export default function DoctorDetailsPage() {
               <div className="text-center">
                 <button
                   onClick={() => setShowSlots(true)}
-                  className="px-6 py-2 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-all"
+                  className="px-6 py-2 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-all cursor-pointer"
                 >
                   Select Slot
                 </button>
@@ -290,7 +290,7 @@ export default function DoctorDetailsPage() {
             <div className="mt-10 text-center">
               <button
                 onClick={handleAppointment}
-                className="px-8 py-3 bg-gradient-to-r from-green-400 to-green-600 text-white font-bold rounded-full shadow-lg hover:scale-105 transition-transform"
+                className="px-8 py-3 bg-gradient-to-r from-green-400 to-green-600 text-white font-bold rounded-full shadow-lg hover:scale-105 transition-transform cursor-pointer"
               >
                 Take Appointment
               </button>

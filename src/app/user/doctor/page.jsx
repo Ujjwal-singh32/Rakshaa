@@ -100,7 +100,7 @@ export default function DoctorSection() {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="border border-purple-300 dark:border-purple-600 bg-white dark:bg-purple-800 rounded px-3 py-2 text-sm font-medium text-purple-800 dark:text-purple-100"
+                className="border border-purple-300 dark:border-purple-600 bg-white dark:bg-purple-800 rounded px-3 py-2 text-sm font-medium text-purple-800 dark:text-purple-100 cursor-pointer"
               >
                 Filter by Specialization ⏷
               </button>
@@ -185,7 +185,7 @@ export default function DoctorSection() {
 
                   <button
                     onClick={() => router.push(`/user/doctor/${doctor._id}`)}
-                    className="mt-3 px-5 py-2 cursor-pointer rounded-full bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold shadow-md hover:scale-105 transition"
+                    className="mt-3 px-5 py-2  rounded-full bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold shadow-md hover:scale-105 transition cursor-pointer"
                   >
                     Take Appointment
                   </button>

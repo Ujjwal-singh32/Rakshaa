@@ -380,7 +380,7 @@ export default function AuthPage() {
                     <Button
                       key={r}
                       variant="outline"
-                      className="rounded-full border-purple-400 text-purple-700 hover:bg-purple-100"
+                      className="rounded-full border-purple-400 text-purple-700 hover:bg-purple-100 cursor-pointer"
                       onClick={() => setRole(r)}
                     >
                       {r}
@@ -435,7 +435,7 @@ export default function AuthPage() {
                       </a>
                     </div>
                     <Button
-                      className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-full py-6"
+                      className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-full py-6 cursor-pointer"
                       onClick={handleLogin}
                     >
                       LOGIN

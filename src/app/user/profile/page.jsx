@@ -113,13 +113,13 @@ function MyProfile() {
             <div className="mt-8 flex justify-center gap-4">
               <Button
                 onClick={handleSaveChanges}
-                className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-full"
+                className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-full cursor-pointer"
               >
                 Save Changes
               </Button>
               <Button
                 onClick={toggleEdit}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-full"
+                className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-full cursor-pointer"
               >
                 Cancel
               </Button>
@@ -140,13 +140,13 @@ function MyProfile() {
               <div className="flex flex-col sm:flex-row justify-between gap-4 mb-6">
                 <Button
                   onClick={() => handleLogout()}
-                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md w-full sm:w-auto"
+                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md w-full sm:w-auto cursor-pointer"
                 >
                   Logout
                 </Button>
                 <Button
                   onClick={toggleEdit}
-                  className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-md w-full sm:w-auto"
+                  className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-md w-full sm:w-auto cursor-pointer"
                 >
                   Edit Profile
                 </Button>

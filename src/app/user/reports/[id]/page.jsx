@@ -326,7 +326,7 @@ export default function AppointmentDetails() {
                 <Button
                   key={section}
                   variant={activeSection === section ? "default" : "outline"}
-                  className="w-full capitalize"
+                  className="w-full capitalize cursor-pointer"
                   onClick={() => setActiveSection(section)}
                 >
                   {section === "reports"
@@ -442,7 +442,7 @@ export default function AppointmentDetails() {
                           </table>
                         </div>
                         <Button
-                          className="mt-3 flex gap-2 items-center"
+                          className="mt-3 flex gap-2 items-center cursor-pointer"
                           onClick={handleDownloadPdf}
                         >
                           <Download className="w-4 h-4" /> Download PDF
@@ -500,7 +500,7 @@ export default function AppointmentDetails() {
                 {/* Send Button */}
                 <div className="mt-4 flex justify-end">
                   <Button
-                    className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
+                    className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 cursor-pointer"
                     onClick={handleSendReports}
                   >
                     <Send className="w-4 h-4" />
@@ -521,7 +521,7 @@ export default function AppointmentDetails() {
                       Click below to join your scheduled video consultation.
                     </p>
                     <Button
-                      className="bg-purple-600 text-white hover:bg-purple-700"
+                      className="bg-purple-600 text-white hover:bg-purple-700 cursor-pointer"
                       onClick={() =>
                         window.open(
                           meetingLink,
@@ -545,7 +545,7 @@ export default function AppointmentDetails() {
                       update automatically once the meeting is live.
                     </p>
                     <Button
-                      className="bg-yellow-600 text-white hover:bg-yellow-700"
+                      className="bg-yellow-600 text-white hover:bg-yellow-700 cursor-pointer"
                       onClick={() => window.location.reload()}
                     >
                       Refresh Page

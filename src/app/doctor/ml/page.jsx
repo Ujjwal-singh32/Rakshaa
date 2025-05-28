@@ -233,7 +233,7 @@ export default function MLPredictionPage() {
 
           <div className="flex justify-center">
             <button
-              className="mt-8 px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center gap-2"
+              className="mt-8 px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-full shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center gap-2 cursor-pointer"
               onClick={handlePrediction}
             >
               🔮 Predict Now

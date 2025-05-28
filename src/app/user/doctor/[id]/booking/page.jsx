@@ -117,7 +117,7 @@ const MakePayment = () => {
         <button
           onClick={handlePayment}
           disabled={loading}
-          className={`relative bg-purple-600 hover:bg-purple-700 text-white font-semibold px-8 py-3 rounded-full shadow-lg transition duration-300 transform hover:scale-105 focus:outline-none ${
+          className={`relative bg-purple-600 hover:bg-purple-700 text-white font-semibold px-8 py-3 rounded-full shadow-lg transition duration-300 transform hover:scale-105 focus:outline-none cursor-pointer ${
             loading ? "opacity-50 cursor-not-allowed" : "animate-pulse"
           }`}
         >

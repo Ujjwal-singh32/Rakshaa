@@ -104,7 +104,7 @@ const PathlabReportsPage = () => {
 
                 <button
                   onClick={() => handleView(report.id)}
-                  className="bg-purple-600 text-white px-4 py-2 rounded-xl hover:bg-purple-700 transition text-sm"
+                  className="bg-purple-600 text-white px-4 py-2 rounded-xl hover:bg-purple-700 transition text-sm cursor-pointer"
                 >
                   View
                 </button>

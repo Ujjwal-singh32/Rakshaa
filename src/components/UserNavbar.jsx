@@ -57,7 +57,7 @@ export default function Navbar() {
           <div className="md:hidden">
             <Sheet>
               <SheetTrigger asChild>
-                <button className="text-purple-700 dark:text-purple-200">
+                <button className="text-purple-700 dark:text-purple-200 cursor-pointer">
                   <Menu className="w-6 h-6" />
                 </button>
               </SheetTrigger>
