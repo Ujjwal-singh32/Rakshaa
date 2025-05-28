@@ -126,7 +126,7 @@ export default function DoctorDashboard() {
                           a.click();
                         }}
                         variant="link"
-                        className="text-purple-600 hover:text-purple-800 flex items-center gap-1 text-sm whitespace-nowrap"
+                        className="text-purple-600 hover:text-purple-800 flex items-center gap-1 text-sm whitespace-nowrap cursor-pointer"
                       >
                         <Download className="w-4 h-4" /> Download
                       </Button>
@@ -137,7 +137,7 @@ export default function DoctorDashboard() {
                           window.open(report.url, "_blank"); // Open image in new tab
                         }}
                         variant="link"
-                        className="text-purple-600 hover:text-purple-800 flex items-center gap-1 text-sm whitespace-nowrap"
+                        className="text-purple-600 hover:text-purple-800 flex items-center gap-1 text-sm whitespace-nowrap cursor-pointer"
                       >
                         <Eye className="w-4 h-4" /> View
                       </Button>

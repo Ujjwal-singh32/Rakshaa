@@ -21,7 +21,7 @@ export default function PaymentPage() {
           <div className="mt-6">
             <button
               onClick={() => router.push("/")}
-              className="mt-4 px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-full transition"
+              className="mt-4 px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-full transition cursor-pointer" 
             >
               Go Back to Home
             </button>

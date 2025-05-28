@@ -156,7 +156,7 @@ export default function HealthChatbotSection() {
             <button
               onClick={handleSend}
               disabled={loading}
-              className="w-full sm:w-auto px-5 py-2 flex justify-center items-center gap-2 bg-gradient-to-r from-purple-700 via-purple-600 to-purple-700 text-white rounded-full hover:scale-105 transition-transform duration-200 disabled:opacity-50 shadow-lg shadow-purple-500/50"
+              className="w-full sm:w-auto px-5 py-2 flex justify-center items-center gap-2 bg-gradient-to-r from-purple-700 via-purple-600 to-purple-700 text-white rounded-full hover:scale-105 transition-transform duration-200 disabled:opacity-50 shadow-lg shadow-purple-500/50 cursor-pointer"
               aria-label="Send message"
             >
               <SendHorizonal className="w-5 h-5 animate-pulse" />

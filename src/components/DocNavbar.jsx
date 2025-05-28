@@ -42,7 +42,7 @@ export default function DocNav() {
         {/* Right: Profile + Mobile Menu Toggle */}
         <div className="flex items-center gap-4">
           <button
-            className="md:hidden text-purple-700"
+            className="md:hidden text-purple-700 cursor-pointer"
             onClick={() => setMenuOpen(!menuOpen)}
           >
             <Menu className="w-6 h-6" />

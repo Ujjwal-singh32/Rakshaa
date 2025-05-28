@@ -20,7 +20,7 @@ export default function HomePage() {
         <Button
           asChild
           size="lg"
-          className="bg-purple-700 hover:bg-purple-800 text-white"
+          className="bg-purple-700 hover:bg-purple-800 text-white cursor-pointer"
         >
           <Link href="/user/ai">Ask Our AI Doctor</Link>
         </Button>

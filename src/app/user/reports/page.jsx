@@ -57,7 +57,7 @@ export default function ReportsPage() {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={clsx(
-                "px-4 py-2 rounded-full text-sm font-semibold capitalize w-40 text-center cursor-pointer transition transform duration-200 hover:scale-105 active:scale-95 shadow-md",
+                "px-4 py-2 rounded-full text-sm font-semibold capitalize w-40 text-center cursor-pointer transition transform duration-200 hover:scale-105 active:scale-95 shadow-md cursor-pointer",
                 {
                   "bg-purple-700 text-white": activeTab === tab,
                   "bg-purple-200 text-purple-900 dark:bg-purple-800 dark:text-white":
@@ -114,7 +114,7 @@ export default function ReportsPage() {
                     e.stopPropagation();
                     router.push(`/user/reports/${appt._id}`);
                   }}
-                  className="mt-4 px-4 py-2 bg-purple-700 text-white text-sm rounded-full cursor-pointer hover:bg-purple-800 transition"
+                  className="mt-4 px-4 py-2 bg-purple-700 text-white text-sm rounded-full  hover:bg-purple-800 transition cursor-pointer"
                 >
                   View Details
                 </button>

@@ -84,7 +84,7 @@ export default function PathlabSection() {
             />
             <button
               onClick={toggleSortOrder}
-              className="px-4 py-2 bg-purple-600 text-white rounded-full font-semibold hover:bg-purple-700 transition"
+              className="px-4 py-2 bg-purple-600 text-white rounded-full font-semibold hover:bg-purple-700 transition cursor-pointer"
             >
               Sort by Price: {sortOrder === "asc" ? "Low → High" : "High → Low"}
             </button>
@@ -129,7 +129,7 @@ export default function PathlabSection() {
                     </div>
                     <button
                       onClick={() => handlechange(lab.id)}
-                      className="mt-4 w-fit px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-full font-semibold transition"
+                      className="mt-4 w-fit px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-full font-semibold transition cursor-pointer"
                     >
                       Book Test
                     </button>
