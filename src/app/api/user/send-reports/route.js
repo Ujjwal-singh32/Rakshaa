@@ -19,7 +19,7 @@ export async function POST(req) {
     const doctorId = formData.get("doctorId");
     const files = formData.getAll("reports");
 
-    console.log("backend hit", patientId, doctorId, files);
+    // console.log("backend hit", patientId, doctorId, files);
     
     if (!patientId || !doctorId || files.length === 0) {
       return NextResponse.json(

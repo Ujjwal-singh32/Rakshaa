@@ -33,7 +33,7 @@ export default function DoctorDetailsPage() {
   const [isValidDay, setIsValidDay] = useState(false);
   const params = useParams();
   const doctorId = params.id;
-  console.log("doctor id from frontend", doctorId);
+  // console.log("doctor id from frontend", doctorId);
   const [doctor, setDoctor] = useState(null);
 
   const [selectedDateObj, setSelectedDateObj] = useState(null);
@@ -62,7 +62,7 @@ export default function DoctorDetailsPage() {
           }
         );
 
-        console.log("data doctor", res.data.doctor);
+        // console.log("data doctor", res.data.doctor);
 
         if (res.data.success) {
           setDoctor(res.data.doctor);

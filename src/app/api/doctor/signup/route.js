@@ -45,7 +45,7 @@ export async function POST(req) {
       password,
       profilePic,
     } = data;
-    console.log("data:", data);
+    // console.log("data:", data);
     if (!validator.isEmail(email)) {
       return NextResponse.json({ success: false, message: "Invalid Email" });
     }

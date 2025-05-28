@@ -103,7 +103,7 @@ export default function AppointmentDetails() {
       });
 
       const data = await res.json();
-      console.log("Zoom meeting created:", data);
+      // console.log("Zoom meeting created:", data);
 
       if (data?.join_url) {
         const popup = window.open(
@@ -160,7 +160,7 @@ export default function AppointmentDetails() {
       try {
         const res = await fetch(`/api/medications?patientId=${receiverId}`);
         const data = await res.json();
-        console.log("data fetch:", data);
+        // console.log("data fetch:", data);
 
         if (data.success && Array.isArray(data.medications)) {
           setMedicationData(data.medications);
@@ -283,7 +283,7 @@ export default function AppointmentDetails() {
     // Append to current UI
     setMessages((prev) => [...prev, newMessage]);
     setMessageInput("");
-    console.log(messages);
+    // console.log(messages);
   };
   const handleSelectChange = (isoDate) => {
     const med = medicationData.find(

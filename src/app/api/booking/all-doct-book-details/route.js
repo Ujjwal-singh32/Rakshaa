@@ -9,7 +9,7 @@ export async function POST(req) {
 
   try {
     const { patientId } = await req.json();
-    console.log("consoling the patient id passed from the frontend" , patientId);
+    // console.log("consoling the patient id passed from the frontend" , patientId);
     if (!patientId) {
       return NextResponse.json(
         { success: false, message: "Patient ID is required" },

@@ -14,7 +14,7 @@ export async function POST(req) {
         { status: 400 }
       );
     }
-    console.log("bookingId received:", bookingId);
+    // console.log("bookingId received:", bookingId);
     const booking = await bookingModel
       .findById(bookingId)
       .populate("patientId", "name")

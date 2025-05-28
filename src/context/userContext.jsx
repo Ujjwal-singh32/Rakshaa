@@ -12,7 +12,7 @@ const UserProvider = ({ children }) => {
   useEffect(() => {
     const fetchUser = async () => {
       const token = await localStorage.getItem("token");
-      console.log("token in contex", token);
+      // console.log("token in contex", token);
       if (!token) {
         setLoading(false);
         return;
@@ -26,10 +26,10 @@ const UserProvider = ({ children }) => {
         });
 
         if (res.data.success) {
-          console.log("checking the response", res.data.user)
+          // console.log("checking the response", res.data.user)
           setUser(res.data.user);
         } else {
-          console.log("asdcasd");
+          console.log("Something went Wrong");
           setUser(null);
         }
       } catch (error) {

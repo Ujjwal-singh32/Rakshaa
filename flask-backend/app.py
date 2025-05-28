@@ -251,7 +251,7 @@ def get_disease_details(disease):
 def predict():
     data = request.get_json()
     symptoms = data.get("selectedSymptoms", [])
-    print("symptoms", symptoms)
+    # print("symptoms", symptoms)
     if not symptoms or not isinstance(symptoms, list):
         return jsonify({"error": "Please send a list of symptoms"}), 400
 
@@ -259,7 +259,7 @@ def predict():
     details = get_disease_details(predicted_disease)
     details["disease"] = predicted_disease
     details = sanitize_for_json(details)
-    print(details)
+    # print(details)
     return jsonify({"predicted_disease": predicted_disease, "details": details})
 
 

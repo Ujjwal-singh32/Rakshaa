@@ -30,7 +30,7 @@ export default function DoctorDashboard() {
 
         if (res.data.success) {
           setReports(res.data.reports);
-          console.log("reports pringting", res.data.reports);
+          // console.log("reports pringting", res.data.reports);
         }
       } catch (error) {
         console.error("Error fetching reports:", error);

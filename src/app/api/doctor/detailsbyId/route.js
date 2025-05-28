@@ -12,7 +12,7 @@ export async function POST(req) {
     if (!doctorId) {
       return NextResponse.json({ success: false, message: "Missing doctorId" }, { status: 400 });
     }
-    console.log("doctorId received:", doctorId);
+    // console.log("doctorId received:", doctorId);
     const doctor = await doctorModel.findById(doctorId).select("-password");
 
     if (!doctor) {

@@ -46,7 +46,7 @@ export default function AppointmentDetails() {
         });
 
         if (res.data.success) {
-          console.log("debugging", res.data.booking);
+          // console.log("debugging", res.data.booking);
           setBooking(res.data.booking);
         } else {
           console.error("Failed to fetch booking details:", res.data.message);
@@ -98,7 +98,7 @@ export default function AppointmentDetails() {
           `/api/medications?patientId=${senderId}&doctorId=${receiverId}`
         );
         const data = await res.json();
-        console.log("Fetched medications:", data.medications);
+        // console.log("Fetched medications:", data.medications);
         setReceivedMedication(data.medications);
       } catch (error) {
         console.error("Error fetching medications:", error);
@@ -262,7 +262,7 @@ export default function AppointmentDetails() {
     // Append to current UI
     setMessages((prev) => [...prev, newMessage]);
     setMessageInput("");
-    console.log("this is the messages", messages);
+    // console.log("this is the messages", messages);
   };
 
   // if (!isClient) return null;

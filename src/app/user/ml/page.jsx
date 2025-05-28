@@ -160,7 +160,7 @@ export default function MLPredictionPage() {
       return;
     }
     const apiBaseUrl = process.env.NEXT_PUBLIC_FLASK_URL;
-    console.log("consoling the api flask url" , apiBaseUrl);
+    // console.log("consoling the api flask url" , apiBaseUrl);
 
     try {
       const res = await fetch(`${apiBaseUrl}/predict`, {

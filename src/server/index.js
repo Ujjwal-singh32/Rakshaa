@@ -20,13 +20,13 @@ const io = new Server(server, {
 
 // When a client connects
 io.on("connection", (socket) => {
-  console.log("User connected:", socket.id);
+  // console.log("User connected:", socket.id);
 
   // Join room based on userId (senderId or receiverId)
   socket.on("join", ({ userId }) => {
     if (userId) {
       socket.join(userId);
-      console.log(`Socket ${socket.id} joined room: ${userId}`);
+      // console.log(`Socket ${socket.id} joined room: ${userId}`);
     }
   });
 
@@ -35,17 +35,17 @@ io.on("connection", (socket) => {
     if (to && message) {
       // Emit the message to the 'to' user room only
       io.to(to).emit("newMessage", message);
-      console.log(`Message from ${message.sender} sent to ${to}:`, message);
+      // console.log(`Message from ${message.sender} sent to ${to}:`, message);
     }
   });
 
   socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
+    // console.log("User disconnected:", socket.id);
   });
 });
 
 const PORT = process.env.SOCKET_URL;
-console.log("consoling the port" , PORT);
+// console.log("consoling the port" , PORT);
 server.listen(PORT, () => {
-  console.log(`Socket.IO server listening on port ${PORT}`);
+  // console.log(`Socket.IO server listening on port ${PORT}`);
 });
