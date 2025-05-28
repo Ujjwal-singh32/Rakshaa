@@ -68,10 +68,13 @@ export default function DoctorSection() {
   }
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-20">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="w-16 h-16 border-4 border-purple-400 border-dashed rounded-full animate-spin dark:border-purple-300"></div>
-          <p className="text-purple-700 dark:text-purple-200 text-lg font-semibold animate-pulse">
+      <div className="flex justify-center items-center py-20 bg-purple-50 dark:bg-purple-900 min-h-screen px-4">
+        <div className="flex flex-col items-center space-y-6">
+          {/* Gradient Spinner */}
+          <div className="w-16 h-16 border-4 border-transparent border-t-purple-500 border-l-purple-400 rounded-full animate-spin bg-gradient-to-r from-purple-300 via-purple-400 to-purple-600 shadow-lg"></div>
+
+          {/* Animated Loading Text */}
+          <p className="text-purple-700 dark:text-purple-200 text-xl font-semibold animate-pulse">
             Loading doctors...
           </p>
         </div>
