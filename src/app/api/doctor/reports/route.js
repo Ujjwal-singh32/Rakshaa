@@ -23,7 +23,7 @@ export async function GET(req) {
       .populate("patientId", "name email")
       .sort({ createdAt: -1 });
 
-    console.log(doctorReports);
+    // console.log(doctorReports);
 
     // Flatten all reports into one array with metadata
     const allReports = doctorReports.flatMap((doc) =>

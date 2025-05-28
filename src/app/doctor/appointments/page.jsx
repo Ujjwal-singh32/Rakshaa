@@ -23,7 +23,7 @@ export default function AppointmentPage() {
         });
 
         if (res.data.success) {
-          console.log("checkingr", res.data.bookings);
+          // console.log("checkingr", res.data.bookings);
           setAppointments(res.data.bookings);
         } else {
           console.error("Failed to fetch appointments");

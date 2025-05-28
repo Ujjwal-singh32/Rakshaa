@@ -16,7 +16,7 @@ const verifyToken = (token) => {
 
 export default async function handler(req, res) {
   if (!res.socket.server.io) {
-    console.log("Initializing Socket.io...");
+    // console.log("Initializing Socket.io...");
     io = new Server(res.socket.server, {
       path: "/api/chat/socket",
       addTrailingSlash: false,
@@ -34,7 +34,7 @@ export default async function handler(req, res) {
     });
 
     io.on("connection", (socket) => {
-      console.log("User connected:", socket.user.id);
+      // console.log("User connected:", socket.user.id);
 
       // Join a personal room
       socket.join(socket.user.id);
@@ -53,7 +53,7 @@ export default async function handler(req, res) {
       });
 
       socket.on("disconnect", () => {
-        console.log("User disconnected:", socket.user.id);
+        // console.log("User disconnected:", socket.user.id);
       });
     });
   }

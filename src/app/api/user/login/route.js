@@ -25,7 +25,7 @@ export async function POST(req) {
     }
 
     const token = createToken(patient._id);
-    console.log("token" , token)
+    // console.log("token" , token)
     return NextResponse.json({ success: true, token });
     
   } catch (error) {

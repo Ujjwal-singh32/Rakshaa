@@ -11,7 +11,7 @@ export async function POST(req) {
     await connectDB();
 
     const { email, password } = await req.json();
-    console.log("email", email);  
+    // console.log("email", email);  
 
     const doctor = await doctorModel.findOne({ email });
     if (!doctor) {

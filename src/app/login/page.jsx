@@ -189,7 +189,7 @@ export default function AuthPage() {
       });
 
       const data = response.data;
-      console.log("Login Response:", data);
+      // console.log("Login Response:", data);
 
       if (data.success) {
         // Save token if needed
@@ -213,7 +213,7 @@ export default function AuthPage() {
       });
 
       const data = response.data;
-      console.log("Login Response:", data);
+      // console.log("Login Response:", data);
 
       if (data.success) {
         // Save token if needed
@@ -247,7 +247,7 @@ export default function AuthPage() {
       });
 
       if (response.data.success) {
-        console.log("Patient created:", response.data);
+        // console.log("Patient created:", response.data);
         toast.success("Account Created Successfully Now login");
         // since it is signed up so move it to login mode
         setMode("login");
@@ -277,7 +277,7 @@ export default function AuthPage() {
       });
 
       if (response.data.success) {
-        console.log("doctor created:", response.data);
+        // console.log("doctor created:", response.data);
         toast.success("Account Created Successfully Now Login!!");
         setMode("login");
       } else {

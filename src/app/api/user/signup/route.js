@@ -22,7 +22,7 @@ const createToken = (id) => {
 export async function POST(req) {
   try {
     await connectDB();
-    console.log("hiii this is the debugging line")
+    // console.log("hiii this is the debugging line")
     const formData = await req.formData();
     const data = {};
     formData.forEach((value, key) => {
@@ -45,7 +45,7 @@ export async function POST(req) {
       profilePic,
     } = data;
 
-    console.log("as", data);
+    // console.log("as", data);
     if (!validator.isEmail(email)) {
       return NextResponse.json({
         success: false,
@@ -105,7 +105,7 @@ export async function POST(req) {
       password: hashedPassword,
       profilePic: imageUrl,
     });
-    console.log(newPatient.profilePic);
+    // console.log(newPatient.profilePic);
     const savedPatient = await newPatient.save();
     const token = createToken(savedPatient._id);
 

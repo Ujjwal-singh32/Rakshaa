@@ -12,7 +12,7 @@ const DoctorProvider = ({ children }) => {
   useEffect(() => {
     const fetchDoctor = async () => {
       const token = await localStorage.getItem("drtoken");
-      console.log("token in context", token);
+      // console.log("token in context", token);
 
       if (!token) {
         setLoading(false);

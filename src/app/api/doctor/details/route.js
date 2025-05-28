@@ -13,11 +13,11 @@ export async function GET(req) {
     if (!token) {
       return NextResponse.json({ success: false, message: "No token provided" }, { status: 401 });
     }
-    console.log("token in bekendend", token);
+    // console.log("token in bekendend", token);
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const doctor = await doctorModel.findById(decoded.id).select("-password");
-    console.log("doctor in backend", doctor);
+    // console.log("doctor in backend", doctor);
     if (!doctor) {
       return NextResponse.json({ success: false, message: "Doctor not found" }, { status: 404 });
     }
