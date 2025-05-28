@@ -26,7 +26,7 @@ const UserProvider = ({ children }) => {
         });
 
         if (res.data.success) {
-          // console.log("checking the response", res.data.user)
+          console.log("checking the response", res.data.user)
           setUser(res.data.user);
         } else {
           console.log("asdcasd");

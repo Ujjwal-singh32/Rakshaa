@@ -34,6 +34,8 @@ export default function AppointmentPage() {
     };
 
     fetchAppointments();
+    const interval = setInterval(fetchAppointments, 10000); // Every 10 seconds
+    return () => clearInterval(interval);
   }, [doctorId]);
 
   const handleMarkStarted = async (bookingId) => {

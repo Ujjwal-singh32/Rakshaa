@@ -15,7 +15,7 @@ export default function ReportsPage() {
   const router = useRouter();
   const { user, userId } = useUser();
   useEffect(() => {
-     if (!userId) return; 
+    if (!userId) router.push("/login");
     const fetchAppointments = async () => {
       try {
         const res = await axios.post("/api/booking/all-doct-book-details", {
@@ -33,8 +33,12 @@ export default function ReportsPage() {
     };
 
     fetchAppointments();
+    const interval = setInterval(fetchAppointments, 10000); // Every 10 seconds
+    return () => clearInterval(interval);
   }, [userId]);
-  console.log("appointments", appointments);
+
+  // console.log("appointments", appointments);
+
   const filteredAppointments = appointments
     .filter((a) => a.status === activeTab)
     .sort((a, b) => new Date(b.date) - new Date(a.date));

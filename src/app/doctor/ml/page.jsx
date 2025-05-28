@@ -159,9 +159,9 @@ export default function MLPredictionPage() {
       alert("Please select at least one symptom.");
       return;
     }
-
+    const apiBaseUrl = process.env.NEXT_PUBLIC_FLASK_URL;
     try {
-      const res = await fetch("http://127.0.0.1:5000/predict", {
+      const res = await fetch(`${apiBaseUrl}/predict`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

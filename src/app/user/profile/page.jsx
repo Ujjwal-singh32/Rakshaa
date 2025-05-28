@@ -5,12 +5,14 @@ import UserNavbar from "@/components/UserNavbar";
 import { useUser } from "@/context/UserContext";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+
 function MyProfile() {
   const router = useRouter();
   const [isEditing, setIsEditing] = React.useState(false);
   const { user, loading, } = useUser();
   // console.log("user details", user);
   const [userDetails, setUserDetails] = React.useState(null);
+
   React.useEffect(() => {
     if (user) {
       setUserDetails({
