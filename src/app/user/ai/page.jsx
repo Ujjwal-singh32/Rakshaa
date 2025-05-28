@@ -145,19 +145,18 @@ export default function HealthChatbotSection() {
           </div>
 
           {/* Input */}
-          <div className="flex items-center p-4 border-t border-purple-300 dark:border-purple-700 bg-purple-100 dark:bg-purple-900">
+          <div className="flex flex-col sm:flex-row items-center gap-3 p-4 border-t border-purple-300 dark:border-purple-700 bg-purple-100 dark:bg-purple-900">
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Type your message... 💬"
-              className="flex-1 bg-white dark:bg-purple-800 text-purple-900 dark:text-purple-100 rounded-full px-4 py-2 outline-none focus:ring-2 focus:ring-purple-500 resize-none"
-              rows={1}
+              className="w-full bg-white dark:bg-purple-800 text-purple-900 dark:text-purple-100 rounded-full px-4 py-2 outline-none focus:ring-2 focus:ring-purple-500"
             />
             <button
               onClick={handleSend}
               disabled={loading}
-              className="ml-2 px-5 py-2 flex items-center gap-2 bg-gradient-to-r from-purple-700 via-purple-600 to-purple-700 text-white rounded-full hover:scale-110 transition-transform duration-200 disabled:opacity-50 shadow-lg shadow-purple-500/50"
+              className="w-full sm:w-auto px-5 py-2 flex justify-center items-center gap-2 bg-gradient-to-r from-purple-700 via-purple-600 to-purple-700 text-white rounded-full hover:scale-105 transition-transform duration-200 disabled:opacity-50 shadow-lg shadow-purple-500/50"
               aria-label="Send message"
             >
               <SendHorizonal className="w-5 h-5 animate-pulse" />
