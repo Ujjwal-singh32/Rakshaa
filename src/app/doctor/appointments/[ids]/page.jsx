@@ -148,7 +148,11 @@ export default function AppointmentDetails() {
       }
     };
 
-    if (senderId) fetchReports();
+    if (senderId) {
+      fetchReports();
+      const interval = setInterval(fetchReports, 10000); // Every 10 seconds
+      return () => clearInterval(interval);
+    }
   }, [senderId]);
 
   useEffect(() => {
@@ -169,7 +173,11 @@ export default function AppointmentDetails() {
       }
     };
 
-    if (receiverId) fetchMeds();
+    if (receiverId) {
+      fetchMeds();
+      const interval = setInterval(fetchMeds, 10000); // Every 10 seconds
+      return () => clearInterval(interval);
+    }
   }, [receiverId]);
 
   const socket = useRef(null);

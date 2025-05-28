@@ -43,6 +43,10 @@ export default function DoctorSection() {
     };
 
     fetchDoctors();
+
+    const interval = setInterval(fetchDoctors, 10000); // Every 10 seconds
+    return () => clearInterval(interval);
+
   }, []);
 
   useEffect(() => {

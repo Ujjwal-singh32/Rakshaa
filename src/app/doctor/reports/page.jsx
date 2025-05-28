@@ -38,6 +38,8 @@ export default function DoctorDashboard() {
     };
 
     fetchReports();
+    const interval = setInterval(fetchReports, 10000); // Every 10 seconds
+    return () => clearInterval(interval);
   }, [doctorId]);
 
   // Group reports by patient name

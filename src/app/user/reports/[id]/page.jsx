@@ -107,6 +107,8 @@ export default function AppointmentDetails() {
 
     if (receiverId && senderId) {
       fetchMedications();
+      const interval = setInterval(fetchMedications, 10000); // Every 10 seconds
+      return () => clearInterval(interval);
     }
   }, [receiverId, senderId]);
 

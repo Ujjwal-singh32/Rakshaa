@@ -208,6 +208,7 @@ export default function DoctorDetailsPage() {
                 type="date"
                 value={date}
                 onChange={handleDateChange}
+                min={new Date().toISOString().split("T")[0]}
                 className="w-full px-3 py-2 rounded-lg border border-purple-300 dark:border-purple-700 bg-purple-100 dark:bg-purple-800 text-purple-900 dark:text-white"
               />
             </div>

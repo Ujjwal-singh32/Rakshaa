@@ -89,6 +89,8 @@ export default function DoctorDashboard() {
     };
 
     fetchDashboardData();
+    const interval = setInterval(fetchDashboardData, 10000); // Every 10 seconds
+    return () => clearInterval(interval);
   }, []);
 
   const handleMouseEnter = () => {
