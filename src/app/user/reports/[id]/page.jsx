@@ -66,29 +66,30 @@ export default function AppointmentDetails() {
   const senderId = booking?.patientId?._id || booking?.patientId || null;
   // console.log("secsd" ,senderId);?\
 
-  const receiverId = booking?.doctorId?._id || booking?.doctorId || null; 
-
+  const receiverId = booking?.doctorId?._id || booking?.doctorId || null;
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
- useEffect(() => {
-  const fetchAppointment = async () => {
-    try {
-      const res = await fetch(`/api/appointments/user-upcoming?appointmentId=${booking._id}`);
-      const data = await res.json();
-      if (res.ok && data.meetingLink) {
-        setMeetingLink(data.meetingLink);
+  useEffect(() => {
+    const fetchAppointment = async () => {
+      if (!booking?._id) return;
+      try {
+        const res = await fetch(
+          `/api/appointments/user-upcoming?appointmentId=${booking._id}`
+        );
+        const data = await res.json();
+        if (res.ok && data.meetingLink) {
+          setMeetingLink(data.meetingLink);
+        }
+      } catch (err) {
+        console.error("Failed to fetch appointment:", err);
       }
-    } catch (err) {
-      console.error("Failed to fetch appointment:", err);
-    }
-  };
+    };
 
-  fetchAppointment();
-}, [senderId]); 
-
+    fetchAppointment();
+  }, [senderId]);
 
   useEffect(() => {
     const fetchMedications = async () => {
@@ -137,7 +138,19 @@ export default function AppointmentDetails() {
   const [messageInput, setMessageInput] = useState("");
 
   if (loading || !receiverId || !senderId) {
-    return <div>Loading appointment details...</div>;
+    return (
+      <div className="flex justify-center items-center py-20 bg-purple-50 dark:bg-purple-900 min-h-screen px-4">
+        <div className="flex flex-col items-center space-y-6">
+          {/* Beautiful Gradient Spinner */}
+          <div className="w-16 h-16 border-4 border-transparent border-t-purple-500 border-l-purple-400 rounded-full animate-spin bg-gradient-to-r from-purple-300 via-purple-400 to-purple-600 shadow-lg"></div>
+
+          {/* Animated Text */}
+          <p className="text-purple-700 dark:text-purple-200 text-xl font-semibold animate-pulse">
+            Loading Appointment Details...
+          </p>
+        </div>
+      </div>
+    );
   }
 
   const handleReportUpload = (e) => {
@@ -198,7 +211,6 @@ export default function AppointmentDetails() {
       alert("Please upload at least one report before sending.");
       return;
     }
-    
 
     const formData = new FormData();
     formData.append("patientId", senderId);
@@ -251,20 +263,24 @@ export default function AppointmentDetails() {
     console.log("this is the messages", messages);
   };
 
-  if (!isClient) return null;
+  // if (!isClient) return null;
   // console.log("booking", booking);
   if (!isClient || loading || !booking) {
     return (
-      <div className="flex justify-center items-center py-20">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="w-16 h-16 border-4 border-purple-400 border-dashed rounded-full animate-spin dark:border-purple-300"></div>
-          <p className="text-purple-700 dark:text-purple-200 text-lg font-semibold animate-pulse">
+      <div className="flex justify-center items-center py-20 bg-purple-50 dark:bg-purple-900 min-h-screen px-4">
+        <div className="flex flex-col items-center space-y-6">
+          {/* Beautiful Gradient Spinner */}
+          <div className="w-16 h-16 border-4 border-transparent border-t-purple-500 border-l-purple-400 rounded-full animate-spin bg-gradient-to-r from-purple-300 via-purple-400 to-purple-600 shadow-lg"></div>
+
+          {/* Animated Text */}
+          <p className="text-purple-700 dark:text-purple-200 text-xl font-semibold animate-pulse">
             Loading Appointment Details...
           </p>
         </div>
       </div>
     );
   }
+
   return (
     <>
       <UserNavbar />
@@ -492,53 +508,49 @@ export default function AppointmentDetails() {
               </>
             )}
 
-            {activeSection === "zoom" && (
-  meetingLink ? (
-    <Card className="bg-purple-100 dark:bg-purple-900">
-      <CardContent className="p-4 space-y-2">
-        <h2 className="text-xl font-semibold text-purple-800 dark:text-purple-100">
-          Join Video Call
-        </h2>
-        <p className="text-sm text-purple-700 dark:text-purple-200">
-          Click below to join your scheduled video consultation.
-        </p>
-        <Button
-          className="bg-purple-600 text-white hover:bg-purple-700"
-          onClick={() =>
-            window.open(
-              meetingLink,
-              "_blank",
-              "width=1000,height=700,toolbar=no,scrollbars=yes,resizable=yes"
-            )
-          }
-        >
-          Join Zoom Meeting
-        </Button>
-      </CardContent>
-    </Card>
-  ) : (
-    <Card className="bg-yellow-100 dark:bg-yellow-900">
-      <CardContent className="p-4 space-y-2">
-        <h2 className="text-xl font-semibold text-yellow-800 dark:text-yellow-100">
-          Waiting for Doctor to Start Meeting
-        </h2>
-        <p className="text-sm text-yellow-700 dark:text-yellow-200">
-          Please wait while the doctor connects. This page will update automatically once the meeting is live.
-        </p>
-        <Button
-          className="bg-yellow-600 text-white hover:bg-yellow-700"
-          onClick={() => window.location.reload()}
-        >
-          Refresh Page
-        </Button>
-      </CardContent>
-    </Card>
-  )
-)}
-
-
-
-
+            {activeSection === "zoom" &&
+              (meetingLink ? (
+                <Card className="bg-purple-100 dark:bg-purple-900">
+                  <CardContent className="p-4 space-y-2">
+                    <h2 className="text-xl font-semibold text-purple-800 dark:text-purple-100">
+                      Join Video Call
+                    </h2>
+                    <p className="text-sm text-purple-700 dark:text-purple-200">
+                      Click below to join your scheduled video consultation.
+                    </p>
+                    <Button
+                      className="bg-purple-600 text-white hover:bg-purple-700"
+                      onClick={() =>
+                        window.open(
+                          meetingLink,
+                          "_blank",
+                          "width=1000,height=700,toolbar=no,scrollbars=yes,resizable=yes"
+                        )
+                      }
+                    >
+                      Join Zoom Meeting
+                    </Button>
+                  </CardContent>
+                </Card>
+              ) : (
+                <Card className="bg-yellow-100 dark:bg-yellow-900">
+                  <CardContent className="p-4 space-y-2">
+                    <h2 className="text-xl font-semibold text-yellow-800 dark:text-yellow-100">
+                      Waiting for Doctor to Start Meeting
+                    </h2>
+                    <p className="text-sm text-yellow-700 dark:text-yellow-200">
+                      Please wait while the doctor connects. This page will
+                      update automatically once the meeting is live.
+                    </p>
+                    <Button
+                      className="bg-yellow-600 text-white hover:bg-yellow-700"
+                      onClick={() => window.location.reload()}
+                    >
+                      Refresh Page
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
           </div>
         </div>
       </div>

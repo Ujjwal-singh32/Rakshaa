@@ -36,19 +36,19 @@ export default function DoctorDetailsPage() {
   console.log("doctor id from frontend", doctorId);
   const [doctor, setDoctor] = useState(null);
 
-  const [selectedDateObj, setSelectedDateObj] = useState(null); 
+  const [selectedDateObj, setSelectedDateObj] = useState(null);
 
   const handleDateChange = (e) => {
     const selectedDate = new Date(e.target.value);
-  
-    const formatted = selectedDate.toLocaleDateString("en-CA"); 
+
+    const formatted = selectedDate.toLocaleDateString("en-CA");
     setDate(formatted);
     setSelectedDateObj(selectedDate);
     setSelectedSlot("");
     setShowSlots(false);
     setIsValidDay(isWeekday(selectedDate));
   };
-  
+
   useEffect(() => {
     const fetchDoctorDetails = async () => {
       try {
@@ -83,8 +83,12 @@ export default function DoctorDetailsPage() {
     return (
       <>
         <UserNavbar />
-        <div className="min-h-screen flex items-center justify-center bg-purple-50 dark:bg-purple-900">
-          <p className="text-purple-800 dark:text-purple-200 text-lg">
+        <div className="min-h-screen flex flex-col items-center justify-center bg-purple-50 dark:bg-purple-900 px-4">
+          {/* Gradient Spinner */}
+          <div className="w-16 h-16 border-4 border-transparent border-t-purple-500 border-l-purple-400 rounded-full animate-spin bg-gradient-to-r from-purple-300 via-purple-400 to-purple-600 shadow-lg mb-6"></div>
+
+          {/* Animated Text */}
+          <p className="text-purple-800 dark:text-purple-200 text-xl font-semibold animate-pulse">
             Loading doctor details...
           </p>
         </div>
@@ -98,7 +102,7 @@ export default function DoctorDetailsPage() {
       alert("Please select a date and a valid slot.");
       return;
     }
-  
+
     const queryParams = new URLSearchParams({
       doctorId: doctorId,
       patientId: user._id,
@@ -107,12 +111,11 @@ export default function DoctorDetailsPage() {
       disease: disease,
       consultationFee: doctor.consultationFees,
       paymentMode: "online",
-      patientName:user.name
+      patientName: user.name,
     });
-  
+
     router.push(`/user/doctor/${doctorId}/booking?${queryParams.toString()}`);
   };
-  
 
   return (
     <>
