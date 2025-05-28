@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Download, Eye } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import DocNav from "@/components/DocNavbar";
 import DoctorFooter from "@/components/DocFooter";
-import { useDoctor } from "@/context/doctorContext"; // Update path if needed
+import { useDoctor } from "@/context/doctorContext";
 import axios from "axios";
 
 export default function DoctorDashboard() {
-  const { doctorId, loading } = useDoctor();
+  const { doctorId } = useDoctor();
   const [reports, setReports] = useState([]);
 
   useEffect(() => {
@@ -19,15 +19,18 @@ export default function DoctorDashboard() {
     const fetchReports = async () => {
       try {
         const token = localStorage.getItem("drtoken");
-        const res = await axios.get(`/api/doctor/all-reports?doctorId=${doctorId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
+        const res = await axios.get(
+          `/api/doctor/all-reports?doctorId=${doctorId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         if (res.data.success) {
           setReports(res.data.reports);
+          console.log("reports pringting", res.data.reports);
         }
       } catch (error) {
         console.error("Error fetching reports:", error);
@@ -44,52 +47,95 @@ export default function DoctorDashboard() {
     return acc;
   }, {});
 
+  // Scroll to patient section when dropdown changes
+  const handleSelectChange = (e) => {
+    const patientId = e.target.value;
+    if (!patientId) return;
+
+    const el = document.getElementById(patientId);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-purple-50 dark:bg-purple-950 text-purple-900 dark:text-purple-100">
         <DocNav />
 
-        <section className="px-6 py-10">
-          <h2 className="text-3xl font-bold mb-6">Submitted Reports</h2>
+        <section className="px-4 sm:px-6 lg:px-10 py-10 max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold mb-6 text-center break-words">
+            Submitted Reports
+          </h2>
+
+          {/* Dropdown to select patient */}
+          <div className="mb-8 text-center">
+            <select
+              onChange={handleSelectChange}
+              className="border border-purple-400 rounded-md p-2 text-purple-900 dark:text-purple-100 bg-white dark:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              defaultValue=""
+            >
+              <option value="" disabled>
+                Select Patient
+              </option>
+              {Object.keys(groupedReports).map((patientName) => (
+                // Use a safe id by replacing spaces with dashes or encoding
+                <option
+                  key={patientName}
+                  value={patientName.replace(/\s+/g, "-")}
+                >
+                  {patientName}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {Object.entries(groupedReports).map(([patientName, reports]) => (
-            <div key={patientName} className="mb-6">
-              <h3 className="text-xl font-semibold mb-2">{patientName}</h3>
-              <div className="space-y-4">
+            <div
+              key={patientName}
+              id={patientName.replace(/\s+/g, "-")} // ID for scrolling
+              className="mb-10 bg-white dark:bg-purple-900 rounded-2xl shadow-lg p-6 sm:p-8"
+              style={{ border: "2px solid #7c3aed" }}
+            >
+              <h3 className="text-2xl font-semibold mb-6 text-center text-purple-700 dark:text-purple-300 break-words">
+                {patientName}
+              </h3>
+              <div className="space-y-6">
                 {reports.map((report, index) => (
-                  <div key={index} className="bg-white dark:bg-purple-900 p-5 rounded-xl shadow">
-                    <p className="text-purple-700 dark:text-purple-300 mb-2">
-                      Disease: {report.disease}
+                  <div
+                    key={index}
+                    className="bg-purple-50 dark:bg-purple-800 rounded-lg p-4 sm:p-6 shadow-md border border-purple-300 dark:border-purple-700 break-words"
+                  >
+                    <p className="text-purple-900 dark:text-purple-200 font-medium mb-4 break-words">
+                      <span className="font-semibold">Date:</span>{" "}
+                      {new Date(report.date).toLocaleString(undefined, {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      })}
                     </p>
-                    <div className="flex gap-4">
+
+                    <div className="flex flex-wrap gap-4">
+                      {/* Download Image */}
                       <Button
                         onClick={() => {
-                          const blob = new Blob([
-                            `<html><head><meta charset='utf-8'></head><body><h2>Medical Report for ${patientName}</h2><p><strong>Disease:</strong> ${report.disease}</p></body></html>`
-                          ], { type: 'application/pdf' });
-
-                          const url = URL.createObjectURL(blob);
-                          const a = document.createElement('a');
-                          a.href = url;
-                          a.download = report.reportName || "report.pdf";
+                          const a = document.createElement("a");
+                          a.href = report.url; // Cloudinary image URL
+                          a.download = report.reportName || "report.jpg"; // Default extension can be jpg/png based on your data
                           a.click();
-                          URL.revokeObjectURL(url);
                         }}
                         variant="link"
-                        className="text-purple-600 hover:text-purple-800 flex items-center gap-1 text-sm"
+                        className="text-purple-600 hover:text-purple-800 flex items-center gap-1 text-sm whitespace-nowrap"
                       >
                         <Download className="w-4 h-4" /> Download
                       </Button>
 
+                      {/* View Image */}
                       <Button
                         onClick={() => {
-                          const newWindow = window.open();
-                          newWindow.document.write(
-                            `<html><head><meta charset='utf-8'></head><body><h2>Medical Report for ${patientName}</h2><p><strong>Disease:</strong> ${report.disease}</p></body></html>`
-                          );
-                          newWindow.document.close();
+                          window.open(report.url, "_blank"); // Open image in new tab
                         }}
                         variant="link"
-                        className="text-purple-600 hover:text-purple-800 flex items-center gap-1 text-sm"
+                        className="text-purple-600 hover:text-purple-800 flex items-center gap-1 text-sm whitespace-nowrap"
                       >
                         <Eye className="w-4 h-4" /> View
                       </Button>

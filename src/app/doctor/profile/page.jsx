@@ -82,6 +82,12 @@ export default function DoctorProfilePage() {
     );
   }
 
+  const handleLogout = () => {
+    localStorage.removeItem("drtoken");
+    router.push("/login"); // redirect to login
+    toast.success("Logged out successfully!");
+  };
+
   const renderField = (label, name) => (
     <div className="flex flex-col gap-1">
       <label className="font-semibold">{label}</label>
@@ -104,57 +110,68 @@ export default function DoctorProfilePage() {
       <div className="min-h-screen bg-purple-50 dark:bg-purple-950 text-purple-900 dark:text-purple-100">
         <DocNav />
         <section className="max-w-6xl mx-auto px-6 py-10 space-y-10">
-  {/* HEADER */}
-  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-    <div className="flex items-center gap-4">
-      <Avatar className="w-20 h-20 border-4 border-purple-400">
-        <AvatarImage src={doctorInfo.profilePic} alt="Doctor" />
-        <AvatarFallback>DR</AvatarFallback>
-      </Avatar>
-      <div>
-        <h2 className="text-2xl font-bold">{doctorInfo.name}</h2>
-        <p className="text-sm text-purple-600">{doctorInfo.specialization}</p>
-      </div>
-    </div>
-    <div className="space-x-4">
-      {isEditing ? (
-        <>
-          <Button onClick={handleSaveChanges}>Save</Button>
-          <Button variant="secondary" onClick={() => setIsEditing(false)}>Cancel</Button>
-        </>
-      ) : (
-        <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
-      )}
-    </div>
-  </div>
+          {/* HEADER */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <Avatar className="w-20 h-20 border-4 border-purple-400">
+                <AvatarImage src={doctorInfo.profilePic} alt="Doctor" />
+                <AvatarFallback>DR</AvatarFallback>
+              </Avatar>
+              <div>
+                <h2 className="text-2xl font-bold">{doctorInfo.name}</h2>
+                <p className="text-sm text-purple-600">
+                  {doctorInfo.specialization}
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+              {isEditing ? (
+                <>
+                  <Button onClick={handleSaveChanges}>Save</Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => setIsEditing(false)}
+                  >
+                    Cancel
+                  </Button>
+                </>
+              ) : (
+                <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
+              )}
+              <Button variant="destructive" onClick={handleLogout}>
+                Logout
+              </Button>
+            </div>
+          </div>
 
-  {/* CARD CONTAINER - row above 450px, column below */}
-  <div className="flex flex-col max-[450px]:flex-col sm:flex-row gap-6">
-    {/* Basic Info */}
-    <div className="flex-1 bg-purple-100 dark:bg-purple-900 p-6 rounded-xl shadow space-y-4">
-      <h3 className="text-xl font-semibold mb-2">Basic Information</h3>
-      {renderField("Name", "name")}
-      {renderField("Email", "email")}
-      {renderField("Phone", "phone")}
-      {renderField("Hospital", "hospital")}
-      {renderField("Address", "address")}
-      {renderField("Languages", "languages")}
-      {renderField("Consultation Fees", "consultationFees")}
-    </div>
+          {/* CARD CONTAINER - row above 450px, column below */}
+          <div className="flex flex-col max-[450px]:flex-col sm:flex-row gap-6">
+            {/* Basic Info */}
+            <div className="flex-1 bg-purple-100 dark:bg-purple-900 p-6 rounded-xl shadow space-y-4">
+              <h3 className="text-xl font-semibold mb-2">Basic Information</h3>
+              {renderField("Name", "name")}
+              {renderField("Email", "email")}
+              {renderField("Phone", "phone")}
+              {renderField("Hospital", "hospital")}
+              {renderField("Address", "address")}
+              {renderField("Languages", "languages")}
+              {renderField("Consultation Fees", "consultationFees")}
+            </div>
 
-    {/* Professional Info */}
-    <div className="flex-1 bg-purple-100 dark:bg-purple-900 p-6 rounded-xl shadow space-y-4">
-      <h3 className="text-xl font-semibold mb-2">Professional Details</h3>
-      {renderField("Specialization", "specialization")}
-      {renderField("Qualification", "qualification")}
-      {renderField("Experience", "experience")}
-      {renderField("Achievements", "achievements")}
-      {renderField("College Studied", "college")}
-      {renderField("Past Hospital Experience", "pastHospitals")}
-    </div>
-  </div>
-</section>
-
+            {/* Professional Info */}
+            <div className="flex-1 bg-purple-100 dark:bg-purple-900 p-6 rounded-xl shadow space-y-4">
+              <h3 className="text-xl font-semibold mb-2">
+                Professional Details
+              </h3>
+              {renderField("Specialization", "specialization")}
+              {renderField("Qualification", "qualification")}
+              {renderField("Experience", "experience")}
+              {renderField("Achievements", "achievements")}
+              {renderField("College Studied", "college")}
+              {renderField("Past Hospital Experience", "pastHospitals")}
+            </div>
+          </div>
+        </section>
       </div>
     </TooltipProvider>
   );

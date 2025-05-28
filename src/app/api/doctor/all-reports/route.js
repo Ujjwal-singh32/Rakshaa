@@ -8,7 +8,7 @@ export async function GET(req) {
 
     const { searchParams } = new URL(req.url);
     const doctorId = searchParams.get("doctorId");
-    const patientId = searchParams.get("patientId"); // optional
+    const patientId = searchParams.get("patientId");
 
     if (!doctorId) {
       return NextResponse.json(
@@ -41,7 +41,10 @@ export async function GET(req) {
       }))
     );
 
-    return NextResponse.json({ success: true, reports: allReports }, { status: 200 });
+    return NextResponse.json(
+      { success: true, reports: allReports },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error fetching doctor reports:", error);
     return NextResponse.json(
