@@ -89,6 +89,8 @@ export default function AppointmentDetails() {
     };
 
     fetchAppointment();
+    const interval = setInterval(fetchAppointment, 10000); // Every 10 seconds
+    return () => clearInterval(interval);
   }, [senderId]);
 
   useEffect(() => {
@@ -544,12 +546,6 @@ export default function AppointmentDetails() {
                       Please wait while the doctor connects. This page will
                       update automatically once the meeting is live.
                     </p>
-                    <Button
-                      className="bg-yellow-600 text-white hover:bg-yellow-700 cursor-pointer"
-                      onClick={() => window.location.reload()}
-                    >
-                      Refresh Page
-                    </Button>
                   </CardContent>
                 </Card>
               ))}
