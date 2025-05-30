@@ -160,7 +160,7 @@ export default function AppointmentDetails() {
       try {
         const res = await fetch(`/api/medications?patientId=${receiverId}`);
         const data = await res.json();
-        // console.log("data fetch:", data);
+        
 
         if (data.success && Array.isArray(data.medications)) {
           setMedicationData(data.medications);
