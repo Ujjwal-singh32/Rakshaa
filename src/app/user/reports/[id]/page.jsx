@@ -123,7 +123,7 @@ export default function AppointmentDetails() {
 
     const token = localStorage.getItem("token") || "";
 
-    socket.current = io("http://localhost:3001", {
+    socket.current = io("https://rakhsa-socket.onrender.com", {
       autoConnect: true,
       auth: { token },
     });
