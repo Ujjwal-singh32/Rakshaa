@@ -21,15 +21,11 @@ export async function GET(req) {
     });
 
     if (!upcomingAppointment) {
-      console.error("No upcoming scheduled appointment found");
-      return new Response(
-      
-        JSON.stringify({ error: "No upcoming appointment found" }),
-        {
-          status: 404,
-        }
-      );
-    }
+  return Response.json({
+    meetingLink: null,
+    message: "No scheduled meeting found",
+  });
+} 
 
     // Mark the appointment as completed (so it doesn't reappear)
     upcomingAppointment.status = "completed";

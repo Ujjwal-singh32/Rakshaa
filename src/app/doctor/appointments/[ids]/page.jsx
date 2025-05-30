@@ -160,7 +160,7 @@ export default function AppointmentDetails() {
       try {
         const res = await fetch(`/api/medications?patientId=${receiverId}`);
         const data = await res.json();
-        // console.log("data fetch:", data);
+        
 
         if (data.success && Array.isArray(data.medications)) {
           setMedicationData(data.medications);
@@ -187,7 +187,7 @@ export default function AppointmentDetails() {
 
     const token = localStorage.getItem("drtoken") || "";
 
-    socket.current = io("http://localhost:3001", {
+    socket.current = io("https://rakhsa-socket.onrender.com", {
       autoConnect: true,
       auth: { token },
     });
