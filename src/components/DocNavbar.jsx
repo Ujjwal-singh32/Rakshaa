@@ -8,7 +8,7 @@ import { useDoctor } from "@/context/doctorContext";
 
 export default function DocNav() {
   const [menuOpen, setMenuOpen] = useState(false);
-    const { doctor } = useDoctor();
+  const { doctor } = useDoctor();
 
   return (
     <nav className="w-full bg-purple-100 dark:bg-purple-900 shadow-sm top-0 sticky z-50">
@@ -21,17 +21,23 @@ export default function DocNav() {
           >
             🩺 Rakshaa
           </Link>
-          </div>
+        </div>
 
         {/* Center: Desktop Menu */}
         <div className="hidden md:flex gap-6 font-semibold text-lg ">
           <Link href="/doctor/home" className="hover:text-purple-700 font-bold">
             Home
           </Link>
-          <Link href="/doctor/dashboard" className="hover:text-purple-700 font-bold">
+          <Link
+            href="/doctor/dashboard"
+            className="hover:text-purple-700 font-bold"
+          >
             Dashboard
           </Link>
-          <Link href="/doctor/appointments" className="hover:text-purple-700 font-bold">
+          <Link
+            href="/doctor/appointments"
+            className="hover:text-purple-700 font-bold"
+          >
             Appointments
           </Link>
           <Link href="/doctor/ml" className="hover:text-purple-700 font-bold">
@@ -50,10 +56,7 @@ export default function DocNav() {
 
           <Link href="/doctor/profile">
             <Avatar className="w-9 h-9 border-2 border-purple-400 hover:border-purple-600 transition">
-              <AvatarImage
-                src={doctor?.profilePic }
-                alt="Doctor Profile"
-              />
+              <AvatarImage src={doctor?.profilePic} alt="Doctor Profile" />
               <AvatarFallback>DR</AvatarFallback>
             </Avatar>
           </Link>
@@ -62,14 +65,20 @@ export default function DocNav() {
 
       {/* Mobile Dropdown Menu */}
       {menuOpen && (
-        <div className="md:hidden mt-3 flex flex-col gap-3 font-semibold text-md">
+        <div className="md:hidden mt-3 px-4 pb-4 flex flex-col gap-3 text-purple-600 dark:text-purple-200 text-[16px] font-semibold">
           <Link href="/doctor/home" className="hover:text-purple-700 font-bold">
             Home
           </Link>
-          <Link href="/doctor/dashboard" className="hover:text-purple-700 font-bold">
+          <Link
+            href="/doctor/dashboard"
+            className="hover:text-purple-700 font-bold"
+          >
             Dashboard
           </Link>
-          <Link href="/doctor/appointments" className="hover:text-purple-700 font-bold">
+          <Link
+            href="/doctor/appointments"
+            className="hover:text-purple-700 font-bold"
+          >
             Appointments
           </Link>
           <Link href="/doctor/ml" className="hover:text-purple-700 font-bold">
