@@ -57,7 +57,7 @@ export default function ReportsPage() {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={clsx(
-                "px-4 py-2 rounded-full text-sm font-semibold capitalize w-40 text-center cursor-pointer transition transform duration-200 hover:scale-105 active:scale-95 shadow-md cursor-pointer",
+                "px-4 py-2 rounded-full text-sm font-semibold capitalize w-40 text-center cursor-pointer transition transform duration-200 hover:scale-105 active:scale-95 shadow-md",
                 {
                   "bg-purple-700 text-white": activeTab === tab,
                   "bg-purple-200 text-purple-900 dark:bg-purple-800 dark:text-white":
