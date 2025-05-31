@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useUser } from "@/context/UserContext";
+import { useUser } from "@/context/userContext";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
