@@ -44,8 +44,8 @@ io.on("connection", (socket) => {
   });
 });
 
-const PORT = process.env.SOCKET_URL;
+const PORT = process.env.PORT;
 // console.log("consoling the port" , PORT);
 server.listen(PORT, () => {
-  // console.log(`Socket.IO server listening on port ${PORT}`);
+   console.log(`Socket.IO server listening on port ${PORT}`);
 });
