@@ -8,7 +8,7 @@ import UserFooter from "@/components/UserFooter";
 import { useEffect } from "react";
 import { useParams } from "next/navigation";
 import axios from "axios";
-import { useUser } from "@/context/UserContext";
+import { useUser } from "@/context/userContext";
 // Predefined slot times
 const timeSlots = {
   "10:00 AM": 3,

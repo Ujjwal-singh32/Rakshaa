@@ -2,7 +2,7 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import UserNavbar from "@/components/UserNavbar";
-import { useUser } from "@/context/UserContext";
+import { useUser } from "@/context/userContext";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 

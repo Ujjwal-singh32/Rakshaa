@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import clsx from "clsx";
 import UserNavbar from "@/components/UserNavbar";
 import UserFooter from "@/components/UserFooter";
-import { useUser } from "@/context/UserContext";
+import { useUser } from "@/context/userContext";
 import axios from "axios";
 const tabs = ["started", "upcoming", "completed"];
 
