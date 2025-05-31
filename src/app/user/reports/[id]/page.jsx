@@ -11,7 +11,7 @@ import UserNavbar from "@/components/UserNavbar";
 import UserFooter from "@/components/UserFooter";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { useUser } from "@/context/UserContext";
+import { useUser } from "@/context/userContext";
 import axios from "axios";
 import { Send } from "lucide-react";
 import { toast } from "react-toastify";
