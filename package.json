@@ -41,7 +41,6 @@
     "razorpay": "^2.9.6",
     "react": "^19.0.0",
     "react-datepicker": "^8.3.0",
-    "react-day-picker": "^8.10.1",
     "react-dom": "^19.0.0",
     "react-select": "^5.10.1",
     "react-toastify": "^11.0.5",
