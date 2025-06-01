@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { MailIcon, LockIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 const roles = ["Patient", "Doctor"];
 import axios from "axios";
+import imageCompression from 'browser-image-compression';
 
 const IconInput = ({ icon: Icon, onKeyDown, ...props }) => (
   <div className="relative">
@@ -27,7 +27,7 @@ export default function AuthPage() {
   const [role, setRole] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [step, setStep] = useState(0);
-  
+
   // Individual form states
   const [patientData, setPatientData] = useState({
     name: "",
@@ -63,7 +63,6 @@ export default function AuthPage() {
     profilePic: null,
   });
 
-
   const getFormData = () => {
     if (role === "Patient") return patientData;
     if (role === "Doctor") return doctorData;
@@ -86,8 +85,18 @@ export default function AuthPage() {
     }
   };
 
-  const handleImageChange = (file) => {
-    setFormData({ profilePic: file });
+  const handleImageChange = async (file) => {
+    const options = {
+      maxSizeMB: 9, // max size in mb
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+    };
+    try {
+      const compressedFile = await imageCompression(file, options);
+      setFormData({ profilePic: compressedFile });
+    } catch (error) {
+      console.error("Image compression error:", error);
+    }
   };
 
   const getSignupSteps = () => {
@@ -163,7 +172,7 @@ export default function AuthPage() {
         await loginPatient(email, password);
       } else if (role === "Doctor") {
         await loginDoctor(email, password);
-      } 
+      }
     } catch (error) {
       console.error("Login failed", error);
     }
@@ -347,244 +356,244 @@ export default function AuthPage() {
   };
 
   return (
-  <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-purple-200 via-purple-100 to-blue-100 p-2 sm:p-4">
-    <FloatingBlobs />
-    <div className="flex flex-col md:flex-row w-full max-w-6xl h-auto md:h-[90vh] overflow-hidden rounded-3xl shadow-2xl backdrop-blur-xl bg-white/80">
-      
-      {/* Left Image Section */}
-      <div className="hidden md:flex md:w-1/2 bg-gradient-to-tr from-blue-700 via-purple-700 to-pink-500 relative items-center justify-center p-4">
-        <img
-          src="https://static.vecteezy.com/system/resources/thumbnails/024/585/326/small/3d-happy-cartoon-doctor-cartoon-doctor-on-transparent-background-generative-ai-png.png"
-          alt="doctor"
-          className="w-[80%] max-h-[80%] object-contain"
-        />
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-purple-200 via-purple-100 to-blue-100 p-2 sm:p-4">
+      <FloatingBlobs />
+      <div className="flex flex-col md:flex-row w-full max-w-6xl h-auto md:h-[90vh] overflow-hidden rounded-3xl shadow-2xl backdrop-blur-xl bg-white/80">
+        {/* Left Image Section */}
+        <div className="hidden md:flex md:w-1/2 bg-gradient-to-tr from-blue-700 via-purple-700 to-pink-500 relative items-center justify-center p-4">
+          <img
+            src="https://static.vecteezy.com/system/resources/thumbnails/024/585/326/small/3d-happy-cartoon-doctor-cartoon-doctor-on-transparent-background-generative-ai-png.png"
+            alt="doctor"
+            className="w-[80%] max-h-[80%] object-contain"
+          />
+        </div>
 
-      {/* Right Form Section */}
-      <div className="w-full md:flex-1 p-3 sm:p-6 md:p-10 flex flex-col justify-center bg-gradient-to-tr from-purple-200 via-purple-100 to-blue-100">
-        <div className="w-full max-w-xs sm:max-w-md mx-auto">
-          {!role ? (
-            <>
-              <h1 className="text-2xl sm:text-4xl font-extrabold text-center text-purple-700 mb-4 sm:mb-6 tracking-widest drop-shadow-lg flex items-center justify-center gap-2 sm:gap-3">
-                <span className="animate-bounce">🛡️</span>
-                <span className="bg-gradient-to-r from-purple-600 via-pink-500 to-purple-700 bg-clip-text text-transparent">
-                  Rakshaa!!
-                </span>
-                <span className="animate-ping text-purple-300 text-sm sm:text-2xl">💖</span>
-              </h1>
-              <h2 className="text-xl sm:text-3xl font-bold text-center text-purple-700 mb-4 sm:mb-6">
-                Select Your Role
-              </h2>
-              <div className="flex flex-wrap justify-center gap-2 sm:gap-4">
-                {roles.map((r) => (
-                  <Button
-                    key={r}
-                    variant="outline"
-                    className="rounded-full border-purple-400 text-purple-700 hover:bg-purple-100 cursor-pointer text-sm sm:text-base"
-                    onClick={() => setRole(r)}
-                  >
-                    {r}
-                  </Button>
-                ))}
-              </div>
-            </>
-          ) : (
-            <>
-              <h2 className="text-lg sm:text-2xl font-semibold text-center text-blue-800 mb-2">
-                {mode === "login" ? "Welcome Back!!" : `${role} Signup`}
-              </h2>
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <span className="text-sm text-gray-500">Role:</span>
-                <select
-                  className="text-sm border border-purple-300 rounded-full px-3 py-1 text-purple-700 bg-white focus:outline-none focus:ring-2 focus:ring-purple-400"
-                  value={role}
-                  onChange={(e) => handleRoleChange(e.target.value)}
-                >
+        {/* Right Form Section */}
+        <div className="w-full md:flex-1 p-3 sm:p-6 md:p-10 flex flex-col justify-center bg-gradient-to-tr from-purple-200 via-purple-100 to-blue-100">
+          <div className="w-full max-w-xs sm:max-w-md mx-auto">
+            {!role ? (
+              <>
+                <h1 className="text-2xl sm:text-4xl font-extrabold text-center text-purple-700 mb-4 sm:mb-6 tracking-widest drop-shadow-lg flex items-center justify-center gap-2 sm:gap-3">
+                  <span className="animate-bounce">🛡️</span>
+                  <span className="bg-gradient-to-r from-purple-600 via-pink-500 to-purple-700 bg-clip-text text-transparent">
+                    Rakshaa!!
+                  </span>
+                  <span className="animate-ping text-purple-300 text-sm sm:text-2xl">
+                    💖
+                  </span>
+                </h1>
+                <h2 className="text-xl sm:text-3xl font-bold text-center text-purple-700 mb-4 sm:mb-6">
+                  Select Your Role
+                </h2>
+                <div className="flex flex-wrap justify-center gap-2 sm:gap-4">
                   {roles.map((r) => (
-                    <option key={r} value={r}>
-                      {r}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {mode === "login" ? (
-                <div className="space-y-4">
-                  <IconInput
-                    icon={MailIcon}
-                    placeholder="Your Email"
-                    value={currentData.email}
-                    onChange={(e) => handleChange("email", e.target.value)}
-                    onKeyDown={handleKeyDown}
-                  />
-                  <IconInput
-                    icon={LockIcon}
-                    placeholder="Your Password"
-                    type="password"
-                    value={currentData.password}
-                    onChange={(e) => handleChange("password", e.target.value)}
-                    onKeyDown={handleKeyDown}
-                  />
-                  <div className="flex items-center justify-between text-xs sm:text-sm text-gray-500">
-                    <label className="flex items-center gap-1 sm:gap-2">
-                      <input type="checkbox" className="accent-blue-500" />
-                      Remember me
-                    </label>
-                    <a href="#" className="text-blue-600 hover:underline">
-                      Forgot password?
-                    </a>
-                  </div>
-                  <Button
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-full py-4 sm:py-6 cursor-pointer text-sm sm:text-base"
-                    onClick={handleLogin}
-                  >
-                    LOGIN
-                  </Button>
-                  <p className="text-center text-xs sm:text-sm mt-2 sm:mt-4">
-                    Don’t have an account?{" "}
-                    <span
-                      className="text-blue-600 cursor-pointer hover:underline"
-                      onClick={() => {
-                        setMode("signup");
-                        setStep(0);
-                      }}
+                    <Button
+                      key={r}
+                      variant="outline"
+                      className="rounded-full border-purple-400 text-purple-700 hover:bg-purple-100 cursor-pointer text-sm sm:text-base"
+                      onClick={() => setRole(r)}
                     >
-                      Signup
-                    </span>
-                  </p>
+                      {r}
+                    </Button>
+                  ))}
                 </div>
-              ) : (
-                <>
-                  <Progress
-                    value={(step / (steps.length - 1)) * 100}
-                    className="mb-4"
-                  />
-                  <div className="space-y-4">
-                    {steps[step] && steps[step].type === "image" ? (
-                      <div className="space-y-2">
-                        <div className="flex flex-col items-center space-y-4">
-                          <label
-                            htmlFor="profile-upload"
-                            className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full border-2 border-dashed border-purple-400 flex items-center justify-center cursor-pointer hover:bg-purple-100 transition-all"
-                          >
-                            {currentData.profilePic ? (
-                              <img
-                                src={URL.createObjectURL(
-                                  currentData.profilePic
-                                )}
-                                alt="Profile"
-                                className="w-full h-full object-cover rounded-full"
-                              />
-                            ) : (
-                              <span className="text-center text-xs sm:text-sm text-purple-500 px-2">
-                                Click to upload
-                              </span>
-                            )}
-                            <input
-                              id="profile-upload"
-                              type="file"
-                              accept="image/*"
-                              className="hidden"
-                              onChange={(e) =>
-                                handleImageChange(e.target.files[0])
-                              }
-                            />
-                          </label>
-                          {currentData.profilePic && (
-                            <p className="text-xs sm:text-sm text-gray-600 text-center truncate max-w-xs">
-                              {currentData.profilePic.name}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="space-y-1">
-                        {steps[step].type === "select" ? (
-                          <select
-                            className={`w-full py-3 px-4 rounded-full bg-gray-100 text-gray-700 text-sm border ${
-                              errorMessage
-                                ? "border-red-500"
-                                : "border-transparent"
-                            }`}
-                            value={currentData[steps[step].field] || ""}
-                            onChange={(e) =>
-                              handleChange(steps[step].field, e.target.value)
-                            }
-                          >
-                            <option value="">
-                              Select {steps[step].label}
-                            </option>
-                            {steps[step].options.map((option) => (
-                              <option key={option} value={option}>
-                                {option}
-                              </option>
-                            ))}
-                          </select>
-                        ) : (
-                          <Input
-                            placeholder={steps[step].label}
-                            type={steps[step].type || "text"}
-                            value={currentData[steps[step].field] || ""}
-                            onChange={(e) =>
-                              handleChange(steps[step].field, e.target.value)
-                            }
-                            onKeyDown={handleKeyDown}
-                            className={`py-4 rounded-full bg-gray-100 text-sm ${
-                              errorMessage ? "border border-red-500" : ""
-                            }`}
-                          />
-                        )}
-                        {errorMessage && (
-                          <p className="text-red-500 text-xs sm:text-sm ml-2">
-                            {errorMessage}
-                          </p>
-                        )}
-                      </div>
-                    )}
+              </>
+            ) : (
+              <>
+                <h2 className="text-lg sm:text-2xl font-semibold text-center text-blue-800 mb-2">
+                  {mode === "login" ? "Welcome Back!!" : `${role} Signup`}
+                </h2>
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <span className="text-sm text-gray-500">Role:</span>
+                  <select
+                    className="text-sm border border-purple-300 rounded-full px-3 py-1 text-purple-700 bg-white focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    value={role}
+                    onChange={(e) => handleRoleChange(e.target.value)}
+                  >
+                    {roles.map((r) => (
+                      <option key={r} value={r}>
+                        {r}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-                    <div className="flex justify-between">
-                      <Button
-                        variant="ghost"
-                        disabled={step === 0}
-                        onClick={() => setStep((prev) => prev - 1)}
-                        className="text-xs sm:text-sm"
-                      >
-                        Back
-                      </Button>
-                      {step === steps.length - 1 ? (
-                        <Button
-                          className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm"
-                          onClick={handleSignup}
-                        >
-                          Submit
-                        </Button>
-                      ) : (
-                        <Button
-                          className="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm"
-                          onClick={handleNextStep}
-                        >
-                          Next
-                        </Button>
-                      )}
+                {mode === "login" ? (
+                  <div className="space-y-4">
+                    <IconInput
+                      icon={MailIcon}
+                      placeholder="Your Email"
+                      value={currentData.email}
+                      onChange={(e) => handleChange("email", e.target.value)}
+                      onKeyDown={handleKeyDown}
+                    />
+                    <IconInput
+                      icon={LockIcon}
+                      placeholder="Your Password"
+                      type="password"
+                      value={currentData.password}
+                      onChange={(e) => handleChange("password", e.target.value)}
+                      onKeyDown={handleKeyDown}
+                    />
+                    <div className="flex items-center justify-between text-xs sm:text-sm text-gray-500">
+                      <label className="flex items-center gap-1 sm:gap-2">
+                        <input type="checkbox" className="accent-blue-500" />
+                        Remember me
+                      </label>
+                      <a href="#" className="text-blue-600 hover:underline">
+                        Forgot password?
+                      </a>
                     </div>
+                    <Button
+                      className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-full py-4 sm:py-6 cursor-pointer text-sm sm:text-base"
+                      onClick={handleLogin}
+                    >
+                      LOGIN
+                    </Button>
                     <p className="text-center text-xs sm:text-sm mt-2 sm:mt-4">
-                      Already have an account?{" "}
+                      Don’t have an account?{" "}
                       <span
                         className="text-blue-600 cursor-pointer hover:underline"
-                        onClick={() => setMode("login")}
+                        onClick={() => {
+                          setMode("signup");
+                          setStep(0);
+                        }}
                       >
-                        Login
+                        Signup
                       </span>
                     </p>
                   </div>
-                </>
-              )}
-            </>
-          )}
+                ) : (
+                  <>
+                    <Progress
+                      value={(step / (steps.length - 1)) * 100}
+                      className="mb-4"
+                    />
+                    <div className="space-y-4">
+                      {steps[step] && steps[step].type === "image" ? (
+                        <div className="space-y-2">
+                          <div className="flex flex-col items-center space-y-4">
+                            <label
+                              htmlFor="profile-upload"
+                              className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full border-2 border-dashed border-purple-400 flex items-center justify-center cursor-pointer hover:bg-purple-100 transition-all"
+                            >
+                              {currentData.profilePic ? (
+                                <img
+                                  src={URL.createObjectURL(
+                                    currentData.profilePic
+                                  )}
+                                  alt="Profile"
+                                  className="w-full h-full object-cover rounded-full"
+                                />
+                              ) : (
+                                <span className="text-center text-xs sm:text-sm text-purple-500 px-2">
+                                  Click to upload
+                                </span>
+                              )}
+                              <input
+                                id="profile-upload"
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) =>
+                                  handleImageChange(e.target.files[0])
+                                }
+                              />
+                            </label>
+                            {currentData.profilePic && (
+                              <p className="text-xs sm:text-sm text-gray-600 text-center truncate max-w-xs">
+                                {currentData.profilePic.name}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-1">
+                          {steps[step].type === "select" ? (
+                            <select
+                              className={`w-full py-3 px-4 rounded-full bg-gray-100 text-gray-700 text-sm border ${
+                                errorMessage
+                                  ? "border-red-500"
+                                  : "border-transparent"
+                              }`}
+                              value={currentData[steps[step].field] || ""}
+                              onChange={(e) =>
+                                handleChange(steps[step].field, e.target.value)
+                              }
+                            >
+                              <option value="">
+                                Select {steps[step].label}
+                              </option>
+                              {steps[step].options.map((option) => (
+                                <option key={option} value={option}>
+                                  {option}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            <Input
+                              placeholder={steps[step].label}
+                              type={steps[step].type || "text"}
+                              value={currentData[steps[step].field] || ""}
+                              onChange={(e) =>
+                                handleChange(steps[step].field, e.target.value)
+                              }
+                              onKeyDown={handleKeyDown}
+                              className={`py-4 rounded-full bg-gray-100 text-sm ${
+                                errorMessage ? "border border-red-500" : ""
+                              }`}
+                            />
+                          )}
+                          {errorMessage && (
+                            <p className="text-red-500 text-xs sm:text-sm ml-2">
+                              {errorMessage}
+                            </p>
+                          )}
+                        </div>
+                      )}
+
+                      <div className="flex justify-between">
+                        <Button
+                          variant="ghost"
+                          disabled={step === 0}
+                          onClick={() => setStep((prev) => prev - 1)}
+                          className="text-xs sm:text-sm"
+                        >
+                          Back
+                        </Button>
+                        {step === steps.length - 1 ? (
+                          <Button
+                            className="bg-purple-600 hover:bg-purple-700 text-white rounded-full px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm"
+                            onClick={handleSignup}
+                          >
+                            Submit
+                          </Button>
+                        ) : (
+                          <Button
+                            className="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm"
+                            onClick={handleNextStep}
+                          >
+                            Next
+                          </Button>
+                        )}
+                      </div>
+                      <p className="text-center text-xs sm:text-sm mt-2 sm:mt-4">
+                        Already have an account?{" "}
+                        <span
+                          className="text-blue-600 cursor-pointer hover:underline"
+                          onClick={() => setMode("login")}
+                        >
+                          Login
+                        </span>
+                      </p>
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
-
+  );
 }

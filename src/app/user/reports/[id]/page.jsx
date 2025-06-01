@@ -14,6 +14,7 @@ import autoTable from "jspdf-autotable";
 import { useUser } from "@/context/userContext";
 import axios from "axios";
 import { Send } from "lucide-react";
+import imageCompression from "browser-image-compression";
 import { toast } from "react-toastify";
 import {
   Select,
@@ -157,16 +158,38 @@ export default function AppointmentDetails() {
     );
   }
 
-  const handleReportUpload = (e) => {
+  const handleReportUpload = async (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
 
-    const newReports = files.map((file) => ({
-      name: file.name,
-      url: URL.createObjectURL(file),
-      file: file,
-    }));
-    setUploadedReports((prev) => [...prev, ...newReports]);
+    const compressedReports = await Promise.all(
+      files.map(async (file) => {
+        try {
+          // Compress the image file
+          const compressedFile = await imageCompression(file, {
+            maxSizeMB: 9,  // max size is 9 mb
+            maxWidthOrHeight: 1920, 
+            useWebWorker: true,
+          });
+
+          return {
+            name: compressedFile.name,
+            url: URL.createObjectURL(compressedFile),
+            file: compressedFile,
+          };
+        } catch (error) {
+          console.error("Compression error:", error);
+          // Fallback: use original file if compression fails
+          return {
+            name: file.name,
+            url: URL.createObjectURL(file),
+            file: file,
+          };
+        }
+      })
+    );
+
+    setUploadedReports((prev) => [...prev, ...compressedReports]);
 
     // Reset file input
     if (fileInputRef.current) {
