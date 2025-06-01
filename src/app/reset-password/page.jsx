@@ -7,10 +7,10 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
 export default function ResetPassword() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const role = searchParams.get("role");
+  const router = useRouter();
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
