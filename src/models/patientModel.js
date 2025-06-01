@@ -14,10 +14,17 @@ const patientSchema = new mongoose.Schema({
   age: { type: String },
   password: { type: String, required: true },
   profilePic: { type: String },
+  resetPasswordToken: {
+    type: String,
+    default: null,
+  },
+
+  resetPasswordExpires: {
+    type: Date,
+    default: null,
+  },
 });
 
-const patientModel = mongoose.models.Patient || mongoose.model("Patient", patientSchema);
+const patientModel =
+  mongoose.models.Patient || mongoose.model("Patient", patientSchema);
 export default patientModel;
-
-
-

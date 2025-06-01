@@ -16,7 +16,17 @@ const doctorSchema = new mongoose.Schema({
   pastHospitals: { type: String },
   password: { type: String, required: true },
   profilePic: { type: String },
+  resetPasswordToken: {
+    type: String,
+    default: null,
+  },
+
+  resetPasswordExpires: {
+    type: Date,
+    default: null,
+  },
 });
 
-const doctorModel = mongoose.models.Doctor || mongoose.model("Doctor", doctorSchema);
+const doctorModel =
+  mongoose.models.Doctor || mongoose.model("Doctor", doctorSchema);
 export default doctorModel;
