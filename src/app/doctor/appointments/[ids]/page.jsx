@@ -160,7 +160,6 @@ export default function AppointmentDetails() {
       try {
         const res = await fetch(`/api/medications?patientId=${receiverId}`);
         const data = await res.json();
-        
 
         if (data.success && Array.isArray(data.medications)) {
           setMedicationData(data.medications);
@@ -514,7 +513,8 @@ export default function AppointmentDetails() {
                           className="mt-3 flex gap-2 items-center cursor-pointer"
                           onClick={handleDownloadPdf}
                         >
-                          <Download className="w-4 h-4 cursor-pointer" /> Download PDF
+                          <Download className="w-4 h-4 cursor-pointer" />{" "}
+                          Download PDF
                         </Button>
                       </TabsContent>
                     </Tabs>
@@ -538,13 +538,13 @@ export default function AppointmentDetails() {
                         {uploadedReports.map((file, index) => (
                           <div
                             key={index}
-                            className="flex justify-between items-center bg-white dark:bg-purple-950 p-2 rounded shadow"
+                            className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white dark:bg-purple-950 p-2 rounded shadow space-y-2 sm:space-y-0 sm:space-x-4"
                           >
-                            <div>
-                              <span className="truncate font-medium">
+                            <div className="w-full sm:w-auto overflow-hidden">
+                              <span className="block font-medium truncate max-w-full sm:max-w-xs">
                                 {file.name}
                               </span>
-                              <div className="text-xs text-gray-600 dark:text-gray-400">
+                              <div className="text-xs text-gray-600 dark:text-gray-400 break-words">
                                 Uploaded on: {file.date || "Unknown date"}
                                 {file.patientName && (
                                   <> | Patient: {file.patientName}</>
