@@ -16,12 +16,12 @@ const patientSchema = new mongoose.Schema({
   profilePic: { type: String },
   resetPasswordToken: {
     type: String,
-    default: null,
+    default: "",
   },
 
   resetPasswordExpires: {
     type: Date,
-    default: null,
+    default: "",
   },
 });
 

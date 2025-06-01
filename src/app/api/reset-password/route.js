@@ -47,8 +47,8 @@ export async function POST(req, res) {
 
     // Update password and clear reset fields
     user.password = hashedPassword;
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
+    user.resetPasswordToken = "";
+    user.resetPasswordExpires = "";
 
     await user.save();
 
