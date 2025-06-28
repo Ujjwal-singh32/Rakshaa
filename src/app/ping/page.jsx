@@ -22,6 +22,7 @@ export default function KeepAlive() {
       }
 
       // Ping Socket.IO Server
+      // it is deployed on render
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_SOCKET_URL}/ping`);
         setSocketStatus(res.ok ? '✅ Socket Server Alive' : '❌ Socket Server Error');
