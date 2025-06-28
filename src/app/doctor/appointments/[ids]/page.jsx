@@ -186,7 +186,7 @@ export default function AppointmentDetails() {
 
     const token = localStorage.getItem("drtoken") || "";
 
-    socket.current = io("https://rakhsa-socket.onrender.com", {
+    socket.current = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
       autoConnect: true,
       auth: { token },
     });
